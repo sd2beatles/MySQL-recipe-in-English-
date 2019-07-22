@@ -1,1 +1,1 @@
-# my_first_project
+# SQL-recipe written in English
