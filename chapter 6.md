@@ -111,7 +111,41 @@ FROM quarterly_sales
 ORDER BY year;
 ```
 
+If we are only intrested in the average based on 'non-NUll' values, there must be a change in the numberator in our calcuation.
+Using 'sign', which returns one value of three(-1,0,1) and coalesce altogether, we deliberately ignore NULL values. 
 
+```MySQL
+SELECT year,(COALESCE(q1,0)+COALESCE(q2,0)+COALESCE(q3,0)+COALESCE(q4,0))/
+			(SIGN(COALESCE(q1,0))+SIGN(COALESCE(q2,0))+SIGN(COALESCE(q3,0))+SIGN(COALESCE(q4,0)))
+AS average
+FROM quarterly_sales
+ORDER BY year;
+```
+
+### 3) Manipulation of Integer Data
+
+```MySQL
+CREATE TABLE advertising_stats (
+    dt          varchar(255)
+  , ad_id       varchar(255)
+  , impressions integer
+  , clicks      integer
+);
+
+INSERT INTO advertising_stats
+VALUES
+    ('2017-04-01', '001', 100000,  3000)
+  , ('2017-04-01', '002', 120000,  1200)
+  , ('2017-04-01', '003', 500000, 10000)
+  , ('2017-04-02', '001',      0,     0)
+  , ('2017-04-02', '002', 130000,  1400)
+  , ('2017-04-02', '003', 620000, 15000)
+;
+'''
+Impressions represents the number of 
+
+
+#### * Calculating the Click Rates
 
 
 
