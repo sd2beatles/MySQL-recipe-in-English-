@@ -123,9 +123,9 @@ SELECT CURRENT_DATE() AS dt, current_time() AS dh ,current_timestamp() AS stamp;
 #### *Conversion of 'char' into 'date' type
 Making use of 'Cast'function is the most universay way to handle the task.
 
-'''mysql
+```mysql
 SELECT CAST('2019-7-23' AS DATE) AS dt, CAST('2019-7-23 17:20:13' AS DATETIME ) AS stamp;
-'''
+```
 
 #### *Extraction of specific parts from the date
 ```mysql
@@ -143,6 +143,33 @@ SELECT stamp,
        EXTRACT(HOUR FROM stamp) AS HOUR
        FROM practbl;
 ```
+
+#### 5)Handling Default Value 
+NULL as default value  is an 'infectious' one ; anything it touches will lead to NULL in the end. Therefore, we need a measure
+to deal with this problem. I have used 'coalesce' to prevent it from happening. 
+
+method 1)prepare the data
+```mysql
+CREATE TABLE purchase_log_with_coupon (
+    purchase_id varchar(255)
+  , amount      integer
+  , coupon      integer
+);
+
+INSERT INTO purchase_log_with_coupon
+VALUES
+    ('10001', 3280, NULL)
+  , ('10002', 4650,  500)
+  , ('10003', 3870, NULL)
+;
+```
+method 2) handling the default values.
+```mysql
+SELECT purchase_id,amount,coupon,
+       amount-COALESCE(coupon,0) AS actual_price
+       FROM purchase_log_with_coupon;
+```
+
 
 
 
