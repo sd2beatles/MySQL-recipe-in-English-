@@ -26,7 +26,7 @@ SELECT CONCAT(pref_name,' ',city_name) AS pref_city
 
 ### 2) Comparing Values 
 
-The table shows the sale of each quater from 2015 to 2017. Assuming there were no track records left in the 3 and 4 quarter of 2017, I have inserted Null for these periods. 
+The table shows the sale of each quater from 2015 to 2017. Assuming there were no track records  in the 3 and 4 quarter of 2017, I have inserted NULL for these periods. As for 2018, all columns consist of NULL. 
 
 ```mywsql
 CREATE TABLE quarterly_sales (
