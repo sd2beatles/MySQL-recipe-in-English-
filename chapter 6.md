@@ -86,7 +86,7 @@ For the  next two remaining cases, ifnull is employed to find the least value. I
 
 ```mysql
 SELECT year,
-     /* finding the greatest value*/
+     /* finding the greatest values*/
     case
     WHEN GREATEST(COALESCE(q1,0),COALESCE(q2,0),COALESCE(q3,0),COALESCE(q4,0))=0 THEN 'NULL'
     ELSE GREATEST(COALESCE(q1,0),COALESCE(q2,0),COALESCE(q3,0),COALESCE(q4,0)) 
