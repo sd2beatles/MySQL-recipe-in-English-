@@ -50,7 +50,9 @@ It is crucial for mangers to see there is any change in sale's revenue from thie
 there separate sections ,which make it more convenient and handy to conduct thier quarterly analysis. 
 
 -movment_q2_q1  '-' : loss in sale's compared to previous quarter , '+'  gain , ' ' no change at all 
+
 -diff_q2_q1  the name implies absolute value of the diffrence between two quarters. 
+
 -sign_q2_q1  '-1' , loss in sale's compared to previous quarter , '1'  gain , ' 0' no change at all 
 
 ```mysql
