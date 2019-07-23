@@ -14,7 +14,7 @@ CREATE TABLE mst_user_location
  
 INSERT INTO mst_user_location 
        VALUES('U001','42 Parkstone Ave','ChristChurch'),
-			       ('U002','12 Queenswood St','Auckland'),
+             ('U002','12 Queenswood St','Auckland'),
              ('U003','14-A Queens St','Auckland');
 ```
 method 2) concating the letters
