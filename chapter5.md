@@ -101,6 +101,51 @@ SELECT stamp,
 ```
 
 #### * spliting one section into many sub-divsions
+In this section, the path is further taken apart into two subgroups, path1 and path 2. 
+Unlike PostGreSQL that provides split_part function, MySQL dose not have it, which leads the codes to look a little messy and 
+less efficient in terms of readability. 
+
+```mysql
+SELECT stamp,url,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTR(url,LENGTH(SUBSTRING_INDEX(url,'/',3))+2),'/',1),'#',1) AS path1,
+		CASE
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTR(url, LENGTH(SUBSTRING_INDEX(url,'/',3))+2), '?', 1), '#', 1) RLIKE '\/'
+            THEN SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTR(url, LENGTH(SUBSTRING_INDEX(url,'/',3))+2), '?', 1), '#', 1), '/', -1)
+		    ELSE ''
+            END AS path2
+			FROM access_log;
+```
+
+#### 4) Handling Date and Time Stamp of Data
+#### *Printing current-time and time stamp 
+```mysql
+SELECT CURRENT_DATE() AS dt, current_time() AS dh ,current_timestamp() AS stamp;
+```
+#### *Conversion of 'char' into 'date' type
+Making use of 'Cast'function is the most universay way to handle the task.
+
+'''mysql
+SELECT CAST('2019-7-23' AS DATE) AS dt, CAST('2019-7-23 17:20:13' AS DATETIME ) AS stamp;
+'''
+
+#### *Extraction of specific parts from the date
+```mysql
+DROP TABLE IF EXISTS practbl;
+CREATE TABLE practbl
+(stamp datetime);
+
+INSERT INTO practbl 
+       VALUES ('2019-7-23 17:25:01');
+
+SELECT stamp, 
+       EXTRACT(YEAR FROM stamp) AS YEAR, 
+	   EXTRACT(MONTH FROM stamp) AS MONTH, 
+       EXTRACT(DAY FROM stamp)  AS DAY,
+       EXTRACT(HOUR FROM stamp) AS HOUR
+       FROM practbl;
+```
+
+
+
 
 
 
