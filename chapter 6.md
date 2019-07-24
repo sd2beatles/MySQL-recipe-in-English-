@@ -141,29 +141,26 @@ VALUES
   , ('2017-04-02', '002', 130000,  1400)
   , ('2017-04-02', '003', 620000, 15000)
 ;
-```
 Impressions represents the total number of advertisments made on each given data. 
 Now, I will add two additional columns 'ctr' for the rate of actual clicks on the specific date and 'crt_as_percent'
 that is measured in percentage with 2 decimal points.
 
-```MySQL
 SELECT dt,ad_id, ROUND(clicks/impressions,2) AS ctr,
 	   100*(clicks/impressions) AS crt_as_percent 
        FROM advertising_stats
        ORDER BY dt,ad_id
        ;
 
- 
 ```
-<special Note 1> It must be unnatural to assume that any number is divisible by zero.
+<Special Note 1> It must be unnatural to assume that any number is divisible by zero.
 The meritness of emplyoing MySQL is we don't need to take an extra measure to handle this issue.
 However, if other queries are taken for this situation, a little trick should kick in to avoid an error message ; 
 
-
+```
 SELECT ROUND(clcks/NULLIF(impression,0),2) AS ctr, 100*(clicks/NULLIF(impression,0)) AS crt_as_percent 
        FROM advertising_stats
        ORDER BY dt,ad_id;
-       
+```       
 <Special Note 2> NULLIF VS IFNULL
 - NULLIF(exp1,exp2) if exp1 and exp2 are same to one another, it returns NULL. 
                   Otherwise,the firste expression is returned. 
@@ -171,7 +168,7 @@ SELECT ROUND(clcks/NULLIF(impression,0),2) AS ctr, 100*(clicks/NULLIF(impression
 - IFNULL(exp1,exp2) if exp1 is null,then it returns exp2 and if two values are all NULL,it returns NULL. 
                   Other than these two cases, it always return the first expression. 
                   
-```
+		  
 ### 4) Computation of Distance 
 #### * Absolute Value and Squared Root 
 
