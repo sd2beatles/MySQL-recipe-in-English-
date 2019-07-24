@@ -264,17 +264,46 @@ SELECT user_id,DATE(NOW()) AS today,register_stamp,birth_date,
 
 ```
 
-### 6) Management of IP address 
+### 6) Management of IP address
 
-#### * Comparasion of network address 
 Given the dotted-quad representations of IP address as a string, we are curious wheter one is more or less than another,or whether
-IP address belongs to the data in the format 'adress/y'. Whatever case it is, it is not strongly recommendable to make a judgement
-based on 'string' data since the task itself is really inefficient and time-consuming. Therefore, I have employed inet
+IP address belongs to the data in the format 'adress/y'. Whatever cases they are, it is not a good idead  to make a judgement
+based on 'string' data since the task itself is really inefficient and time-consuming. Therefore, I have employed INET_ATON.
 
-
+##### * Inequality  
 
 ```MySQL
-Case 1) Inequlity 
+SELECT IF(INET_ATON('123.0.0.1') < INET_ATON('128.0.0.1'),'T','F') AS lt,
+       IF(INET_ATON('123.0.0.1')> INET_ATON('123.0.0.1'),'T','F') AS gt;
+ ```
+ #### * Split an IP address into 4 respective octet
+ 
+ In addition to the four sections of IP address, I pad the table with another column called ip_integer(ie an integer value of ip address).
+ 
+```MySQL
+DROP TABLE IF EXISTS iptbl;
+CREATE TABLE iptbl
+(ip CHAR(20) NOT NULL PRIMARY KEY);
+INSERT INTO iptbl
+       VALUES ('120.168.0.1'),
+              ('179.123.0.2'),
+			  ('156.233.0.0'),
+              ('123.0.0.2');
+              
+SELECT ip,SUBSTRING_INDEX(ip,'.',1) AS ip_part1,
+          SUBSTRING_INDEX(SUBSTRING_INDEX(ip,'.',-3),'.',1) AS ip_part2,
+	      SUBSTRING_INDEX(SUBSTRING_INDEX(ip,'.',-2),'.',1) AS ip_part3,
+          SUBSTRING_INDEX(ip,'.',-1) AS ip_part4,
+          INET_ATON(ip) AS ip_integer
+          FROM iptbl;
+```
+##### - _special Note_  INET_ATON(EXP1) VS INET_NTOA(EXP1)
+
+INET_ATON(exp1) to return the numerical value of IP address.
+
+INET_NTOA(exp1) to concvert the numberical value into IP address. 
+ 
+       
 
 
 
