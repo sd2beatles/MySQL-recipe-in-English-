@@ -152,18 +152,18 @@ SELECT dt,ad_id, ROUND(clicks/impressions,2) AS ctr,
        FROM advertising_stats
        ORDER BY dt,ad_id
        ;
- ```
+
  
 ```
-<special Note> It must be unnatural to assume that any number is divisible by zero.
+<special Note 1> It must be unnatural to assume that any number is divisible by zero.
 The meritness of emplyoing MySQL is we don't need to take an extra measure to handle this issue.
 However, if other queries are taken for this situation, a little trick should kick in to avoid an error message ; 
 
-```MySQL
+
 SELECT ROUND(clcks/NULLIF(impression,0),2) AS ctr, 100*(clicks/NULLIF(impression,0)) AS crt_as_percent 
        FROM advertising_stats
        ORDER BY dt,ad_id;
-``` 
+       
 <Special Note 2> NULLIF VS IFNULL
 - NULLIF(exp1,exp2) if exp1 and exp2 are same to one another, it returns NULL. 
                   Otherwise,the firste expression is returned. 
@@ -217,6 +217,45 @@ VALUES
 SELECT ROUND(SQRT(POW(x1-x2,2)+POW(y1-y2,2)),2) AS dist
 	   FROM location_2d;
 ```
+
+### 5) Hanlding Time and Date Data
+
+#### _Preapring unprocessed data_
+```MySQL
+DROP TABLE IF EXISTS mst_users_with_dates;
+CREATE TABLE mst_users_with_dates (
+    user_id        varchar(255)
+  , register_stamp varchar(255)
+  , birth_date     varchar(255)
+);
+
+INSERT INTO mst_users_with_dates
+VALUES
+    ('U001', '2016-02-28 10:00:00', '2000-02-29')
+  , ('U002', '2016-02-29 10:00:00', '2000-02-29')
+  , ('U003', '2016-03-01 10:00:00', '2000-02-29')
+;
+```
+
+#### * Manipulation of Date and Time 
+
+In order to substract from or add cetrain interval to the current data, among the variety of possible ways, 
+I have used the simple operators( + or - ) together with INTERVAL function. Unlike postGresql, MySQL dictates that
+INTERVAL be followed by a desginated integer number. For exmaple,  INTERVAL 1 HOUR .
+
+```MySQL
+SELECT user_id,register_stamp,
+       register_stamp+INTERVAL 1 HOUR AS after_1_hour,
+       register_stamp-INTERVAL 30 minute AS before_30_minutes,
+       SUBSTRING_INDEX(register_stamp,' ',1) AS register_date,
+       SUBSTRING_INDEX(register_stamp,' ',1)+INTERVAL 1 DAY AS after_1_day,
+       SUBSTRING_INDEX(register_stamp,' ',1)-INTERVAL 1 MONTH AS before_1_month
+       
+       
+       FROM mst_users_with_dates;
+```
+
+
 
 
  
