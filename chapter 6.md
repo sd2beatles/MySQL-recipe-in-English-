@@ -146,7 +146,7 @@ Impressions represents the total number of advertisments made on each given data
 Now, I will add two additional columns 'ctr' for the rate of actual clicks on the specific date and 'crt_as_percent'
 that is measured in percentage with 2 decimal points.
 
-'''MySQL
+```MySQL
 SELECT dt,ad_id, ROUND(clicks/impressions,2) AS ctr,
 	   100*(clicks/impressions) AS crt_as_percent 
        FROM advertising_stats
@@ -171,6 +171,53 @@ SELECT ROUND(clcks/NULLIF(impression,0),2) AS ctr, 100*(clicks/NULLIF(impression
                   Other than these two cases, it always return the first expression. 
                   
 ```
+### 4) Computation of Distance 
+#### * Absolute Value and Squared Root 
+
+```MySQL
+DROP TABLE IF EXISTS location_1d;
+CREATE TABLE location_1d (
+    x1 integer
+  , x2 integer
+);
+
+INSERT INTO location_1d
+VALUES
+    ( 5 , 10)
+  , (10 ,  5)
+  , (-2 ,  4)
+  , ( 3 ,  3)
+  , ( 0 ,  1)
+;
+
+SELECT ABS(X1-X2) AS abs,
+       SQRT(POW(x1-x2,2)) AS sqrt
+	   FROM location_1d;
+```
+
+#### * Eucleidan Distance 
+
+```MySQL
+DROP TABLE IF EXISTS location_2d;
+CREATE TABLE location_2d (
+    x1 integer
+  , y1 integer
+  , x2 integer
+  , y2 integer
+);
+
+INSERT INTO location_2d
+VALUES
+    (0, 0, 2, 2)
+  , (3, 5, 1, 2)
+  , (5, 3, 2, 1)
+;
+
+SELECT ROUND(SQRT(POW(x1-x2,2)+POW(y1-y2,2)),2) AS dist
+	   FROM location_2d;
+```
+
+
  
 
 
