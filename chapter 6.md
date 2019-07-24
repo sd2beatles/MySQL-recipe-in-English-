@@ -301,7 +301,7 @@ SELECT ip,SUBSTRING_INDEX(ip,'.',1) AS ip_part1,
 
 INET_ATON(exp1) to return the numerical value of IP address.
 
-INET_NTOA(exp1) to concvert the numberical value into IP address. 
+INET_NTOA(exp1) to concvert the numerical value into IP address. 
  
        
 
