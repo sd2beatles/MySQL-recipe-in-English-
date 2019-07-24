@@ -270,7 +270,7 @@ Given the dotted-quad representations of IP address as a string, we are curious 
 IP address belongs to the data in the format 'adress/y'. Whatever cases they are, it is not a good idead  to make a judgement
 based on 'string' data since the task itself is really inefficient and time-consuming. Therefore, I have employed INET_ATON.
 
-##### * Inequality  
+#### * Inequality  
 
 ```MySQL
 SELECT IF(INET_ATON('123.0.0.1') < INET_ATON('128.0.0.1'),'T','F') AS lt,
