@@ -51,11 +51,11 @@ VALUES
 It is crucial for mangers to see there is any change in sale's revenue from thier company. Therefore, I have made 
 there separate sections ,which make it more convenient and handy to conduct thier quarterly analysis. 
 
--movment_q2_q1  '-' : loss in sale's compared to previous quarter , '+'  gain , ' ' no change at all 
+- _movment_q2_q1_   '-' : loss in sale's compared to previous quarter , '+'  gain , ' ' no change at all 
 
--diff_q2_q1  the name implies absolute value of the diffrence between two quarters. 
+- _diff_q2_q1_   the name implies absolute value of the diffrence between two quarters. 
 
--sign_q2_q1  '-1' , loss in sale's compared to previous quarter , '1'  gain , ' 0' no change at all 
+- _sign_q2_q1_  '-1' , loss in sale's compared to previous quarter , '1'  gain , ' 0' no change at all 
 
 ```mysql
 SELECT year,q1,q2,
@@ -164,10 +164,10 @@ SELECT ROUND(clcks/NULLIF(impression,0),2) AS ctr, 100*(clicks/NULLIF(impression
        ORDER BY dt,ad_id;
  
 <Special Note 2> NULLIF VS IFNULL
-NULLIF(exp1,exp2) if exp1 and exp2 are same to one another, it returns NULL. 
+- NULLIF(exp1,exp2) if exp1 and exp2 are same to one another, it returns NULL. 
                   Otherwise,the firste expression is returned. 
 
-IFNULL(exp1,exp2) if exp1 is null,then it returns exp2 and if two values are all NULL,it returns NULL. 
+- IFNULL(exp1,exp2) if exp1 is null,then it returns exp2 and if two values are all NULL,it returns NULL. 
                   Other than these two cases, it always return the first expression. 
                   
 ```
