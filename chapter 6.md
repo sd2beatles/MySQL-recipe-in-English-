@@ -249,11 +249,39 @@ SELECT user_id,register_stamp,
        register_stamp-INTERVAL 30 minute AS before_30_minutes,
        SUBSTRING_INDEX(register_stamp,' ',1) AS register_date,
        SUBSTRING_INDEX(register_stamp,' ',1)+INTERVAL 1 DAY AS after_1_day,
-       SUBSTRING_INDEX(register_stamp,' ',1)-INTERVAL 1 MONTH AS before_1_month
-       
-       
+       SUBSTRING_INDEX(register_stamp,' ',1)-INTERVAL 1 MONTH AS before_1_month,
+       DATEDIFF(CURDATE(),register_stamp) AS diff_days
        FROM mst_users_with_dates;
 ```
+
+#### * Age 
+It seems to be trivial and struggling for data analysts to compute age based on date-typed data if they decide to use MySQL. Among many alternatives , I have taken TIMESTAMPDIFF.
+
+```MySQL
+SELECT user_id,DATE(NOW()) AS today,register_stamp,birth_date,
+	   TIMESTAMPDIFF(YEAR,birth_date,CURDATE()) AS register_date,
+       /* in order to extract the section of date from register_stamp,
+	      DATE is used!*/
+       TIMESTAMPDIFF(YEAR,birth_date,DATE(register_stamp)) AS current_age
+       FROM mst_users_with_dates;
+
+```
+
+### 6) Management of IP address 
+
+#### * Comparasion of network address 
+Given the dotted-quad representations of IP address as a string, we are curious wheter one is more or less than another,or whether
+IP address belongs to the data in the format 'adress/y'. Whatever case it is, it is not strongly recommendable to make a judgement
+based on 'string' data since the task itself is really inefficient and time-consuming. Therefore, I have employed inet
+
+
+
+```MySQL
+Case 1) Inequlity 
+
+
+
+
 
 
 
