@@ -72,8 +72,8 @@ SELECT year,q1,q2,
 
 #### * Finding The Lowest and Greatest Sale among The Qauaters 
 
-This taks took me a quite longer than What I had previously expected. This is primarly beacuse  MySQL does not currently provide
-any functions which generates either lowest,greatest value among 'non-null' columns. Therefore, I came out with indirect ways to
+This taks took me a quite longer than What I had previously expected . This is primarly beacuse  MySQL is not currently providing
+any functions which generates either lowest,greatest value among 'non-null' columns. Therefore, I come out with indirect ways to
 get those values with the same codes repeated over and over. 
 
 As for finding the greast value, since the sale can not be lower than zero, the value automatically returns zero if any column on the talbe contains zero by using 'COALESCE' ,which is followed by finding the greatest value among four non-Null values. Otherwise,'NULL' automatically would appear.
@@ -142,10 +142,39 @@ VALUES
   , ('2017-04-02', '003', 620000, 15000)
 ;
 '''
-Impressions represents the number of 
+Impressions represents the total number of advertisments made on each given data. 
+Now, I will add two additional columns 'ctr' for the rate of actual clicks on the specific date and 'crt_as_percent'
+that is measured in percentage with 2 decimal points.
+
+'''MySQL
+SELECT dt,ad_id, ROUND(clicks/impressions,2) AS ctr,
+	   100*(clicks/impressions) AS crt_as_percent 
+       FROM advertising_stats
+       ORDER BY dt,ad_id
+       ;
+ ```
+ 
+```
+<special Note> It must be unnatural to assume that any number is divisible by zero.
+The meritness of emplyoing MySQL is we don't need to take an extra measure to handle this issue.
+However, if other queries are taken for this situation, a little trick should kick in to avoid an error message ; 
+
+SELECT ROUND(clcks/NULLIF(impression,0),2) AS ctr, 100*(clicks/NULLIF(impression,0)) AS crt_as_percent 
+       FROM advertising_stats
+       ORDER BY dt,ad_id;
+ 
+<Special Note 2> NULLIF VS IFNULL
+NULLIF(exp1,exp2) if exp1 and exp2 are same to one another, it returns NULL. 
+                  Otherwise,the firste expression is returned. 
+
+IFNULL(exp1,exp2) if exp1 is null,then it returns exp2 and if two values are all NULL,it returns NULL. 
+                  Other than these two cases, it always return the first expression. 
+                  
+```
+ 
 
 
-#### * Calculating the Click Rates
+
 
 
 
