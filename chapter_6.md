@@ -95,8 +95,8 @@ SELECT year,
     /* obtaining the lowest values*/
     CASE
     WHEN (q1 is NOT NULL AND q2 is NOT NULL AND q3 IS NOT NULL AND q4 IS NOT NULL) THEN least(q1,q2,q3,q4)
-    WHEN ifnull(ifnull(q1,q2),ifnull(q3,q4))=q1 then least(q1,q2) 
-    WHEN ifnull(ifnull(q1,q2),ifnull(q3,q4))=q3 then least(q3,q4)
+    WHEN ifnull(ifnull(q1,q2),ifnull(q3,q4))=IFNULL(q1,q2) then least(q1,q2) 
+    WHEN ifnull(ifnull(q1,q2),ifnull(q3,q4))=IFNULL(q3,q4) then least(q3,q4)
     ELSE 'NULL'
     END AS least_value
     from quarterly_sales
