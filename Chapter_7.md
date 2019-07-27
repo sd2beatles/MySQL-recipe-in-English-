@@ -43,7 +43,7 @@ SELECT user_id,
 #### * OVER() VS OVER(PARTITION BY)
 
 In order to present individual data and ones after aggreate functions is implemented  all together, OVER is the most suitable function. 
-we could take.Unless OVER funcion is used with specifying any options,the aggreating function will be applied to the whole table(see the column named avg_score in our code where we are actully averaging all the scores on the table). However, f PARTITION BY caluse in the parenthesis of Over will determine which rows will be applied to the given functions. Let's look at how these skills are actually 
+we could take.Unless OVER funcion is used with specifying any options,the aggreating function will be applied to the whole table(see the column named avg_score in our code where we are actully averaging all the scores on the table). However,  PARTITION BY caluse in the parenthesis of Over will determine which rows will be applied to the given functions. Let's look at how these concepts are actually 
 implemented in our case stduy. 
 
 
@@ -59,7 +59,17 @@ SELECT user_id,
 
 For more detail about OVER cluase, visit [https://www.sqlservercentral.com/articles/understanding-the-over-clause]
 
-#### * OVER(ORDER BY)
+#### * OVER(ORDER BY) and Ranking The Rows 
+First,we want to arrange rows in either descending or ascedning order  with a help of  ORDER BY clause. In addition, 
+there are three separate window functions to label the ranks of rows of a result-set, each of which has a distinct feature. 
+
+- ROW_NUMBER() : ranks the rows with no overlap 
+- RANK() : allows for overlap , but 'leaping' or 'skiping' in the rank 
+- DENSE_LANK()  : allows for overlap and no 'leaping' or 'skiping' in the rank
+
+Furthermore, it is a good worthy of remembering other window functions such as "LEAD","LAG". 
+
+- Lead() :
 
 
 
