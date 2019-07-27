@@ -67,9 +67,83 @@ there are three separate window functions to label the ranks of rows of a result
 - RANK() : allows for overlap , but 'leaping' or 'skiping' in the rank 
 - DENSE_LANK()  : allows for overlap and no 'leaping' or 'skiping' in the rank
 
-Furthermore, it is a good worthy of remembering other window functions such as "LEAD","LAG". 
+Furthermore, it is a worthy of remembering other window functions such as "LEAD","LAG". 
 
-- Lead() :
+- LEAD() : to return a value from  the next row
+- LAG() :  to return a value from the previous row 
+
+To see how these all window functions are acually implmented int the case of popular_products
+
+'''MySql
+DROP TABLE IF EXISTS popular_products;
+CREATE TABLE popular_products (
+    product_id varchar(255)
+  , category   varchar(255)
+  , score      numeric
+);
+
+INSERT INTO popular_products
+VALUES
+    ('A001', 'action', 94)
+  , ('A002', 'action', 81)
+  , ('A003', 'action', 78)
+  , ('A004', 'action', 64)
+  , ('D001', 'drama' , 90)
+  , ('D002', 'drama' , 82)
+  , ('D003', 'drama' , 78)
+  , ('D004', 'drama' , 58)
+;
+
+SELECT product_id,
+       score,
+       ROW_NUMBER() OVER(ORDER BY score DESC) AS 'row_number',
+	   RANK() OVER(ORDER BY score DESC) AS 'rank',
+       DENSE_RANK() OVER(ORDER BY score DESC) AS 'density_rank',
+       LAG(product_id) OVER(ORDER BY score DESC) AS 'lag1',
+       LAG(product_id,2) OVER(ORDER BY score DESC) AS 'lag2', # a row before the previous raw 
+	   LEAD(product_id) OVER(ORDER BY score DESC) AS lead1,
+       LEAD(product_id,2) OVER(ORDER BY score DESC) as lead2 # a raw after the next raw
+	   FROM popular_products;
+```
+#### * OVER() clause and Aggregating Functions 
+
+<Descrition of Each Label>
+
+- row : rank the data on score withouth any overlap
+- cum_sum : compute cumulative sum up to k th index 
+- local_avg : return an average value of three 'local' values
+             (the preceding value right before the current index, the current index,and the follwing value)
+- first_value : find the product_id whose socre is the least 
+- last_value :  Return the product_id whose score is the highest 
+
+
+```MySQL
+SELECT product_id,
+       score, 
+	   ROW_NUMBER() OVER(ORDER BY score DESC) AS 'row', 
+       SUM(score) OVER(ORDER BY score DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cum_sum,
+       AVG(score) OVER(ORDER BY score DESC ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) AS loca_avg,
+       FIRST_VALUE(product_id) OVER(ORDER BY score DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS 'first_value',
+       LAST_VALUE(product_id) OVER(ORDER BY score DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS 'last_value'
+       FROM popular_products
+       ORDER BY ROW_NUMBER() OVER(ORDER BY score DESC) ; 
+	   
+       ;
+ ```
+       
+    
+
+
+
+
+
+
+	 
+	     
+
+
+
+	
 
 
 
