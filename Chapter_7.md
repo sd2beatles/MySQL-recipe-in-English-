@@ -41,7 +41,17 @@ SELECT user_id,
 	   FROM review
        GROUP  BY user_id;
 ```
-#### * Handling Before and After Groupping Data at A Time
+#### * Presenting THE Grouped and Individual Data Together
+In order to present individual and data after aggreate functions is implemented  all together, OVER is the most suitable function. 
+Unless OVER funcion is used with specifying any options,the aggreating function will be applied to the whole table(see the column 
+named avg_score in our code where we are actully averaging all the scores on the table). However, specification of PARTITION BY in the 
+parenthesis of Over will determine which rows will be applied to the given functions. Let's look at how these skills are actually 
+implement in our case stduy. 
+
+
+```MySQL
+
+
 
 
  
