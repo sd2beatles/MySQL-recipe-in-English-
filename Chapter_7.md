@@ -42,14 +42,23 @@ SELECT user_id,
        GROUP  BY user_id;
 ```
 #### * Presenting THE Grouped and Individual Data Together
-In order to present individual and data after aggreate functions is implemented  all together, OVER is the most suitable function. 
-Unless OVER funcion is used with specifying any options,the aggreating function will be applied to the whole table(see the column 
-named avg_score in our code where we are actully averaging all the scores on the table). However, specification of PARTITION BY in the 
-parenthesis of Over will determine which rows will be applied to the given functions. Let's look at how these skills are actually 
-implement in our case stduy. 
+In order to present individual data and ones after aggreate functions is implemented  all together, OVER is the most suitable function. 
+we could take.Unless OVER funcion is used with specifying any options,the aggreating function will be applied to the whole table(see the column named avg_score in our code where we are actully averaging all the scores on the table). However, f PARTITION BY caluse in the parenthesis of Over will determine which rows will be applied to the given functions. Let's look at how these skills are actually 
+implemented in our case stduy. 
 
 
 ```MySQL
+SELECT user_id,
+       product_id, 
+       score,
+       ROUND(AVG(score) OVER(),2)  AS 'avg_score', #since no specification, the AVG function is applied to 9 rows. 
+       ROUND(AVG(score) OVER(PARTITION BY user_id),2) AS 'user_avg_score', #return averge values based on the particular usr_id
+       ROUND(score-AVG(score) OVER(PARTITION BY user_id),2) AS 'use_avg+diff'
+       FROM review;
+```
+
+For more detail about OVER cluase, visit [https://www.sqlservercentral.com/articles/understanding-the-over-clause]
+
 
 
 
