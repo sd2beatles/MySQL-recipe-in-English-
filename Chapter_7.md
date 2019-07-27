@@ -74,7 +74,7 @@ Furthermore, it is a worthy of remembering other window functions such as "LEAD"
 
 To see how these all window functions are acually implmented int the case of popular_products
 
-'''MySql
+```MySql
 DROP TABLE IF EXISTS popular_products;
 CREATE TABLE popular_products (
     product_id varchar(255)
