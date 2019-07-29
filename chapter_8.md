@@ -2,8 +2,7 @@
 
 ### 1) Combing Tables Vertically : Combing rows of one table to those of another.
 
-Since each SELECT Statement must have the same number of fields(or columns), we  have two options left,one of which is simply to put it aside
-or grant default value. 
+Since each SELECT Statement must have the same number of fields(or columns), we  have two options left,one of which is simply to put it aside and the other is to grant default value. 
 
 ```MySQL
 DROP TABLE IF EXISTS app1_mst_users;
