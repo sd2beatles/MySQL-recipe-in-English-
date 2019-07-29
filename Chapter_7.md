@@ -159,22 +159,112 @@ SELECT category,product_id,score,
  
  _" Unser SQL implementing a window funciton is prohibited in WHERE clause"_
  
- To hadle this issue, we should use a sub-query,indstead. 
+ To handle this issue, we should use a sub-query,indstead. 
  
 ```MySQL
 SELECT * 
 	   FROM(
             SELECT 
                  category,
-				 score,
-				 ROW_NUMBER() OVER(PARTITION BY category ORDER BY score DESC) AS ranks
+		 score,
+		 ROW_NUMBER() OVER(PARTITION BY category ORDER BY score DESC) AS ranks
                  FROM popular_products
-                 )AS popluar_proudcts_wiht_rank
+                 )AS popluar_proudcts_k_st_rank
                  WHERE ranks<=2
                  ORDER BY category,ranks;
 ```
 
- 
+#### * Find The First Rank and Least Rank
+
+```MySQL
+
+SELECT DISTINCT category,
+       FIRST_VALUE(product_id) OVER(PARTITION BY category ORDER BY score DESC
+       ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS first_rank,
+       LAST_VALUE(product_id) OVER(PARTITION BY category ORDER BY score DESC 
+       ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as rank_last
+       FROM popular_products
+       ORDER BY category;
+
+```
+#### * GROUP_CONCAT CALUSE 
+
+Just image a vast of consumers logged on Amazone with thier own user id and puchased a variety of products on display. You may present 
+all the purchaseses and the total amount they spent on the table. This can be done through use of GROUP_CONCAT. 
+
+
+```MySQL
+DROP TABLE IF EXISTS purchase_detail_log;
+CREATE TABLE purchase_detail_log (
+    purchase_id integer
+  , product_id  varchar(255)
+  , price       integer
+);
+
+INSERT INTO purchase_detail_log
+VALUES
+    (100001, 'A001', 3000)
+  , (100001, 'A002', 4000)
+  , (100001, 'A003', 2000)
+  , (100002, 'D001', 5000)
+  , (100002, 'D002', 3000)
+  , (100003, 'A001', 3000)
+;
+
+
+SELECT DISTINCT purchase_id,
+       GROUP_CONCAT(product_id),
+       SUM(PRICE)
+       FROM purchase_detail_log
+       GROUP BY purchase_id
+       ;
+```
+As a default, the separtor of GROUP_CONCAT is ','. If you want to change it, put whatever you want to the second part of the clause. 
+GROUP_CONCAT(EXP1,'|') 
+
+### 3) Transfomration of Rows into Columns
+
+### _This special 'transposition' is conditional on the fact that you know exactly the number of rows and thier type._
+
+First, select the columns of interset. In losely term, we take y-values and x-values
+       In our case, dt provides y-values and indicator provides x-values.
+       
+Second,extend the 'base'table(ie table with only y-values) with extra columns,one for each x-value
+       We add one colum per x-value. Be aware that our x-values is 'indicator'
+
+Third, group and aggregate the exteded table.
+       We need to group by dt since it provides the y-values.
+       
+```MySQL
+DROP TABLE IF EXISTS daily_kpi;
+CREATE TABLE daily_kpi (
+    dt        varchar(255)
+  , indicator varchar(255)
+  , val       integer
+);
+
+INSERT INTO daily_kpi
+VALUES
+    ('2017-01-01', 'impressions', 1800)
+  , ('2017-01-01', 'sessions'   ,  500)
+  , ('2017-01-01', 'users'      ,  200)
+  , ('2017-01-02', 'impressions', 2000)
+  , ('2017-01-02', 'sessions'   ,  700)
+  , ('2017-01-02', 'users'      ,  250)
+;
+
+
+SELECT dt,
+       MAX(CASE WHEN indicator='impressions' THEN val END) AS impressions,
+	   MAX(CASE WHEN indicator='sessions' THEN val END) AS sessions,
+       MAX(CASE WHEN indicator='users' THEN val END) AS users
+       FROM daily_kpi
+       GROUP BY dt
+       ORDER BY dt;
+```    
+
+       
+   
  
  
  
