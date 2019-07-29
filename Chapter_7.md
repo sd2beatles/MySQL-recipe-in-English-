@@ -1,8 +1,7 @@
-```
+
 Acrroding to most books and web sties, they state that MySQL is known for not providing a window funciton.However, the version of 8
-does support some including ROW_NUMBER,RANK(),DESE_RANK() and so on. In the case where MySQL,you hve no choice but to make use of
-user-defined variable to solve the issues. 
-```
+does support some including ROW_NUMBER,RANK(),DESE_RANK() and so on. 
+
 
 
 ## CHAPTER 7 MANUPULATION OF DATA TABLE 
@@ -152,6 +151,33 @@ SELECT category,product_id,score,
        ORDER BY category,'row'
        ;
  ```
+ 
+ #### * K-th higheset Rnaks 
+ 
+ Now, let's extract k-th highest ranks from the sorted rows with all the rows still being partitioned by category. 
+ Then, WHERE is an essential clause to meet the task but the problem beings as fllowing 
+ 
+ _" Unser SQL implementing a window funciton is prohibited in WHERE clause"_
+ 
+ To hadle this issue, we should use a sub-query,indstead. 
+ 
+```MySQL
+SELECT * 
+	   FROM(
+            SELECT 
+                 category,
+				 score,
+				 ROW_NUMBER() OVER(PARTITION BY category ORDER BY score DESC) AS ranks
+                 FROM popular_products
+                 )AS popluar_proudcts_wiht_rank
+                 WHERE ranks<=2
+                 ORDER BY category,ranks;
+```
+
+ 
+ 
+ 
+ 
  
  
 
