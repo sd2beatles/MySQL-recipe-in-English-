@@ -262,6 +262,71 @@ SELECT dt,
        GROUP BY dt
        ORDER BY dt;
 ```    
+### 4) Splitting comm_Separted Values in MySQL
+
+Now take a look at purchase_log table and you will notice a comma-separated list of product_ids that one of costumers purcahsed with
+thier own ideas. You want to add two separte columns which indicate the index of each element in the specific produc_ids
+and its corresponding product_id.
+
+
+- step1) Createa a Separate Table containg numbers at least as big as the length of our longest comma-separted list. 
+         In our data, each slot of product_ids conatin up to 3 elements and this makes a temporary table with numbers 
+	 equal to 3.
+```MySQL
+create temporary table numbers as (
+  select 1 as n
+  union select 2 as n
+  union select 3 as n
+);
+
+SELECT * FROM numbers;
+```
+
+- step 2) Selecting Each Item in the Table
+We use a SUBSTRING_INDEX with n-th comma and select the entire list before that comma. We call it again with thrid arguament being 
+-1 which selects everything to the left of the commna. 
+
+```MySQL
+SELECT purchase_id,product_ids,
+	   SUBSTRING_INDEX(SUBSTRING_INDEX(product_ids,',',n),',',-1) AS product_id
+       FROM purchase_log
+       CROSS JOIN numbers
+       ORDER BY purchase_id,product_id
+       ;
+```
+
+- step 3) A Column Indicatiing a Length of Each list
+
+Now, we need to prepare a sepearte procedure to restirct the number of rows to the length of each list and make it appear on 
+the column named as idx'.
+
+
+Let's take a look at the # code in peices. 
+First is char_length, which returns the number of characters in a string. replace(product_ids, ',', '') removes commas from email_recipients. So char_length(email_recipients) - char_length(replace(product_ids, ',', '')) counts the commas.
+
+By joining on the number of commas <= , we get exactly the number of rows as there.
+
+```MySQL
+
+SELECT purchase_id,product_ids,
+	   SUBSTRING_INDEX(SUBSTRING_INDEX(product_ids,',',n),',',-1) AS product_id,
+       p.n
+       FROM purchase_log
+       CROSS JOIN numbers AS p
+             ON p.n<=(CHAR_LENGTH(product_ids)-CHAR_LENGTH(REPLACE(product_ids,',',''))+1)
+       ORDER BY purchase_id,product_id
+       ;
+ ```
+
+
+
+
+
+
+
+
+
+
 
        
    
