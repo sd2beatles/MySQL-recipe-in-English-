@@ -154,7 +154,7 @@ SELECT m.category_id,
 - _what is good about Subquery way?_
 
 The use of ORDER BY AND LIMIT in the subquery would relieve the burden of storing ranks of each cateogry in the pre-processed
-data set. Therefore, in our case, we do not see any need of stroing the field named rank in product_sale_ranking. 
+result set. Therefore, in our case, we do not see any need of stroing the field named rank in product_sale_ranking.
 
 
 
