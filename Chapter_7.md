@@ -1,3 +1,10 @@
+```
+Acrroding to most books and web sties, they state that MySQL is known for not providing a window funciton.However, the version of 8
+does support some including ROW_NUMBER,RANK(),DESE_RANK() and so on. In the case where MySQL,you hve no choice but to make use of
+user-defined variable to solve the issues. 
+```
+
+
 ## CHAPTER 7 MANUPULATION OF DATA TABLE 
 ### 1) GROUPING 
 
