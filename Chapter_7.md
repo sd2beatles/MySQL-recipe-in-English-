@@ -112,7 +112,7 @@ SELECT product_id,
        LEAD(product_id,2) OVER(ORDER BY score DESC) as lead2 # a raw after the next raw
 	   FROM popular_products;
 ```
-#### * OVER() clause and Aggregating Functions 
+#### * OVER() clause and Aggregating Functions (1)
 
 <Descrition of Each Label>
 
@@ -137,6 +137,30 @@ SELECT product_id,
 	   
        ;
  ```
+ 
+ #### * Using PARTITION BY AND ORDER BY in THE OVER() function at The same time
+
+Like what we have done on the previous section, we are still interested in ranking the rows based on the given scores. Howeever, there
+is one more prerequisite at this time - ranking the orders based on scores with the rows being partitioned by category. 
+
+```MySQL
+SELECT category,product_id,score,
+       ROW_NUMBER() OVER(PARTITION BY category ORDER BY score DESC) AS 'row',
+       RANK() OVER(PARTITION BY category ORDER BY score DESC) AS 'rank',
+       DENSE_RANK() OVER(PARTITION BY category ORDER BY score DESC) AS 'dense_rank'
+       FROM popular_products
+       ORDER BY category,'row'
+       ;
+ ```
+ 
+ 
+
+
+
+
+
+ 
+ 
        
     
 
