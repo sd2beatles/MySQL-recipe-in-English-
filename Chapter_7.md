@@ -232,11 +232,17 @@ Second,extend the 'base'table(ie table with only y-values) with extra columns,on
        We add one colum per x-value. Be aware that our x-values is 'indicator'
 
 Third, group and aggregate the exteded table.
-       We need to group by dt since it provides the y-values. Also, every dt there is only one value available for each of newly
-       created fileds(In the dresire
-
-
+       We need to group by dt since it provides the y-values. 
        
+       
+Lastly, use MAX/MIN function to extract each value for newly created fields.       
+        On every dt there is the only one TRUE value in response to CASE cluase available for each of newly created                             fileds;'impressions','sessions',and'users'. Use MAX/MIN to extract the value for every dt
+
+
+_"Note that the resulting output from CASE clause is a list. Even for only one single scalar, the resulting foramt is still
+  list not a scalar.In order to extract the elment from the list contining the only one value, we often use MAX/MIN function"
+       
+
 ```MySQL
 DROP TABLE IF EXISTS daily_kpi;
 CREATE TABLE daily_kpi (
