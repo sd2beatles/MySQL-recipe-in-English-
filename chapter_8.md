@@ -228,5 +228,10 @@ SELECT m.user_id,m.card_number,COUNT(p.purchase_id) AS purchase_count,
 		GROUP BY m.user_id;
 ```
 
+### Special Note
+Let's take a look at SIGN(COUNT(p.purchase_id)) in pieces. First Count return either 0 or integer value if purchse_id is more than one.
+Then, using the function of SIGN where it returns zero for zero parameter whearas returing 1 for any positive integer. 
+
+
 
 
