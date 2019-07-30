@@ -48,7 +48,7 @@ SELECT user_id,
 ### 2) THE Syntax of OVER CLUASE 
 #### * OVER() VS OVER(PARTITION BY)
 
-In order to present individual data and ones after aggreate functions is implemented  all together, OVER is the most suitable function. 
+In order to present data before and after aggreate functions  are implemented all together, OVER is the most suitable function. 
 we could take.Unless OVER funcion is used with specifying any options,the aggreating function will be applied to the whole table(see the column named avg_score in our code where we are actully averaging all the scores on the table). However,  PARTITION BY caluse in the parenthesis of Over will determine which rows will be applied to the given functions. Let's look at how these concepts are actually 
 implemented in our case stduy. 
 
