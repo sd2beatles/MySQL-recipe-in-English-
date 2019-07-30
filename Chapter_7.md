@@ -190,8 +190,7 @@ SELECT DISTINCT category,
 #### * GROUP_CONCAT CALUSE 
 
 Just image a vast of consumers logged on Amazone with thier own user id and puchased a variety of products on display. You may present 
-all the purchaseses and the total amount they spent on the table. This can be done through use of GROUP_CONCAT. 
-
+all the purchaseses and the total amount each user spent as two separate fields on the table. This can be done through use of GROUP_CONCAT. 
 
 ```MySQL
 DROP TABLE IF EXISTS purchase_detail_log;
@@ -233,7 +232,10 @@ Second,extend the 'base'table(ie table with only y-values) with extra columns,on
        We add one colum per x-value. Be aware that our x-values is 'indicator'
 
 Third, group and aggregate the exteded table.
-       We need to group by dt since it provides the y-values.
+       We need to group by dt since it provides the y-values. Also, every dt there is only one value available for each of newly
+       created fileds(In the dresire
+
+
        
 ```MySQL
 DROP TABLE IF EXISTS daily_kpi;
