@@ -157,11 +157,20 @@ result set. Therefore, in our case, we do not see any need of stroing the field 
 
 
 
+user_id<center>|car_number<center>
+|---------------:|-----------:|
+U001|123-XXXX-XXXX|
+U002||
+U003|5678-XXXX-XXXX|
+	
+	purchase_id<center>|user_id<center>|amount<center>|stamp<center>|
+|----------------:|------------:|-----------------:|------------:|
+1001|U001|200|2017-01-30 10:00:00
+1002|U001|500|2017-02-10 10:00:00
+1003|U001|200|2017-02-12 10:00:00
+1004|U002|800|2017-03-01 10:00:00
+1005|U002|400|2017-03-02 10:00:00
 
 
-
-        
-
-        - 
 
 
