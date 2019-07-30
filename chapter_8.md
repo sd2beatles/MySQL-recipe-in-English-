@@ -233,5 +233,14 @@ Let's take a look at SIGN(COUNT(p.purchase_id)) in pieces. First Count return ei
 Then, using the function of SIGN where it returns zero for zero parameter whearas returing 1 for any positive integer. 
 
 
+### 4) Avoiding Recursive and Lengthy Subquries
+In mangaing somewhat complicating quries, repeating the same subquires over and over seems to be inevitable. It thie repetitive code
+appears often in our code, it would be unpleasant and hard for readers to catch up the lines, leading to thier lower readability. 
+Thefore, CTE which stands for Common TABLE Expression kicks in to deal with this issue -simplifying complex joins and subqueries.
 
+CTE follows the below caluse 
+ _"with <talbe name> AS (SELECT ~)"_
+	
+	
+ 
 
