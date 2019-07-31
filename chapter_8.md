@@ -311,11 +311,39 @@ SELECT
 
 ```
 
-### 5) Multiple Similar Table
-Let's suppose you have a great diversity of orignal thoughts and ides about how to design your own database tables. Unfortunately,
-you are denied an access or right to create them. In this cse, constructing "similar" tables will statify your desire.
+### 5) Multiple Similar Tables
 
-- CASE STUDY 1) Arranging Code Values After Thier Lables ( LEFT JOIN apporach) 
+Let's suppose you have many creative thoughts and ides about how to design your own database tables. Unfortunately,
+you are denied an access or right to create tables. In this cse, there is a indrect way of presenting your 'design' givning 
+the same information and presentation as the physical table. In the book, these features are named similar table even thouhg
+I am highly doubt this terminology is commonly used among the practioners. 
+
+- CASE STUDY 1) LEFT JOIN approach
+
+WITH mst_id_labels AS(
+     SELECT 1 AS device_id , 'PC' AS device_name
+         UNION ALL SELECT   2 AS device_id , 'SP' AS  device_name
+         UNION ALL SELECT   3 AS device_id , 'app' AS device_name)
+         SELECT
+              distinct user_id,
+              d.device_id,
+              d.device_name
+		FROM mst_users AS u
+		LEFT JOIN mst_id_labels AS d
+		    ON u.register_device=d.device_id;
+		 
+WITH mst_id_labels AS(
+     SELECT 1 AS device_id , 'PC' AS device_name
+         UNION ALL SELECT   2 AS device_id , 'SP' AS  device_name
+         UNION ALL SELECT   3 AS device_id , 'app' AS device_name)
+         SELECT
+              distinct user_id,
+              d.device_id,
+              d.device_name
+		FROM mst_users AS u
+		LEFT JOIN mst_id_labels AS d
+		    ON u.register_device=d.device_id;
+		 
 
 method 1) prepare the pre-proccessed data
 ```sql
@@ -335,7 +363,7 @@ VALUES
 
 ```
 
-method 2) create a similar table 
+method 2) create the similar table 
 ```sql
 WITH mst_id_labels AS(
      SELECT 1 AS device_id , 'PC' AS device_name
@@ -355,8 +383,33 @@ WITH mst_id_labels AS(
  |U002|2|SP|
  |U003|3|APP|
 	
-		 
-	
-	
- 
+### 6) Sequential Index
+
+|VALUE| present|
+|-----:|-------:|
+|1|0|
+|2|1|
+|3|1|
+|4|0|
+|5|0|
+|6|0|
+|7|0|
+|8|0|
+|9|1|
+|10|0|
+
+In MySQL 8.0, generataing  a sequence in number can be done through recursive CTE's.
+
+ ```MySQL
+ WITH RECURSIVE nums AS (
+    SELECT 1 AS VALUE
+    UNION ALL
+    SELECT value + 1 AS VALUE
+    FROM nums
+    WHERE nums.VALUE <= 9
+)
+SELECT *
+FROM nums;
+```
+
 
