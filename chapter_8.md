@@ -311,6 +311,51 @@ SELECT
 
 ```
 
+### 5) Multiple Similar Table
+Let's suppose you have a great diversity of orignal thoughts and ides about how to design your own database tables. Unfortunately,
+you are denied an access or right to create them. In this cse, constructing "similar" tables will statify your desire.
+
+- CASE STUDY 1) Arranging Code Values After Thier Lables ( LEFT JOIN apporach) 
+
+method 1) prepare the pre-proccessed data
+```sql
+DROP TABLE IF EXISTS mst_users;
+CREATE TABLE mst_users(
+    user_id         varchar(255)
+  , register_date   varchar(255)
+  , register_device integer
+);
+
+INSERT INTO mst_users
+VALUES
+    ('U001', '2016-08-26', 1)
+  , ('U002', '2016-08-26', 2)
+  , ('U003', '2016-08-27', 3)
+;
+
+```
+
+method 2) create a similar table 
+```sql
+WITH mst_id_labels AS(
+     SELECT 1 AS device_id , 'PC' AS device_name
+         UNION ALL SELECT   2 AS device_id , 'SP' AS  device_name
+         UNION ALL SELECT   3 AS device_id , 'APP' AS device_name)
+         SELECT
+              distinct user_id,
+              d.device_id,
+              d.device_name
+		FROM mst_users AS u
+       LEFT JOIN mst_id_labels AS d
+            ON u.register_device=d.device_id;
+```
+|usr_id<center>|device_id<center>|device_name<center>|
+|------------:|-----------------:|-----------------:|
+ |U001|1|PC|
+ |U002|2|SP|
+ |U003|3|APP|
+	
+		 
 	
 	
  
