@@ -402,14 +402,16 @@ In MySQL 8.0, generataing  a sequence in number can be done through recursive CT
 
  ```MySQL
  WITH RECURSIVE nums AS (
-    SELECT 1 AS VALUE
+    SELECT 1 AS value
     UNION ALL
-    SELECT value + 1 AS VALUE
+    SELECT value + 1 AS value
     FROM nums
-    WHERE nums.VALUE <= 9
+    WHERE nums.value <= 9
 )
-SELECT *
-FROM nums;
+SELECT nums.value, 1-ISNULL(numbers.number) 
+FROM nums
+  LEFT JOIN numbers ON numbers.number = nums.value
+ORDER BY nums.value;
 ```
 
 
