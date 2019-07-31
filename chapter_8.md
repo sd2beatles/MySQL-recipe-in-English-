@@ -236,7 +236,7 @@ Then, using the function of SIGN where it returns zero for zero parameter wheara
 ### 4) Avoiding Recursive and Lengthy Subquries
 In mangaing somewhat complicating quries, repeating the same subquires over and over seems to be inevitable. It thie repetitive code
 appears often in our code, it would be unpleasant and hard for readers to catch up the lines, leading to thier lower readability. 
-Thefore, CTE which stands for Common TABLE Expression kicks in to deal with this issue -simplifying complex joins and subqueries.
+Thefore, CTE ,which stands for Common TABLE Expression, kicks in to deal with this issue -simplifying complex joins and subqueries.
 
 CTE follows the below caluse 
  _"with <talbe name> AS (SELECT ~)"_
@@ -266,6 +266,14 @@ VALUES
 ```
 step 2) create tables for 'multiple uses'
 
+- rank
+- dvd
+- dvd_sale
+- cd
+- cd_sales
+- book
+ book_sales
+
 _"If you want to create more than one table by using 'WITH', comma must be defined before preapring the next one."_
 
 ```MySQL
@@ -277,12 +285,30 @@ SELECT
      sales,
      ROW_NUMBER() OVER(PARTITION BY category_name ORDER BY sales DESC) AS ranks
      FROM product_sales)
-     ,mst_rank AS(
-     
-     
-     
-     
-SELECT * FROM product_sale_ranking;
+     ,mst_ranks AS(
+     SELECT DISTINCT ranks
+     FROM product_sale_ranking
+	)
+SELECT 
+	 m.ranks
+     ,r1.product_id AS dvd
+     ,r1.sales AS dvd_sale
+     ,r2.product_id AS cd
+     ,r2.sales AS cd_sale
+     ,r3.product_id AS book
+     ,r3.sales AS book_sale
+     FROM mst_ranks AS m
+     LEFT JOIN 
+     product_sale_ranking AS r1
+     ON m.ranks=r1.ranks AND r1.category_name='dvd'
+     LEFT JOIN
+     product_sale_ranking AS r2
+     ON m.ranks=r2.ranks AND r2.category_name='cd'
+     LEFT JOIN
+     product_sale_ranking AS r3
+     ON m.ranks=r3.ranks and r3.category_name='book'
+     ORDER BY m.ranks;
+
 ```
 
 	
