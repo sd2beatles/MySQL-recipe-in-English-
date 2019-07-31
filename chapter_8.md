@@ -240,6 +240,51 @@ Thefore, CTE which stands for Common TABLE Expression kicks in to deal with this
 
 CTE follows the below caluse 
  _"with <talbe name> AS (SELECT ~)"_
+
+step 1 ) preapre the 'raw' data
+```MySQL
+DROP TABLE IF EXISTS product_sales;
+CREATE TABLE product_sales (
+    category_name varchar(255)
+  , product_id    varchar(255)
+  , sales         integer
+);
+
+INSERT INTO product_sales
+VALUES
+    ('dvd' , 'D001', 50000)
+  , ('dvd' , 'D002', 20000)
+  , ('dvd' , 'D003', 10000)
+  , ('cd'  , 'C001', 30000)
+  , ('cd'  , 'C002', 20000)
+  , ('cd'  , 'C003', 10000)
+  , ('book', 'B001', 20000)
+  , ('book', 'B002', 15000)
+  , ('book', 'B003', 10000)
+  , ('book', 'B004',  5000)
+;
+```
+step 2) create tables for 'multiple uses'
+
+_"If you want to create more than one table by using 'WITH', comma must be defined before preapring the next one."_
+
+```MySQL
+WITH
+product_sale_ranking AS(
+SELECT
+     category_name,
+	 product_id,
+     sales,
+     ROW_NUMBER() OVER(PARTITION BY category_name ORDER BY sales DESC) AS ranks
+     FROM product_sales)
+     ,mst_rank AS(
+     
+     
+     
+     
+SELECT * FROM product_sale_ranking;
+```
+
 	
 	
  
