@@ -157,6 +157,20 @@ result set. Therefore, in our case, we do not see any need of stroing the field 
 
 
 
+	
+
+### 3) Creating 0/1 Flag Columns 
+
+In this section, we are trying to put a flag column to our desired result set - a filed containing value iether 0 or 1. 
+The fields we will take to our resulting table are following below
+
+- user_id
+- car_number : NULL is permissible 
+- purchase_count : indicates the number of purchases
+- card_registration : 1 for registered / 0 for non-registered
+- purchase_history  : 1 for yes  / 0 for no
+
+
 user_id<center>|car_number<center>
 |---------------:|-----------:|
 U001|123-XXXX-XXXX|
@@ -170,18 +184,6 @@ purchase_id<center>|user_id<center>|amount<center>|stamp<center>|
 |1003|U001|200|2017-02-12 10:00:00|
 |1004|U002|800|2017-03-01 10:00:00|
 |1005|U002|400|2017-03-02 10:00:00|
-	
-
-### 3) Creating Flag Columns 
-
-In this section, we are trying to put a flag column to our desired result set - a filed containing value iether 0 or 1. 
-The fields we will take to our resulting table are following below
-
-- user_id
-- car_number : NULL is permissible 
-- purchase_count : indicates the number of purchases
-- card_registration : 1 for registered / 0 for non-registered
-- purchase_history  : 1 for yes  / 0 for no
 
 
 ```
