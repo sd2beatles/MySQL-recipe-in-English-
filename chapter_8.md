@@ -361,7 +361,6 @@ WITH mst_id_labels AS(
  |U003|3|APP|
 	
 ### 6) Sequential Index
-
 |VALUE| present|
 |-----:|-------:|
 |1|0|
@@ -378,6 +377,14 @@ WITH mst_id_labels AS(
 In MySQL 8.0, generataing  a sequence in number can be done through recursive CTE's.
 
  ```MySQL
+ DROP TABLE IF EXISTS numbers;
+CREATE TABLE numbers
+(number int);
+
+INSERT INTO numbers
+values(2),(3),(9);
+
+
  WITH RECURSIVE nums AS (
     SELECT 1 AS value
     UNION ALL
