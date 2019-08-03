@@ -317,36 +317,11 @@ SELECT
 
 Let's suppose you have many creative thoughts and ides about how to design your own database tables. Unfortunately,
 you are denied an access or right to create tables. In this cse, there is a indrect way of presenting your 'design' givning 
-the same information and presentation as the physical table. In the book, these features are named similar table even thouhg
+the same information and presentation as the physical table. In the book, these features are named 'similar table' even thouhg
 I am highly doubt this terminology is commonly used among the practioners. 
 
 - CASE STUDY 1) LEFT JOIN approach
-
-WITH mst_id_labels AS(
-     SELECT 1 AS device_id , 'PC' AS device_name
-         UNION ALL SELECT   2 AS device_id , 'SP' AS  device_name
-         UNION ALL SELECT   3 AS device_id , 'app' AS device_name)
-         SELECT
-              distinct user_id,
-              d.device_id,
-              d.device_name
-		FROM mst_users AS u
-		LEFT JOIN mst_id_labels AS d
-		    ON u.register_device=d.device_id;
 		 
-WITH mst_id_labels AS(
-     SELECT 1 AS device_id , 'PC' AS device_name
-         UNION ALL SELECT   2 AS device_id , 'SP' AS  device_name
-         UNION ALL SELECT   3 AS device_id , 'app' AS device_name)
-         SELECT
-              distinct user_id,
-              d.device_id,
-              d.device_name
-		FROM mst_users AS u
-		LEFT JOIN mst_id_labels AS d
-		    ON u.register_device=d.device_id;
-		 
-
 method 1) prepare the pre-proccessed data
 ```sql
 DROP TABLE IF EXISTS mst_users;
