@@ -86,8 +86,26 @@ SELECT dt,
         ORDER BY dt;
  ```
  
+ ### 3) Cummulate Sum 
+ 
+ In practice, we are often asked to prepare a separate section indicating the accumulated sum as well as the total amount daily.
+ In this simple example, there are four sections consisting of 
+ 
+ - dt : date
+ - year_month : year/month
+ - total_amount : the total revenue earned on each date
+ - agg_amount : the revene earned up to the date
  
  
-
+ ```sql 
+ SELECT dt, 
+       SUBSTRING_INDEX(dt,'-',2) AS date_record,
+       SUM(purchase_amount) AS total_amount,
+       SUM(SUM(purchase_amount)) OVER(ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS agg_amount
+       FROM  purchase_log
+       GROUP BY dt
+       ORDER BY dt;
+ ```
+Alternatively, it would enhance the easiness of reading the data if we want to split date-format data into the year, month, and date fields.
 
 
