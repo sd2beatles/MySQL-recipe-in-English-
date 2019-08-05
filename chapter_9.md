@@ -60,7 +60,7 @@ Without taking a consideration of who made a purchse on the specific date, our f
 on evry date in a given interval. Then, using a COUNT() function will do for the case. 
 
 
-### 2) Moving Average : A Indator of Trend 
+### 2) Moving Average : A Indicator of Trend 
 
 There are many types of data reporting a seasonal increase in sales in a weekend or during the specified interval of a year. 
 This seasonal 'noise' could adversely affect our critical insight into the trend of business performance. Therefore, a seasonal average comes in handy to help data analysts the track of sale's movement. In our example, we use 'seven-day moving average' .
@@ -74,12 +74,12 @@ to the first six days. However, if you restrict the number of dates to 7 days an
  ```sql
  
 SELECT dt, 
-       SUM(purchase_amount) AS total_amount,
-       AVG(purchase_amount) OVER(ORDER BY dt ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS seven_day_avg,
+       AVG(SUM(purchase_amount)) AS total_amount,
+       AVG(SUM(purchase_amount)) OVER(ORDER BY dt ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS seven_day_avg,
        CASE 
           WHEN 7=COUNT(*) OVER(ORDER BY dt ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) 
           THEN 
-          AVG(purchase_amount) OVER(ORDER BY dt ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)
+          AVG(SUM(purchase_amount)) OVER(ORDER BY dt ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)
           END AS seven_day_strict
 		FROM purchase_log
         GROUP BY dt
