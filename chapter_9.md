@@ -116,4 +116,29 @@ case 2) monthly cumulate sum
 
 Let's record the total revenue generated in each month in the section of purchase_amount and its aggregating sum in agg_amount. 
 
+```sql
+WITH temp_purchase AS(
+     SELECT dt,
+            SUBSTRING_INDEX(dt,'-',1) AS year,
+			SUBSTR(dt,6,3) AS month,
+            SUBSTRING_INDEX(dt,'-',-1) AS date,
+            SUM(purchase_amount) AS purchase_amount
+	FROM purchase_log
+    GROUP BY dt
+    ORDER BY dt
+    )
+    SELECT dt,
+           concat(year,'-',month) AS 'year_month',
+           purchase_amount,
+           SUM(purchase_amount) OVER(PARTITION BY year,month ORDER BY  dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+           AS agg_amount
+	FROM temp_purchase
+    ORDER BY dt;
+```
+- sepcial Note
+
+If you take a closer examination on the code above,   the integral information is first set up and stored in 'temp_purchase' with the help of WITH AS funcion and reused in the later code.  This practice may slow the performance of the data-process. In the custom of big data management, the clarity the code line gives readers should outweigh the level of performance. 
+
+
+
 
