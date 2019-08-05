@@ -237,5 +237,5 @@ WITH temp_purchase AS(
       ORDER BY month;
 ```
 
-
+![z_chart](https://user-images.githubusercontent.com/53164959/62454270-f8ed3b00-b7ae-11e9-9800-ad4fc7e4143d.png)
 
