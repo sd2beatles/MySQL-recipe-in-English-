@@ -242,16 +242,58 @@ WITH temp_purchase AS(
 
 Showing progress over time of either a small project or a whole business can result in a variety of charts to help the business judgment easier. Z can at least three measures into one chart. 
 
-* The omponents of Z-chart are 
+(1) The omponents of Z-chart are 
 
 - Monthly Revenue: the total amount of sales is recorded each month.
 - Aggregated Revenue: Sales are calculated in a cumulate sum  up to the previous month.
-- Moving Sum:  Sum is made based on the last 10 months and a month of interest. 
+- Moving Sum:  Sum is made based on the last 11 months and a month of interest. 
 
-* Considerations in analyzing z-chart
+ (2) Considerations in analyzing z-chart
 
 First, pay attention to the shape of a line indicating the cumulative sum.
 If the line is linear, then there is no noticeable fluctuation in sales over time. However, a curve to the top of the left should give an alarm of a decrease in revenue whereas a curve to the bottom of the right is a opposite sign. 
 
 
 Secondly, the line of moving sum over time is a horizontal line, which represents constancy in sales. If the line slopes upward, this is a positive sign while if it slopes downward, business managers should be alert in a decrease in sales. 
+
+(3) MySQL codes 
+
+```sql
+WITH daily_purchase AS(
+      SELECT dt, 
+      SUBSTRING_INDEX(dt,'-',1) AS year,
+      SUBSTR(dt,6,2) AS month,
+      SUBSTRING_INDEX(dt,'-',-1) AS date,
+      SUM(purchase_amount) AS purchase_amount
+      FROM purchase_log
+      GROUP BY dt
+      ORDER by dt),
+		monthly_purchase AS
+        (SELECT year,
+                month,
+				SUM(purchase_amount) AS amount
+		 FROM daily_purchase
+         GROUP BY year,month),
+         cal_index AS(
+         SELECT
+         year,
+         month,
+         amount,
+         SUM(CASE  WHEN year= '2015' THEN amount END) 
+		     OVER(ORDER BY year,month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS agg_amount,
+		 SUM(amount) OVER(ORDER BY year,month ROWS BETWEEN 11 PRECEDING AND CURRENT ROW) AS year_avg_amount
+         FROM monthly_purchase
+         ORDER BY year,month
+         )
+         SELECT concat(year,'-',month) AS year_months,
+         amount,
+         agg_amount,
+         year_avg_amount
+         FROM cal_index
+         WHERE year='2015'
+	 ORDER BY year_month;
+```
+
+
+
+
