@@ -294,6 +294,44 @@ WITH daily_purchase AS(
 	 ORDER BY year_month;
 ```
 
+### 6) Key Points in Analysing Sales
+
+We should not reach a conclusion on the performance of business solely based on sales record bacause there must be some reason behind it. Therefore, it is a good practice to attach some supporting numbers as factors leading to the result of sale performance. For example,  the financial performance of the shopping mall has shown a steady decrease in revenue earned in a certain year. You could possibly suggest the frequency of purchases made by customers and the average expenditure by him or her: a steady in the level of frequency but a steady decrease in average spending.  By using these 'aids', you now infer that a decrease in spending is playing a major determinant of the poor performance in sales. 
+
+```sql
+SELECT * FROM purchase_log limit 3;
+WITH daily_purchase AS(
+ SELECT dt,
+ order_id as orders,
+ SUBSTRING_INDEX(dt,'-',1) AS year,
+ SUBSTR(dt,6,2) AS month,
+ SUBSTRING_INDEX(dt,'-',-1) AS date,
+ SUM(purchase_amount) AS purchase_amount
+ FROM purchase_log
+ GROUP BY dt
+ ORDER BY dt)
+ ,monthly_purchase AS(
+ SELECT year,
+        month,
+        SUM(orders) AS orders,
+        AVG(purchase_amount) AS avg_amount, #average_month_expenditure
+	    SUM(purchase_amount) AS monthly #total_month_expenditure 
+        FROM daily_purchase
+        GROUP BY year,month)
+SELECT CONCAT(year,'-',month) AS year_months,
+        orders,
+        avg_amount,
+        monthly,
+        SUM(monthly) OVER(PARTITION BY year ORDER BY month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+        AS agg_amount,
+        LAG(monthly,12) OVER(ORDER BY year,month) AS last_year,
+        100.0*monthly/LAG(monthly,12) OVER(ORDER BY year,month) AS rate
+        FROM monthly_purchase
+        ORDER BY year_months;
+```
+
+
+
 
 
 
