@@ -244,8 +244,8 @@ Showing progress over time of either a small project or a whole business can res
 
 (1) The omponents of Z-chart are 
 
-- Monthly Revenue: the total amount of sales is recorded each month.
-- Aggregated Revenue: Sales are calculated in a cumulate sum  up to the previous month.
+- Monthly sale: the total amount of sales is recorded each month.
+- Aggregated sales: Sales are calculated in a cumulate sum  up to the previous month.
 - Moving Sum:  Sum is made based on the last 11 months and a month of interest. 
 
  (2) Considerations in analyzing z-chart
@@ -278,7 +278,7 @@ WITH daily_purchase AS(
          SELECT
          year,
          month,
-         amount,
+         amount, #monthly sales
          SUM(CASE  WHEN year= '2015' THEN amount END) 
 		     OVER(ORDER BY year,month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS agg_amount,
 		 SUM(amount) OVER(ORDER BY year,month ROWS BETWEEN 11 PRECEDING AND CURRENT ROW) AS year_avg_amount
