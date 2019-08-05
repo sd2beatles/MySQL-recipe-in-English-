@@ -242,8 +242,16 @@ WITH temp_purchase AS(
 
 Showing progress over time of either a small project or a whole business can result in a variety of charts to help the business judgment easier. Z can at least three measures into one chart. 
 
-The components of Z-chart are 
+* The omponents of Z-chart are 
 
 - Monthly Revenue: the total amount of sales is recorded each month.
 - Aggregated Revenue: Sales are calculated in a cumulate sum  up to the previous month.
 - Moving Sum:  Sum is made based on the last 10 months and a month of interest. 
+
+* Considerations in analyzing z-chart
+
+First, pay attention to the shape of a line indicating the cumulative sum.
+If the line is linear, then there is no noticeable fluctuation in sales over time. However, a curve to the top of the left should give an alarm of a decrease in revenue whereas a curve to the bottom of the right is a opposite sign. 
+
+
+Secondly, the line of moving sum over time is a horizontal line, which represents constancy in sales. If the line slopes upward, this is a positive sign while if it slopes downward, business managers should be alert in a decrease in sales. 
