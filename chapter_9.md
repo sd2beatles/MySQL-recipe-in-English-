@@ -236,6 +236,14 @@ WITH temp_purchase AS(
       GROUP BY month
       ORDER BY month;
 ```
+### 5) Z-chart Analysis
 
 ![z_chart](https://user-images.githubusercontent.com/53164959/62454270-f8ed3b00-b7ae-11e9-9800-ad4fc7e4143d.png)
 
+Showing progress over time of either a small project or a whole business can result in a variety of chars to help the business judgment easier. Z can at least three measures into one chart. 
+
+The components of Z-chart are 
+Monthly Revenue: the total amount of sales is recorded each month.
+Aggregated Revenue: Sales are calculated in a cumulate sum  up to 
+                                           the previous month.
+Moving Sum:  Sum is made based on the last 10 months and a month of interest. 
