@@ -179,7 +179,9 @@ VALUES
   , ('2015-11-06', 1666, 'ccfbjyeqrb',  6213)
   , ('2015-12-05', 1741, 'onooskbtzp', 26024)
 ;
+```
 
+- LEFT JOIN apporach 
 
 ```sql
 WITH temp_purchase AS(
@@ -210,8 +212,10 @@ WITH temp_purchase AS(
       ORDER BY p.month;
 
 ```
+However, This approach should put any users into the problem in reading the codes. 
+Therefore,we need to explode another method to simplify the code above. 
 
-
+- Without LEFT JOIN approach
 
 ```sql
 WITH temp_purchase AS(
