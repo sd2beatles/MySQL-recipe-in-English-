@@ -180,6 +180,40 @@ VALUES
   , ('2015-12-05', 1741, 'onooskbtzp', 26024)
 ;
 
+
+```sql
+WITH temp_purchase AS(
+      SELECT dt, 
+      SUBSTRING_INDEX(dt,'-',1) AS year,
+      SUBSTR(dt,6,2) AS month,
+      SUBSTRING_INDEX(dt,'-',-1) AS date,
+      SUM(purchase_amount) AS purchase_amount
+      FROM purchase_log
+      GROUP BY dt
+      ORDER by dt),
+      
+      temp_2014 AS(SELECT
+      dt, SUM(CASE WHEN year='2014' THEN purchase_amount END) AS amount_2014
+      FROM temp_purchase
+      GROUP BY month),
+      temp_2015 AS(SELECT
+      dt, SUM(CASE WHEN year='2015' THEN purchase_amount END) AS amount_2015
+      FROM temp_purchase
+      GROUP BY month)
+      SELECT p.month,t1.amount_2014 ,t2.amount_2015
+      FROM temp_purchase AS p
+      LEFT JOIN temp_2014 AS t1
+      ON p.dt=t1.dt
+      LEFT JOIN temp_2015 AS t2
+      ON p.dt=t2.dt
+      GROUP BY p.month
+      ORDER BY p.month;
+
+```
+
+
+
+```sql
 WITH temp_purchase AS(
       SELECT dt, 
       SUBSTRING_INDEX(dt,'-',1) AS year,
