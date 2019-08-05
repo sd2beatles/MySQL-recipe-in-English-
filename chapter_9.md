@@ -96,7 +96,7 @@ SELECT dt,
  - dt : date
  - year_month : year/month
  - total_amount : the total revenue earned on each date
- - agg_amount : the revene earned up to the date
+ - agg_amount : the revene earned up to the date of interest
  
  
  ```sql 
