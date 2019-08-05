@@ -212,8 +212,8 @@ WITH temp_purchase AS(
       ORDER BY p.month;
 
 ```
-However, This approach should put any users into the problem in reading the codes. 
-Therefore,we need to explode another method to simplify the code above. 
+However, this approach should put any users into the problem in reading the codes. 
+Therefore,we need to explode another method to simplify it. 
 
 - Without LEFT JOIN approach
 
