@@ -3,7 +3,7 @@ Aggregation Based On Multiple Dimensions
 
 Depending on the nature of dimensions, we could implement different types of aggregation for the only single measure. Therefore,  we should first take a step of classifying the objects into proper categories and decide which aggregation is most plausible for each subgroup. 
 
-1. Preapare the raw data
+### 1. Preapare the raw data
 
 ```sql
 DROP TABLE IF EXISTS purchase_detail_log;
