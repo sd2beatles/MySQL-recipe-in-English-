@@ -1,4 +1,5 @@
-###Reporting Time Based Data
+ Reporting Time Based Data
+ =========================
 
 ### 1) Aggregation Function on Multiple Rows
 
