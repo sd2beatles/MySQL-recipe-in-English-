@@ -250,8 +250,8 @@ Showing progress over time of either a small project or a whole business can res
 
  (2) Considerations in analyzing z-chart
 
-First, pay attention to the shape of a line indicating the cumulative sum.
-If the line is linear, then there is no noticeable fluctuation in sales over time. However, a curve to the top of the left should give an alarm of a decrease in revenue whereas a curve to the bottom of the right is a opposite sign. 
+First, pay attention to the shape of a line,indicating the cumulative sum.
+If the line is sloping upward, then there is no noticeable fluctuation in sales over time. However, a curve to the top of the left should give an alarm of a decrease in revenue whereas a curve to the bottom of the right is a opposite sign. 
 
 
 Secondly, the line of moving sum over time is a horizontal line, which represents constancy in sales. If the line slopes upward, this is a positive sign while if it slopes downward, business managers should be alert in a decrease in sales. 
