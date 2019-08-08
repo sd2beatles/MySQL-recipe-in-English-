@@ -105,6 +105,13 @@ skip no data available
 
 
 ### 3.Fan chart fro sales' growth
+A fan chart is a chart that joins a line graph for observed past data and gives some hints of the movement of sales along with the given time interval. At your dispoal, pick any month of the year as a reference point and the amount of revenue generated in that month is now being considered as a based amount. Now, a rate is now computed 
+with the following formula ;
+
+rate = current_amount/ base_amount *100 
+
+If the rate returns 100 %, there is no change in Sales as of the base amount. If it is more than 100 %, Sales have improved over the period where the opposite is true.
+
 
 ```sql
 DROP TABLE IF EXISTS purchase_log;
@@ -142,7 +149,40 @@ VALUES
   , ('2015-11-06', 1666, 'ccfbjyeqrb',  6213,'FASHION_WOMEN')
   , ('2015-12-05', 1741, 'onooskbtzp', 26024,'FASHION_MEN')
 ;
+
+
+SELECT * FROM purchase_log;
+WITH daily_category AS(
+     SELECT dt,
+            category,
+            SUBSTRING_INDEX(dt,'-',1) AS year,
+            SUBSTR(dt,6,2) AS month,
+            SUBSTRING_INDEX(dt,'-',-1) AS date,
+            SUM(purchase_amount) AS amount 
+            FROM purchase_log
+            GROUP BY dt,category 
+            ORDER BY dt,category),
+		monthly_category AS(
+        SELECT dt,
+        CONCAT(year,'-',month) AS year_months,
+        SUM(amount) AS amount,
+        category
+        FROM daily_category
+        GROUP BY year,month,category
+        ORDER BY year,month,category
+        )
+        SELECT  year_months,
+                category,
+				amount,
+                FIRST_VALUE(amount) OVER(PARTITION BY category ORDER BY year_months ROWS 
+                BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS base_amount,
+                100.0*amount/FIRST_VALUE(amount) OVER(PARTITION BY category ORDER BY year_months ROWS 
+                BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS rate
+                FROM monthly_category 
+                ORDER BY year_months,category;
 ```
+
+
 
 
 
