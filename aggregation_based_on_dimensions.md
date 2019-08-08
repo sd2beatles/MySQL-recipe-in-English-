@@ -88,6 +88,22 @@ SELECT COALESCE(category,'all') AS category,
         GROUP BY category,sub_category WITH ROLLUP;
 ```
 
+### 2 ABC Analysis
+
+ABC analysis is commonly used in the management of inventory at companies. The basic method is to categorize the products into ranks from A to C based on some factors including the proportion of sales revenue, market share and so on. After placing priorities on each category, we will plan a proper strategy for each section. 
+
+The steps for preparing ABC analysis. 
+First, arrange data to sales revenue in descending order.
+Second, compute the total sum of all categories
+Third, using the total sum to calculate a proportion of each category.
+Lastly, prepare the cumulate sum and set the arbitrary intervals at your
+            own disposal or accordingly to rank the listed categories. 
+
+
+skip no data available 
+
+
+
 ### 3.Fan chart fro sales' growth
 
 ```sql
