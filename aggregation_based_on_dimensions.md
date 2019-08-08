@@ -3,7 +3,16 @@ Aggregation Based On Multiple Dimensions
 
 Depending on the nature of dimensions, we could implement different types of aggregation for the only single measure. Therefore,  we should first take a step of classifying the objects into proper categories and decide which aggregation is most plausible for each subgroup. 
 
-### 1. Preapare the raw data
+### 1.Drill Down Approach
+Here Drill Down approach-breaking down the complex system into progressively smaller parts-will kick in to help us design database systems for products labeled with subcategories as well as categories. 
+
+First, we need a section for accommodating the fields -category, and subcategories for all products. 
+The Nex step category section is classified into smaller parts with the subcategory section keeping the same as previous.  Lastly, we assigned specialized product lines to the sub category.   
+All this process can be characterized as the table below.
+
+<img width="576" alt="data1" src="https://user-images.githubusercontent.com/53164959/62681821-8a4dee80-b9f5-11e9-8d73-5bfc0f3d0ce7.png">
+[table 1] a table for category and subcategory
+
 
 ```sql
 DROP TABLE IF EXISTS purchase_detail_log;
