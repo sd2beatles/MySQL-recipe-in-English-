@@ -182,6 +182,80 @@ WITH daily_category AS(
                 ORDER BY year_months,category;
 ```
 
+### 4. Histogram 
+
+4.1 Histogram Analaysis
+
+- The shape of a histogram is symmetrically distributed around the central value,
+  which indicates that there should a peak(ie the highest value of all the data) 
+  occur around the mean and mode. 
+
+-The graph is skewed left since a few small values are driven by outliers, but
+ do not affect the median. The mode i is said to be greater than mean. 
+ 
+ -This is the case because skewed-right data have a few large values that drive the mean upward but do not affect 
+  where the exact middle of the data is (that is, the median).
+
+- When the graph is bimodal, the only defining chracteristics about this distribution is that it has 2 peaks of 
+  the same height.
+
+4.2 Ways to Construct a Freuqency Distribution Table 
+
+Step 1) Calculte an range(ie) range =maximum - minimum
+
+Ste 2) Based on the rage, decide how many mutaully exclusive classes are created.
+
+step 3) Compute the number of occurences in a class. Preapre a table to record all the information. 
+
+To bear in mind that the histogram is preapred based on the continuous variable, we should not place a space between each class or interval. 
+
+
+4.3 MySQL code
+
+```SQL
+WITH stat AS (SELECT MAX(price) AS max_price,
+        MIN(price) AS min_price, 
+        MAX(price)-MIN(price) AS range_price,
+		10 AS bucket_num
+        FROM purchase_detail_log
+        ),
+        purchase_log_with_bucket AS(
+        SELECT price,
+               min_price,
+			   price-min_price AS diff,
+               range_price/bucket_num AS bucket_range,
+               FLOOR(((price-min_price)/(range_price/bucket_num))+1) AS bucket
+               FROM purchase_detail_log,stat)
+		SELECT price,
+			   min_price,
+               diff,
+               bucket_range,
+               bucket
+               FROM purchase_log_with_bucket
+               ORDER BY bucket;
+```
+
+If you want to divide numbers over which data ranges into an interval of equal length, 
+substracting the min_price from max_price is calcuated and divided by a nominal value as diff. 
+To place the value into a certain calss is determined by price_range(price-min_pirce) divided by the nominal        value and use FLOOR function to discard decimal points. 
+
+<img width="576" alt="data1" src="https://user-images.githubusercontent.com/53164959/62750257-790aed80-ba9a-11e9-8519-aa23de888bee.png">
+
+
+
+
+4.4 Pratical Tips
+
+- If the graph looks bimodal, it is always worthwhile to classify the whole population into two specific sub-groups,   a separate histogram being drawn foreach classified one.
+
+- When instructed to take an investigation on causes to either rise or fall in
+  the sales revenue, it is strongly advisable to first prepare two histograms
+  each based on "recent and past sales, respectively.  Right after the graphs are 
+  done, compare one to another to identify if there are any differences occurring
+  between them.
+
+
+
 
 
 
