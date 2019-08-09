@@ -26,6 +26,7 @@ who visits the website without any log in.
 
 ### 3. Table Data Categorized By The Type of Uers
 
+3.1  Login/Guest 
 Just in case where there is no entry for the section of user_id, I have used
 COALESCE function to categorize the data into login and guest. Note that <> means not equal to, != also means not equal to.
 
@@ -75,6 +76,29 @@ WITH action_log_with_status AS(
         FROM action_log)
  SELECT * FROM action_log_with_status;
 ```        
+3.2 The Treatment Of subtotal 
+
+When we inted to insert a subtotal for each field and name it "all", use COALESCE(name of column, "all") and ROllUP functions. Remind that he ROLLUP is an extension of the GROUP BY clause. The ROLLUP option allows you to include extra rows that represent the subtotals along with the grand total row. By using the ROLLUP option, you can use a single query to generate _"multiple grouping sets"_. Then, the resulting tables contain the column 'action' including indiviaul types and "all", and 'login_status' containing 'login','guest',and 'all'. 
+
+```sql
+SELECT * FROM action_log limit 21;
+WITH
+login_status AS (    
+  SELECT
+    session,
+    action,
+    CASE WHEN COALESCE(user_id,'')<>'' THEN 'login' ELSE 'guest' END AS login_status
+  FROM action_log
+)
+SELECT
+  COALESCE(action, 'all') AS action,
+  COALESCE(login_status, 'all') AS login_status,
+  COUNT(session) AS action_unique_users,
+  COUNT(action) AS action_count
+FROM login_status
+GROUP BY action, login_status WITH ROLLUP;
+```
+
 
 
 
