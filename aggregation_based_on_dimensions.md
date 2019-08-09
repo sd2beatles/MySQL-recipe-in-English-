@@ -215,6 +215,42 @@ To bear in mind that the histogram is preapred based on the continuous variable,
 4.3.1 Preparing Data Class
 
 ```SQL
+DROP TABLE IF EXISTS purchase_log;
+CREATE TABLE purchase_log
+(dt VARCHAR(255) NULL ,
+ order_id INT(11) NULL,
+ user_id VARCHAR(255) NULL,
+ price INT(11) NULL,
+ category varchar(20) NULL);
+ 
+INSERT INTO purchase_log
+VALUES
+    ('2014-01-01',    1, 'rhwpvvitou', 13900,'DVD')
+  , ('2014-02-08',   95, 'chtanrqtzj', 28469,'BOOK')
+  , ('2014-03-09',  168, 'bcqgtwxdgq', 18899,'DVD')
+  , ('2014-04-11',  250, 'kdjyplrxtk', 12394,'GAME')
+  , ('2014-05-11',  325, 'pgnjnnapsc',  2282,'FOOD')
+  , ('2014-06-12',  400, 'iztgctnnlh', 10180,'FASHION_MEN')
+  , ('2014-07-11',  475, 'eucjmxvjkj',  4027,'GAME')
+  , ('2014-08-10',  550, 'fqwvlvndef',  6243,'DVD')
+  , ('2014-09-10',  625, 'mhwhxfxrxq',  3832,'FOOD')
+  , ('2014-10-11',  700, 'wyrgiyvaia',  6716,'FASHION_WOMEN')
+  , ('2014-11-10',  775, 'cwpdvmhhwh', 16444,'DVD')
+  , ('2014-12-10',  850, 'eqeaqvixkf', 29199,'FOOD')
+  , ('2015-01-09',  925, 'efmclayfnr', 22111,'FASHION_MEN')
+  , ('2015-02-10', 1000, 'qnebafrkco', 11965,'FASHION_WOMEN')
+  , ('2015-03-12', 1075, 'gsvqniykgx', 20215,'GAME')
+  , ('2015-04-12', 1150, 'ayzvjvnocm', 11792,'DVD')
+  , ('2015-05-13', 1225, 'knhevkibbp', 18087,'BOOK')
+  , ('2015-06-10', 1291, 'wxhxmzqxuw', 18859,'FOOD')
+  , ('2015-07-10', 1366, 'krrcpumtzb', 14919,'FASHION_MEN')
+  , ('2015-08-08', 1441, 'lpglkecvsl', 12906,'DVD')
+  , ('2015-09-07', 1516, 'mgtlsfgfbj',  5696,'FOOD')
+  , ('2015-10-07', 1591, 'trgjscaajt', 13398,'GAME')
+  , ('2015-11-06', 1666, 'ccfbjyeqrb',  6213,'FASHION_WOMEN')
+  , ('2015-12-05', 1741, 'onooskbtzp', 26024,'FASHION_MEN')
+;
+
 WITH stat AS (SELECT MAX(price) AS max_price,
         MIN(price) AS min_price, 
         MAX(price)-MIN(price) AS range_price,
@@ -225,8 +261,8 @@ WITH stat AS (SELECT MAX(price) AS max_price,
         SELECT price,
                min_price,
 			   price-min_price AS diff,
-               range_price/bucket_num AS bucket_range,
-               FLOOR(((price-min_price)/(range_price/bucket_num))+1) AS bucket
+               range_price/bucket_num AS bucket_range, #setting equal length for every interval
+               FLOOR(((price-min_price)/(range_price/bucket_num))+1) AS bucket #assigning the value to each bucket
                FROM purchase_detail_log,stat)
 		SELECT price,
 			   min_price,
@@ -239,7 +275,7 @@ WITH stat AS (SELECT MAX(price) AS max_price,
 
 If you want to divide numbers over which data ranges into an interval of equal length, 
 substracting the min_price from max_price is calcuated and divided by a nominal value as diff. 
-To place the value into a certain calss is determined by price_range(price-min_pirce) divided by the nominal        value and use FLOOR function to discard decimal points. 
+The assignement of value to the proper class is determined by price_range(price-min_pirce) divided by the nominal value and use FLOOR function to discard decimal points. 
 
 <img width="576" alt="data1" src="https://user-images.githubusercontent.com/53164959/62750257-790aed80-ba9a-11e9-8519-aa23de888bee.png">
 
@@ -295,7 +331,34 @@ WITH stat AS (SELECT MAX(price)+1 AS max_price,
                GROUP BY bucket,min_price,bucket_range
                ORDER by bucket;
 ```
+4.3.3 Control Over the Interval Size
 
+The resulting outcome from the previous section shows that each limit is recorded in a decimal point, which makes end-users of the data hard to understand the defining characteristics. Therefore, it is a good practice of converting them into an integer by modifying max, min, and range at disposal of data analysts
+
+```sql
+WITH stats AS(
+     SELECT 0 AS min_price,
+            30000 AS max_price,
+	    30000 AS range_price,
+            10 AS bucket_num
+            FROM purchase_log),
+	  purchase_log_freq AS(
+      SELECT price,
+             min_price,
+             price-min_price AS diff_price,
+			 range_price/bucket_num AS interval_value,
+             FLOOR((price-min_price)/(range_price/bucket_num))+1 AS bucket
+             FROM purchase_log,stats
+             ORDER BY bucket,price)
+	 SELECT bucket, 
+            min_price+interval_value*(bucket-1) AS lower_limit,
+            min_price+interval_value*(bucket) AS upper_lmit,
+            COUNT(price) AS num_purchase,
+            SUM(price) AS total_sum
+            FROM purchase_log_freq
+            GROUP BY bucket
+            ORDER BY bucket;
+```
 4.4 Pratical Tips
 
 - If the graph looks bimodal, it is always worthwhile to classify the whole population into two specific sub-groups,   a separate histogram being drawn foreach classified one.
