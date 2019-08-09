@@ -212,6 +212,8 @@ To bear in mind that the histogram is preapred based on the continuous variable,
 
 4.3 MySQL code
 
+4.3.1 Preparing Data Class
+
 ```SQL
 WITH stat AS (SELECT MAX(price) AS max_price,
         MIN(price) AS min_price, 
@@ -241,8 +243,58 @@ To place the value into a certain calss is determined by price_range(price-min_p
 
 <img width="576" alt="data1" src="https://user-images.githubusercontent.com/53164959/62750257-790aed80-ba9a-11e9-8519-aa23de888bee.png">
 
+The total number of classes is restricted to 10, thereby any values outside this range classified as 11. Now 
+Now we make small modifications on our code to include the value into our class levels. 
 
 
+```sql
+WITH stat AS (SELECT MAX(price)+1 AS max_price, # modification here
+        MIN(price) AS min_price, 
+        MAX(price)+1-MIN(price) AS range_price, # modifiction here 
+		10 AS bucket_num
+        FROM purchase_detail_log
+        ),
+        purchase_log_with_bucket AS(
+        SELECT price,
+               min_price,
+			   price-min_price AS diff,
+               range_price/bucket_num AS bucket_range,
+               FLOOR(((price-min_price)/(range_price/bucket_num))+1) AS bucket
+               FROM purchase_detail_log,stat)
+		SELECT price,
+			   min_price,
+               diff,
+               bucket_range,
+               bucket
+               FROM purchase_log_with_bucket
+               ORDER BY bucket;
+
+```
+
+4.3.2 Preapre A Table for Histogram
+```sql
+WITH stat AS (SELECT MAX(price)+1 AS max_price,
+        MIN(price) AS min_price, 
+        MAX(price)+1-MIN(price) AS range_price,
+		10 AS bucket_num
+        FROM purchase_detail_log
+        ),
+        purchase_log_with_bucket AS(
+        SELECT price,
+               min_price,
+			   price-min_price AS diff,
+               range_price/bucket_num AS bucket_range,
+               FLOOR(((price-min_price)/(range_price/bucket_num))+1) AS bucket
+               FROM purchase_detail_log,stat)
+		SELECT bucket,
+               min_price+bucket_range*(bucket-1) AS lower_lmit
+               ,min_price+bucket_range*bucket AS uppper_limit
+               ,COUNT(price) AS num_purchase
+               ,SUM(price) AS total_amount
+               FROM purchase_log_with_bucket
+               GROUP BY bucket,min_price,bucket_range
+               ORDER by bucket;
+```
 
 4.4 Pratical Tips
 
