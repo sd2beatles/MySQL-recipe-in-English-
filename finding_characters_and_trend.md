@@ -283,8 +283,8 @@ WITH mst_age AS(
 				  ORDER BY purchase_count DESC;
 ```
 
-![image](https://user-images.githubusercontent.com/53164959/62818241-e93f6f00-bb7f-11e9-8f96-f0d4c1619f34.png)
 
+![image](https://user-images.githubusercontent.com/53164959/62818253-18ee7700-bb80-11e9-8647-71764cef4f54.png)
 
 
 
