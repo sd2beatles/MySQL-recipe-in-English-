@@ -173,7 +173,90 @@ WITH action_log_detail AS(
 ```
 
 
-4. Data Collection By Age Group
+4. Data Collection By Age
+
+
+Based on information on age and sex of customers, we can set up five different categories to indicate which 
+age group each belongs to. Look at the table below, 
+
+![image](https://user-images.githubusercontent.com/53164959/62816405-c30ad680-bb61-11e9-83f8-f2963f6cbe2d.png)
+
+
+```sql
+DROP TABLE IF EXISTS mst_users;
+CREATE TABLE mst_users(
+    user_id         varchar(255)
+  , sex             varchar(255)
+  , birth_date      varchar(255)
+  , register_date   varchar(255)
+  , register_device varchar(255)
+  , withdraw_date   varchar(255)
+);
+
+INSERT INTO mst_users
+VALUES
+    ('U001', 'M', '1977-06-17', '2016-10-01', 'pc' , NULL        )
+  , ('U002', 'F', '1953-06-12', '2016-10-01', 'sp' , '2016-10-10')
+  , ('U003', 'M', '1965-01-06', '2016-10-01', 'pc' , NULL        )
+  , ('U004', 'F', '1954-05-21', '2016-10-05', 'pc' , NULL        )
+  , ('U005', 'M', '1987-11-23', '2016-10-05', 'sp' , NULL        )
+  , ('U006', 'F', '1950-01-21', '2016-10-10', 'pc' , '2016-10-10')
+  , ('U007', 'F', '1950-07-18', '2016-10-10', 'app', NULL        )
+  , ('U008', 'F', '2006-12-09', '2016-10-10', 'sp' , NULL        )
+  , ('U009', 'M', '2004-10-23', '2016-10-15', 'pc' , NULL        )
+  , ('U010', 'F', '1987-03-18', '2016-10-16', 'pc' , NULL        )
+;
+
+
+WITH mst_users_with_birth_date AS(
+    SELECT
+    user_id,
+    sex,
+	birth_date,
+    TIMESTAMPDIFF(YEAR,birth_date,CURDATE()) AS age
+    FROM mst_users)
+    SELECT user_id,
+           sex,
+           birth_date,
+           age,
+		   CONCAT(
+           CASE WHEN 20<=age THEN sex
+                ELSE ''END, 
+		   CASE WHEN age BETWEEN 4 AND 12 THEN 'C' #C stands for children
+                WHEN age BETWEEN 13 AND 19 THEN 'T'
+                WHEN age BETWEEN 20 AND 34 THEN  '1'
+                WHEN age BETWEEN 35 AND 49 THEN '2'
+                WHEN age>=50 THEN '3'
+                END) AS category
+		FROM mst_users_with_birth_date;
+  ```
+  
+Now we want to group consumers by category and count them to produce the total sum of each group. 
+
+```sql 
+WITH mst_users_temp AS(
+     SELECT user_id,
+			sex,
+		    birth_date,
+			TIMESTAMPDIFF(YEAR,birth_date,CURDATE()) AS age
+            FROM mst_users),
+	 mst_users_caetgory AS(SELECT user_id,
+           CONCAT(
+           CASE WHEN age<=20 THEN '' ELSE sex END ,
+		   CASE WHEN age BETWEEN 4 AND 12 THEN 'C'
+                WHEN age BETWEEN 13 AND 19 THEN 'T'
+                WHEN age BETWEEN 20 AND 34 THEN '1'
+		        WHEN age BETWEEN 35 AND 49 THEN '2'
+				WHEN age>=50 THEN '3' END) AS category
+           FROM mst_users_temp)
+           SELECT category, 
+                  COUNT(1) AS user_count
+				   FROM mst_users_caetgory
+                   GROUP BY category;
+```
+
+
+
 
 
 
