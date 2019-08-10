@@ -287,6 +287,7 @@ WITH mst_age AS(
 ![image](https://user-images.githubusercontent.com/53164959/62818253-18ee7700-bb80-11e9-8647-71764cef4f54.png)
 
 5. Vitor Frequency Table 
+Downlading the data called public_center_vistors.csv,  
 
 ```sql
 DROP TABLE IF EXISTS public_vistors;
@@ -300,7 +301,43 @@ CREATE TABLE public_vistors
 LOAD DATA  INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/visit_day.csv' INTO TABLE public_vistors 
 fields terminated by ','; 
 SELECT * FROM public_vistors;
-```
+
+
+DROP TABLE IF EXISTS public_vistors;
+CREATE TABLE public_vistors
+(visit_date varchar(50),
+ career_exploration INT,
+ child_center INT,
+ exhibition INT,
+ total INT);
+ 
+LOAD DATA  INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/visit_day.csv' INTO TABLE public_vistors 
+fields terminated by ','; 
+SELECT * FROM public_vistors LIMIT 10;
+
+
+WITH term_data AS(
+     SELECT visit_date,
+     SUBSTRING_INDEX(visit_date,'-',1) AS year,
+     SUBSTR(visit_date,6,2) AS month,
+     SUBSTRING_INDEX(visit_date,'-',-1) AS date,
+     career_exploration,
+     child_center
+     FROM public_vistors
+     GROUP BY MONTH)
+     SELECT month,
+            career_exploration,
+	    child_center,
+	    SUM(career_exploration) OVER() AS total_career_exploration,
+            SUM(child_center) OVER() AS total_child_center, 
+            SUM(career_exploration) OVER(ORDER BY month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS
+	    cum_sum_ce,
+            SUM(child_center) OVER(ORDER BY month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cum_sum_cc,
+            ROUND(100*career_exploration/sum(career_exploration) OVER(),2) AS rate_ce,
+            ROUND(100*child_center/SUM(child_center) OVER(),2) AS rate_cc
+    FROM term_data
+    GROUP BY month;
+ ```
 
 
 
