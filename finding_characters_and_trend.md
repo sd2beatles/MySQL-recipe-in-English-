@@ -286,6 +286,21 @@ WITH mst_age AS(
 
 ![image](https://user-images.githubusercontent.com/53164959/62818253-18ee7700-bb80-11e9-8647-71764cef4f54.png)
 
+5. Vitor Frequency Table 
+
+```sql
+DROP TABLE IF EXISTS public_vistors;
+CREATE TABLE public_vistors
+(date varchar(50),
+ career_exploration INT,
+ child_center INT,
+ exhibition INT,
+ total INT);
+ 
+LOAD DATA  INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/visit_day.csv' INTO TABLE public_vistors 
+fields terminated by ','; 
+SELECT * FROM public_vistors;
+```
 
 
 
