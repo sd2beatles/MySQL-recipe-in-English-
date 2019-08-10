@@ -101,7 +101,8 @@ GROUP BY action, login_status WITH ROLLUP;
 
 3.3 Managing Membership Status 
 
-
+From immediate supervisors, you are required to change the status of membership of customers to "member" if they have logged in the website once in thier lifetime.  Regardless of whether users visit the website with login or not, the data of member status will keep appearing as a member once they log onto the site. Let's take this change into
+our consideration when coding. 
 ```sql
 DROP TABLE IF EXISTS action_log;
 CREATE TABLE action_log(
@@ -137,7 +138,43 @@ VALUES
   , ('9afaf87c', 'U002', 'purchase', 'drama' , 'D002'     , 1000, '2016-11-04 13:00:00')
   , ('9afaf87c', 'U002', 'purchase', 'action', 'A005,A006', 1000, '2016-11-04 15:00:00')
 ;
+
+WITH action_log_detail AS(
+      SELECT  session,
+	      user_id,
+              action,
+              CASE WHEN COALESCE(MAX(user_id) OVER(PARTITION BY session
+              ORDER BY  stamp ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+              ,'')<>'' THEN 'memeber' ELSE 'none' END AS member_status,
+              stamp
+              FROM action_log)
+              SELECT  * FROM action_log_detail;
 ```
+
+3.4 Speacial Treatment On user_id 
+
+When carefully examing all the sections of the table thoroughly, you should be aware that some sections are containing  NULL.  To treat the missing value,  you are required to replace it with 0. Otherwise, return user_id. 
+This time COALESCE function could have alternatively used. However, this time I take NULLIF function.. 
+
+_"NULLIF(exp1,exp2) function returns NULL if exp1 and exp2 are same.Otherwise, return exp1."_
+
+```sql
+ 
+WITH action_log_detail AS(
+      SELECT  session,
+			  CASE WHEN NULLIF(user_id,NUll)<>'' THEN user_id ELSE '0' END AS user_id,
+              action,
+              CASE WHEN COALESCE(MAX(user_id) OVER(PARTITION BY session
+              ORDER BY  stamp ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+              ,'')<>'' THEN 'memeber' ELSE 'none' END AS member_status,
+              stamp
+              FROM action_log)
+              SELECT  * FROM action_log_detail;
+```
+
+
+4. Data Collection By Age Group
+
 
 
 
