@@ -286,8 +286,7 @@ WITH mst_age AS(
 
 ![image](https://user-images.githubusercontent.com/53164959/62818253-18ee7700-bb80-11e9-8647-71764cef4f54.png)
 
-5. Vitor Frequency Table 
-Downlading the data called public_center_vistors.csv,  
+5. Vitor Frequency Table Downlading The Data Called public_center_vistors.csv
 
 ```sql
 DROP TABLE IF EXISTS public_vistors;
@@ -338,6 +337,86 @@ WITH term_data AS(
     FROM term_data
     GROUP BY month;
  ```
+6. Venn Diagram Analysis 
+
+Venn Diagram is a statistical tool to visualize the proportion of each group and overlaps among two or more datasets. The diagram oftenuses a circle or ellipse to represent a segment or how much similar or different 
+segments are from one another. 
+
+
+6.1 Flag Variable 
+
+With the use of flag variable, grant 1 if there is a record existing for each segment.  Otherwise,  name 0
+a consumer whose user_id is U001 has a historical record of all types of action no matter how many they have 
+. Then grant 1 for all the segments. 
+
+
+```sql
+
+
+DROP TABLE IF EXISTS action_log;
+CREATE TABLE action_log(
+    session  varchar(255)
+  , user_id  varchar(255)
+  , action   varchar(255)
+  , category varchar(255)
+  , products varchar(255)
+  , amount   integer
+  , stamp    varchar(255)
+);
+
+INSERT INTO action_log
+VALUES
+    ('989004ea', NULL, 'purchase', 'drama' , 'D001,D002', 2000, '2016-11-03 18:10:00')
+  , ('989004ea', 'U001', 'view'    , NULL    , NULL       , NULL, '2016-11-03 18:00:00')
+  , ('989004ea', NULL, 'favorite', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
+  , ('989004ea', 'U001', 'review'  , 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D002'     , NULL, '2016-11-03 18:01:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001,D002', NULL, '2016-11-03 18:02:00')
+  , ('989004ea', 'U001', 'purchase', 'drama' , 'D001,D002', 2000, '2016-11-03 18:10:00')
+  , ('47db0370', NULL, 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 19:00:00')
+  , ('47db0370', 'U002', 'purchase', 'drama' , 'D001'     , 1000, '2016-11-03 20:00:00')
+  , ('47db0370', NULL, 'add_cart', 'drama' , 'D002'     , NULL, '2016-11-03 20:30:00')
+  , ('87b5725f', NULL, 'add_cart', 'action', 'A004'     , NULL, '2016-11-04 12:00:00')
+  , ('87b5725f', 'U001', 'add_cart', 'action', 'A005'     , NULL, '2016-11-04 12:00:00')
+  , ('87b5725f', NULL, 'add_cart', 'action', 'A006'     , NULL, '2016-11-04 12:00:00')
+  , ('9afaf87c', 'U002', 'purchase', 'drama' , 'D002'     , 1000, '2016-11-04 13:00:00')
+  , ('9afaf87c', 'U002', 'purchase', 'action', 'A005,A006', 1000, '2016-11-04 15:00:00')
+;
+
+Collecting data For action and converting it into flag variable. 
+WITH action_log_users AS(
+     SELECT CASE WHEN COALESCE(user_id,'')<>'' THEN user_id ELSE 'GUEST' END as user_id,
+            # first sum up all the purchases made by one user and if the count
+			# is non-zero, return 1. Otherwise, 0. Same goes to the other segments.
+		    SIGN(SUM(CASE WHEN action='purchase' THEN 1 ELSE 0 END)) AS has_purchase,
+		    SIGN(SUM(CASE WHEN action='review' THEN 1 ELSE 0 END)) AS has_review,
+            SIGN(SUM(CASE WHEN action='favorite' THEN 1 ELSE 0 END)) AS has_favorite
+            FROM action_log
+            GROUP BY user_id)
+	 SELECT * 
+	 FROM action_log_users;
+```
+
+Additionally, to represent all the prepared data graphically, we need to 
+provide a separate field that indicates how many customers belong to two or more sets. 
+
+```sql
+
+
+
+	
+
+
+
+
+
+
+
 
 
 
