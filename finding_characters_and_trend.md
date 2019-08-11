@@ -402,8 +402,8 @@ WITH action_log_users AS(
 	 FROM action_log_users;
 ```
 
-Additionally, to represent all the prepared data graphically, we need to 
-provide a separate field that indicates how many customers belong to two or more sets. 
+Additionally, to draw venn didagram, we should preapre a separte section to indicate the subtotal of all
+combinatin of grouping columns. 
 
 ```sql
 
