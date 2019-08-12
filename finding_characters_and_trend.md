@@ -530,7 +530,7 @@ We need three major components to perform the analysis ;
 8.2 Retail_Data_transaction.cvs From Kaggle
 
 
-``sql
+```sql
 
 WITH purchase_log AS(
 SELECT user_id,
