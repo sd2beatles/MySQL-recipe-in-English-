@@ -498,7 +498,7 @@ SELECT user_id,
                   FROM decile_with_amount;
 
 ```
-
+![image](https://user-images.githubusercontent.com/53164959/62863999-74b62d00-bd45-11e9-8568-8d11a23c1dd9.png)
 
 
 
