@@ -451,7 +451,10 @@ WITH user_action_flag AS(
 ```
 
 
-7. Rnaking The Group
+7. Decile Aanalysis 
+
+Decile analysis is a popular segmentation tool that dvide the whole data into equally sized groups of 10%. 
+The steps are so following beow
 
 
 ```sql
