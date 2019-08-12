@@ -419,8 +419,7 @@ WITH user_action_flag AS(
 		   ORDER BY has_purchase,has_review,has_favorite;
                    
   ```
-  
-![image](https://user-images.githubusercontent.com/53164959/62853626-ec755f00-bd27-11e9-9f51-5951b60c4688.png)
+
 
 The empty entries are NULL to indicate that it is unclear wheter consumers has taken any action on each category or not.
 
