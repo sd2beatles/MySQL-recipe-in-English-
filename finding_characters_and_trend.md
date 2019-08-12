@@ -507,7 +507,7 @@ SELECT user_id,
 ![image](https://user-images.githubusercontent.com/53164959/62863999-74b62d00-bd45-11e9-8568-8d11a23c1dd9.png)
 
 
-
+The top 10% of consumers are generating 20% of profit which is still higher than other groups but not being perceived as significant a number as we expected it would be. The possible reason is that relatively overall consumers are willing to purchase items because massive advertising and discounts are offered to attract thier consumers during Black Friday.  That is, the group of decile 1 is sill having a greater purchasing power and gives a huge impact on the financial performance of the surveyed company. Since this seasonal effect may boost the total amount of sales, the rate of decile group should shrink a little compare to that in other months.
 
 
 
