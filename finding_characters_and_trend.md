@@ -583,11 +583,82 @@ SELECT user_id,
 ![image](https://user-images.githubusercontent.com/53164959/62880025-6c6ee980-bd67-11e9-93b9-0b921ebcb67d.png)
 
 
+8.3 
 Based on the result above, we are interested in the number of consumers belonging to each parameter ranged from 5 to 1. 
 For example, what is the number of customers whose rfm_index is r and the scale they belong to is 5?
 
+```sql
+WITH purchase_log AS(
+SELECT user_id,
+       SUBSTRING(date,1,10) AS dt,
+       amount
+       FROM retail_data)
+       ,user_rfm AS(
+       SELECT user_id,
+              MAX(dt) AS recent_date,
+              CURRENT_DATE-MAX(dt::date) AS recency,
+              COUNT(dt) AS frequency,
+              SUM(amount) AS monetary
+              FROM purchase_log
+              GROUP BY user_id)
+         /*     
+         Finding the range for each field
+        SELECT min(recency), 
+               max(recency),
+               min(frequency),
+               max(frequency),
+               min(monetary),
+               max(monetary)
+                FROM user_rfm;
+               */
+         ,user_rfm_rank AS(
+         SELECT user_id,
+                recent_date,
+                recency,
+                frequency,
+                monetary,
+                CASE WHEN recency <1800 THEN 5
+                      WHEN recency <1900 THEN 4
+                      WHEN recency <2000 THEN 3
+                      WHEN recency <2100 THEN 2
+                      ELSE 1 END AS r
+                 ,CASE WHEN 20<=frequency THEN 5
+                       WHEN 10<=frequency THEN 4
+                       WHEN 5<=frequency THEN 3
+                       WHEN 2<=frequency THEN 2
+                       WHEN 1<=frequency THEN 1 END AS f
+                 ,CASE WHEN 2000<=monetary THEN 5
+                       WHEN 1500<=monetary THEN 4
+                       WHEN 1000<=monetary THEN 3
+                       WHEN 500<=monetary THEN 2
+                       ELSE 1 END AS m
+                  FROM user_rfm )
+                 ,mst_rfm_index AS(
+                 SELECT 1 AS rfm_index
+                 UNION ALL SELECT 2 AS rfm_index
+                 UNION ALL SELECT 3 AS rfm_index
+                 UNION ALL SELECT 4 AS rfm_index
+                 UNION ALL SELECT 5 AS rfm_index
+                 )
+                 ,rfm_flag AS(
+                 SELECT
+                 m.rfm_index, 
+                 CASE WHEN m.rfm_index=r.r THEN 1 ELSE 0 END AS r_flag,
+                 CASE WHEN m.rfm_index=r.f THEN 1 ELSE 0 END AS f_flag,
+                 CASE WHEN m.rfm_index=r.m THEN 1 ELSE 0 END AS m_flag
+                 FROM mst_rfm_index AS m
+                 CROSS JOIN user_rfm_rank AS r
+                 )
+                 SELECT rfm_index,
+                        SUM(r_flag) AS r,
+                        SUM(f_flag) AS f,
+                        SUM(m_flag) AS m
+                        FROM rfm_flag
+                        GROUP BY rfm_index
+                        ORDER BY rfm_index DESC;
                       
-                      
+```
+![image](https://user-images.githubusercontent.com/53164959/62881723-5e22cc80-bd6b-11e9-986c-a9339af250dd.png)
 
 
 
