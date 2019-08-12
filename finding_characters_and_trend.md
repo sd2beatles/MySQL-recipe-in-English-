@@ -531,7 +531,6 @@ We need three major components to perform the analysis ;
 
 
 ```sql
-
 WITH purchase_log AS(
 SELECT user_id,
        SUBSTRING(date,1,10) AS dt,
@@ -561,11 +560,10 @@ SELECT user_id,
                 recency,
                 frequency,
                 monetary,
-                CASE WHEN recency <1800 THEN 6
-                      WHEN recency <1900 THEN 5
-                      WHEN recency <2000 THEN 4
-                      WHEN recency <2100 THEN 3
-                      WHEN recency <2200 THEN 2
+                CASE WHEN recency <1800 THEN 5
+                      WHEN recency <1900 THEN 4
+                      WHEN recency <2000 THEN 3
+                      WHEN recency <2100 THEN 2
                       ELSE 1 END AS r
                  ,CASE WHEN 20<=frequency THEN 5
                        WHEN 10<=frequency THEN 4
@@ -578,8 +576,8 @@ SELECT user_id,
                        WHEN 500<=monetary THEN 2
                        ELSE 1 END AS m
                   FROM user_rfm )
-                  SELECT * FROM user_rfm_rank 
-                  LIMIT 5;
+                  SELECT * FROM user_rfm_rank  LIMIT 5;
+
 ```
 
 ![image](https://user-images.githubusercontent.com/53164959/62878967-1d27b980-bd65-11e9-8ee9-e52cbae527e8.png)
