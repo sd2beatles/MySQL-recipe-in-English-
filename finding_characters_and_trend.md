@@ -345,9 +345,8 @@ segments are from one another.
 
 6.1 Flag Variable 
 
-With the use of flag variable, grant 1 if there is a record existing for each segment.  Otherwise,  name 0
-a consumer whose user_id is U001 has a historical record of all types of action no matter how many they have 
-. Then grant 1 for all the segments. 
+With the use of flag variable, grant 1 if there is a record existing for each segment.  Otherwise, give 0.
+For example, a consumer whose user_id is U001 has a historical record of all types of action. Then grant 1 for all the segments. 
 
 
 ```sql
@@ -390,9 +389,8 @@ VALUES
 
 Collecting data For action and converting it into flag variable. 
 WITH action_log_users AS(
-     SELECT CASE WHEN COALESCE(user_id,'')<>'' THEN user_id ELSE 'GUEST' END as user_id,
-            # first sum up all the purchases made by one user and if the count
-			# is non-zero, return 1. Otherwise, 0. Same goes to the other segments.
+     SELECT    # first sum up all the purchases made by one user and if the count
+               # is non-zero, return 1. Otherwise, 0. Same goes to the other segments.
 		    SIGN(SUM(CASE WHEN action='purchase' THEN 1 ELSE 0 END)) AS has_purchase,
 		    SIGN(SUM(CASE WHEN action='review' THEN 1 ELSE 0 END)) AS has_review,
             SIGN(SUM(CASE WHEN action='favorite' THEN 1 ELSE 0 END)) AS has_favorite
@@ -403,12 +401,55 @@ WITH action_log_users AS(
 ```
 
 Additionally, to draw venn didagram, we should preapre a separte section to indicate the subtotal of all
-combinatin of grouping columns. 
+combinatin of grouping columns. We use CUBE cluase to obtain the combinations. 
 
 ```sql
+WITH user_action_flag AS(
+     SELECT CASE WHEN COALESCE(user_id,'')<>'' THEN user_id ELSE 'Guest' END AS user_id,
+            SIGN(SUM(CASE WHEN action='purchase' THEN 1 ELSE 0 END)) AS has_purchase,
+            SIGN(SUM(CASE WHEN action='review' THEN 1 ELSE 0 END)) AS has_review,
+            SIGN(SUM(CASE WHEN action='favorite' THEN 1 ELSE 0 END)) AS has_favorite
+            FROM action_log
+            GROUP BY user_id) -- produce fullstatics based on each user_id
+            SELECT has_purchase,
+                   has_review,
+                   has_favorite
+                   FROM user_action_flag
+                   GROUP BY CUBE(has_purchase,has_review,has_favorite)
+		   ORDER BY has_purchase,has_review,has_favorite;
+                   
+  ```
+  
+![image](https://user-images.githubusercontent.com/53164959/62853626-ec755f00-bd27-11e9-9f51-5951b60c4688.png)
 
+The empty entries are NULL to indicate that it is unclear wheter consumers has taken any action on each category or not.
 
-
+```SQL
+WITH user_action_flag AS(
+     SELECT CASE WHEN COALESCE(user_id,'')<>'' THEN user_id ELSE 'Guest' END AS user_id,
+            SIGN(SUM(CASE WHEN action='purchase' THEN 1 ELSE 0 END)) AS has_purchase,
+            SIGN(SUM(CASE WHEN action='review' THEN 1 ELSE 0 END)) AS has_review,
+            SIGN(SUM(CASE WHEN action='favorite' THEN 1 ELSE 0 END)) AS has_favorite,
+            count(1) AS users
+            FROM action_log
+            GROUP BY user_id) -- produce fullstatics based on each user_id
+                  ,action_venn_diagram AS(SELECT 
+                   has_purchase,
+                   has_review,
+                   has_favorite,
+                   COUNT(1) AS users
+                   FROM user_action_flag
+                   GROUP BY CUBE(has_purchase,has_review,has_favorite)
+		   ORDER BY has_purchase,has_review,has_favorite)
+            SELECT CASE WHEN has_purchase=1 THEN 'purchase' WHEN has_purchase=0 THEN 'not purchase' ELSE 'any' END AS has_purchse,
+                   CASE WHEN has_review=1 THEN 'review' WHEN has_review=0 THEN 'not review' ELSE 'any' END AS has_review,
+                   CASE WHEN has_favorite=1 THEN 'favorite' WHEN has_favorite=0 THEN 'not favorite' ELSE 'any' END AS has_favorite,
+                   100.0*users/NULLIF(SUM(CASE WHEN has_purchase IS NULL AND has_review IS NULL AND has_favorite IS NULL THEN users ELSE                    0 END) OVER(),0) AS ratio
+		   -- every action having null value represents the total amount of consumers
+		   -- using window function to calculate the sum 
+                   FROM action_venn_diagram
+		   ORDER by has_purchase,has_review,has_favorite ;
+```
 	
 
 
