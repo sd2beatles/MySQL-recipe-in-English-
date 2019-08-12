@@ -580,7 +580,8 @@ SELECT user_id,
 
 ```
 
-![image](https://user-images.githubusercontent.com/53164959/62878967-1d27b980-bd65-11e9-8ee9-e52cbae527e8.png)
+![image](https://user-images.githubusercontent.com/53164959/62880025-6c6ee980-bd67-11e9-93b9-0b921ebcb67d.png)
+
 
 Based on the result above, we are interested in the number of consumers belonging to each parameter ranged from 5 to 1. 
 For example, what is the number of customers whose rfm_index is r and the scale they belong to is 5?
