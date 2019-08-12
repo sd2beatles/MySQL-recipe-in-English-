@@ -506,8 +506,24 @@ SELECT user_id,
 
 ![image](https://user-images.githubusercontent.com/53164959/62863999-74b62d00-bd45-11e9-8568-8d11a23c1dd9.png)
 
+I inteded to use data reflecting a sesonal effect to make it clear to explain the drawbacks of Decile analysis. 
 
-The top 10% of consumers are generating 20% of profit which is still higher than other groups but not being perceived as significant a number as we expected it would be. The possible reason is that relatively overall consumers are willing to purchase items because massive advertising and discounts are offered to attract thier consumers during Black Friday.  That is, the group of decile 1 is sill having a greater purchasing power and gives a huge impact on the financial performance of the surveyed company. Since this seasonal effect may boost the total amount of sales, the rate of decile group should shrink a little compare to that in other months.
+First, VIPs, the top 10% of consumers, are generating 20% of profit which is still higher than other groups but not being perceived as significant a number as we expected it would be. The possible reason is that relatively overall consumers are willing to purchase items because massive advertising and discounts are offered to attract thier consumers during Black Friday.  Of course, the group of decile 1 is sill having a greater purchasing power and gives a huge impact on the financial performance of the surveyed company. However, since this seasonal effect may boost the total amount of sales, the proportion of spending made by Vips should shrink accordingly. 
+
+Secondly,we should not put aside the possibility of counting, to the group of long term customers, the relatively large number of consumers who buy in bulk or buy up many items only this time of the year. This seasonal effect may conceal the true sales figure of each group.
+
+8. RFM analysis
+
+The alternative approach to Decile is RFM analysis which can allow us to quantify  the group of consumers in a delicate manner. 
+We need three major components to perform the analysis ;
+
+- Recency: the recent date of purchase.(Give more weight   to those who makes the purchase lately) 
+
+- Frequency: the frequency of purchasing 
+  (The more frequently they make purchases, the more important companies consider them)
+
+- monetary: the total amount purchasing  by the customer
+
 
 
 
