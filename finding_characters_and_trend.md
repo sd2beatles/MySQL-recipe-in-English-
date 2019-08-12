@@ -512,9 +512,9 @@ First, VIPs, the top 10% of consumers, are generating 20% of profit which is sti
 
 Secondly,we should not put aside the possibility of counting, to the group of long term customers, the relatively large number of consumers who buy in bulk or buy up many items only this time of the year. This seasonal effect may conceal the true sales figure of each group.
 
-8. RFM analysis
+### 8. RFM analysis
 
-8.1 Introduction
+#### 8.1 Introduction
 
 The alternative approach to Decile is RFM analysis which can allow us to quantify  the group of consumers in a delicate manner. 
 We need three major components to perform the analysis ;
@@ -527,7 +527,7 @@ We need three major components to perform the analysis ;
 - monetary: the total amount purchasing  by the customer
 
 
-8.2 Retail_Data_transaction.cvs From Kaggle
+#### 8.2 Retail_Data_transaction.cvs From Kaggle
 
 
 ```sql
@@ -583,7 +583,7 @@ SELECT user_id,
 ![image](https://user-images.githubusercontent.com/53164959/62880025-6c6ee980-bd67-11e9-93b9-0b921ebcb67d.png)
 
 
-8.3 
+#### 8.3  Table FOR THE NUMBER OF CONUMSERS GROUPED BY rfm index 
 Based on the result above, we are interested in the number of consumers belonging to each parameter ranged from 5 to 1. 
 For example, what is the number of customers whose rfm_index is r and the scale they belong to is 5?
 
