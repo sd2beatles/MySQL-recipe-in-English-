@@ -529,6 +529,8 @@ We need three major components to perform the analysis ;
 
 #### 8.2 Retail_Data_transaction.cvs From Kaggle
 
+![image](https://user-images.githubusercontent.com/53164959/62907540-b7601f80-bdae-11e9-9362-073e090f64b2.png)
+
 
 ```sql
 WITH purchase_log AS(
