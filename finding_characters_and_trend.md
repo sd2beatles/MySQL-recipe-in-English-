@@ -668,7 +668,7 @@ The terminology of one variable may give a rise to confusion to some of readers,
 here is to peform RFM analysis subject to the total sum of r,f,and m.
 
 The major problem with rfm analysis in the three-dimensional graphical dimension is a quite large number of groups we take into our consideration. In the previous case, each consumer should belong to one of 125 combinations of three indicators(5*5*5). Therefore, 
-an analysis based on the total sum of these three indicators to determine which group they are assigned to.
+an analysis based on the total sum of these three indicators is needed to determine which group they are assigned to.
 
 
 ```sql
@@ -715,6 +715,12 @@ WITH purchase_log AS(
                           ORDER BY total_rank DESC,r DESC,f DESC,m DESC;
  ```
  ![image](https://user-images.githubusercontent.com/53164959/62908165-87fee200-bdb1-11e9-981d-ed1120e93e1c.png)
+ 
+ ### 8.5 Selecting The Number of Indicators
+ 
+It is also possible to select the number of indicators in your analysis to your case. Just think of a table with rows
+indicating recency and columns consisting of the range of frequency.
+ 
 
                                
                    
