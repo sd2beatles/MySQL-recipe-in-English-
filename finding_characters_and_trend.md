@@ -721,6 +721,34 @@ WITH purchase_log AS(
  
 It is also possible to select the number of indicators in your analysis to your case. Just think of a table with rows
 indicating recency and columns consisting of the range of frequency.
+
+Right after preapreing the table it is the time when you should classify the consumer persona you uncover during RFM analysis and 
+come up with proper strategies implmented specific to each group.
+
+- Brand Champion ( R=14 ,F=20)
+
+These are your best customers and you want to keep it that way. It is the group that you should come up with a variety of marketing strategies to make them feel satisfied with the service and product you offer because they would bring your potential targets to your door. For example, Auction, one of the biggest e-commerce in South Korea, grants thier loyal customers  5 coupons for a free delivery service a month and a big discount on thier purchase if they invite thier neighborhoods to join the service and buy the item. 
+
+
+- Loyal Customers ( R=28, F=10)
+
+These groups are still one of your valuable customers and there should be a good chance of increasing thier lifetime value with the right offers. Therefore,  you may be alert at what he or she wants and a thorough survey and examination on thier purchasing behavior are needed on request. The possible business strategies are volume discounts and loyalty scheme.  
+
+- Possibly Alienated 
+
+A mismatch between recency and frequency is not a good sign where some was a regular customer but stopped using your service or the recently joined may find your service not much satisfactory and turn away. Regardless of either case, something has gone wrong and there is a need to bring some measures to fix it.  The possible strategy includes welcome back offers and satisfaction surveys. 
+
+- New Customers (R=14, F=1)
+
+People in this category have just recently discovered or rediscovered you after some time away. Our attention is placed on the ways of building a long-lasting relationship with them such as introductory offers, hints, tips and useful content. 
+
+- One-off Big Spender 
+
+Some customers buy up a great amount and then disappear. The possible reason is that they come to you with a specific need and realize that any other offers do not seem relevant to thier taste. To encourage them to revisit your, upgraded and maintenance offers are provided on the condition that they place an order for assigned number of times. 
+
+- Expired leads (R=1, F=1, M=1)
+
+Low-scoring customers are the least promising prospects in your database. They don’t have a significant purchase history with your company and there have been no recent interactions. These customers will fall outside of the scope of most marketing campaigns. By focusing on more promising leads, you can invest resources where they’re likely to lead to a result
  
 
                                
