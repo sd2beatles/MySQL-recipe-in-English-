@@ -584,6 +584,7 @@ SELECT user_id,
 
 ![image](https://user-images.githubusercontent.com/53164959/62880025-6c6ee980-bd67-11e9-93b9-0b921ebcb67d.png)
 
+Within the RFM model, each consumer has a score from 1111 to 5555 , a total of 125 combinations. That gives us discrete 125 consumers persona based on three indicators of the sales data. It is a good practice of carefully monitoring the clusters by plotting individual scores on a scatter plot graph and looking for patterns. For example, a lot of big business will have a lot of consumer with scores 111, due to a large amount of consumer churn. 
 
 #### 8.3  Table FOR THE NUMBER OF CONUMSERS GROUPED BY rfm index 
 Based on the result above, we are interested in the number of consumers belonging to each parameter ranged from 5 to 1. 
