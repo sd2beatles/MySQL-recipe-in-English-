@@ -719,6 +719,54 @@ WITH purchase_log AS(
  
  ### 8.5 Selecting The Number of Indicators
  
+ 
+ ```sq1
+ WITH purchase_log AS(
+   SELECT user_id,
+          SUBSTRING(date,1,10) AS dt,
+          amount
+          FROM retail_data),
+          user_rfm AS(
+          SELECT user_id,
+                 MAX(dt::date) AS date,
+                 CURRENT_DATE-MAX(dt::date) AS recency,
+                 COUNT(dt) AS frequency,
+                 SUM(amount) AS monetary
+                 FROM purchase_log
+                 GROUP BY user_id)
+          ,user_rank AS(
+          SELECT user_id, 
+                  recency,
+                  frequency,
+                  monetary,
+                  CASE WHEN recency<1800 THEN 5
+                       WHEN recency<1900 THEN 4
+                       WHEN recency<2000 THEN 3
+                       WHEN recency<2100 THEN 2
+                       ELSE 1 END AS r,
+                  CASE WHEN 20<=frequency THEN 5
+                       WHEN 10<=frequency THEN 4
+                       WHEN 5<=frequency THEN 3
+                       WHEN 3<=frequency THEN 2
+                       ELSE 1 END AS f,
+                   CASE WHEN 20000<=monetary THEN 5
+                        WHEN 1500<=monetary THEN 4 
+                        WHEN 1000<=monetary THEN 3
+                        WHEN 500<=monetary THEN 2
+                        ELSE 1 END AS m
+                   FROM user_rfm)
+                   SELECT CONCAT('r_',r) AS r_rank,
+                          COUNT(CASE WHEN f=5 THEN 1 END) as f_5,
+                          COUNT(CASE WHEN f=4 THEN 1 END) as f_4,
+                          COUNT(CASE WHEN f=3 THEN 1 END) as f_3,
+                          COUNT(CASE WHEN f=2 THEN 1 END) as f_2,
+                          COUNT(CASE WHEN f=1 THEN 1 END) as f_1
+                          FROM user_rank
+                          GROUP BY r
+                          ORDER BY r_rank DESC;
+         
+     ```
+ 
 It is also possible to select the number of indicators in your analysis to your case. Just think of a table with rows
 indicating recency and columns consisting of the range of frequency.
 
