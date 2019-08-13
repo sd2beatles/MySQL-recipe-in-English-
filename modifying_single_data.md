@@ -44,6 +44,8 @@ SELECT user_id,
 		FROM mst_users;
 ```
 
+
+
 #### 2 Extracting elements from URL
 
 #### *  host 
@@ -72,8 +74,14 @@ VALUES
 method 2) Extraction 
 
 ```mysql
+<mysql Ver>
 SELECT stamp, 
        SUBSTRING_INDEX(SUBSTRING_INDEX(referrer,'//',-1),'/',1) AS referrer_host
+       FROM access_log;
+```
+<postgresql ver>
+SELECT referrer, 
+       SUBSTRING(referrer from '//([^/]*)') as host 
        FROM access_log;
 ```
 #### * path,id 
@@ -99,6 +107,14 @@ SELECT stamp,
 	FROM access_log;
 
 ```
+```sql
+<posgresql ver>
+SELECT url,
+       SUBSTRING(url,'//([^/]*)') AS host,
+       SUBSTRING(url,'//[^/]*([^#?]*)') AS path,
+       SUBSTRING(url,'id=([^&]*)') AS id
+       FROM access_log;
+```
 
 #### * spliting one section into many sub-divsions
 In this section, the path is further taken apart into two subgroups, path1 and path 2. 
@@ -114,6 +130,16 @@ SELECT stamp,url,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTR(url,LENGTH(SUBSTRING_IND
             END AS path2
 			FROM access_log;
 ```
+
+```SQL
+<postgresql>
+SELECT url,
+       SUBSTRING(url from '//([^/]*)') AS host,
+       SUBSTRING(url from '//[^/]+([^?#]+)') AS path,
+       SPLIT_PART(SUBSTRING(url from '//[^/]+([^?#]+)'),'/',2) AS path1,
+       SPLIT_PART(SUBSTRING(url from '//[^/]+([^?#]+)'),'/',3) as path2
+       FROM access_log;
+ ```
 
 #### 4) Handling Date and Time Stamp of Data
 #### *Printing current-time and time stamp 
@@ -143,6 +169,27 @@ SELECT stamp,
        EXTRACT(HOUR FROM stamp) AS HOUR
        FROM practbl;
 ```
+
+```sql
+<postgresql>
+SELECT CAST(stamp AS date) AS dt, --return "2019-07-23"
+       CAST(stamp AS timestamp) AS stamp, -- return "2019-07-23 17:25:01"
+       stamp::date,  --return "2019-07-23"
+       stamp::timestamp
+       FROM practbl;
+
+
+
+SELECT SUBSTRING(stamp,1,4) AS year,
+       SUBSTRING(stamp,6,2) AS month,
+       SUBSTRING(stamp,9,2) AS date,
+       SUBSTRING(stamp,12,2) AS hour,
+       SUBSTRING(stamp,15,2) AS min,
+       SUBSTRING(stamp,18,2) AS sec
+       from practbl;
+```
+
+
 
 #### 5)Handling Default Value 
 NULL as default value  is an 'infectious' one ; anything it touches will lead to NULL in the end. Therefore, we need a measure
