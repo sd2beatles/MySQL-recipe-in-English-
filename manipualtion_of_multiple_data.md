@@ -85,6 +85,7 @@ For the  next two remaining cases, ifnull is employed to find the least value. I
 
 
 ```mysql
+<MySQL version>
 SELECT year,
      /* finding the greatest values*/
     case
@@ -103,24 +104,53 @@ SELECT year,
     ORDER BY year;
 ```
 
+```sql
+<postgreSQL version>
+
+SELECT years, 
+       GREATEST(q1,q2,q3,q4) AS  greatest,
+       LEAST(q1,q2,q3,q4) AS least
+       FROM quarterly_sales
+       ORDER BY years;
+```
+
+
+
 #### * Finding Avaerage 
 
-```MySQL
-SELECT year,(COALESCE(q1,0)+COALESCE(q2,0)+COALESCE(q3,0)+COALESCE(q4,0))/4 AS average
-FROM quarterly_sales
-ORDER BY year;
+```sql
+DROP TABLE IF EXISTS quarterly_sales;
+CREATE TABLE quarterly_sales (
+    years integer
+  , q1   integer
+  , q2   integer
+  , q3   integer
+  , q4   integer
+);
+
+INSERT INTO quarterly_sales
+VALUES
+    (2015, 82000, 83000, 78000, 83000)
+  , (2016, 85000, 85000, 80000, 81000)
+  , (2017, 92000, 81000, NULL ,NULL)
+  ,(2018,NULL,NULL,NULL,NULL)
+;
+
+WITH stat_sales AS(
+        SELECT years, 
+        q1,
+        q2,
+        q3,
+        q4,
+       SIGN(COALESCE(q1,0))+SIGN(COALESCE(q2,0))+SIGN(COALESCE(q3,0))+SIGN(COALESCE(q4,0)) AS denominator
+       FROM quarterly_sales)
+       SELECT years, 
+       CASE WHEN denominator>0 THEN (COALESCE(q1,0)+COALESCE(q2,0)+COALESCE(q3,0)+COALESCE(q4,0))/denominator 
+            ELSE NULL  END AS avg
+       FROM stat_sales;
 ```
 
-If we are only intrested in the average based on 'non-NUll' values, there must be a change in the numberator in our calcuation.
-Using 'sign', which returns one value of three(-1,0,1) and coalesce altogether, we deliberately ignore NULL values. 
 
-```MySQL
-SELECT year,(COALESCE(q1,0)+COALESCE(q2,0)+COALESCE(q3,0)+COALESCE(q4,0))/
-			(SIGN(COALESCE(q1,0))+SIGN(COALESCE(q2,0))+SIGN(COALESCE(q3,0))+SIGN(COALESCE(q4,0)))
-AS average
-FROM quarterly_sales
-ORDER BY year;
-```
 
 ### 3) Manipulation of Integer Data
 
@@ -236,11 +266,10 @@ VALUES
 
 #### * Manipulation of Date and Time 
 
-In order to substract from or add cetrain interval to the current data, among the variety of possible ways, 
-I have used the simple operators( + or - ) together with INTERVAL function. Unlike postGresql, MySQL dictates that
-INTERVAL be followed by a desginated integer number. For exmaple,  INTERVAL 1 HOUR .
+In order to substract from or add cetrain interval to the current data,   I have used the simple operators( + or - ) together with INTERVAL function. Unlike postGresql, MySQL dictates thatINTERVAL be followed by a desginated integer number. For exmaple,  INTERVAL 1 HOUR .
 
 ```MySQL
+<MySQL version>
 SELECT user_id,register_stamp,
        register_stamp+INTERVAL 1 HOUR AS after_1_hour,
        register_stamp-INTERVAL 30 minute AS before_30_minutes,
@@ -250,6 +279,10 @@ SELECT user_id,register_stamp,
        DATEDIFF(CURDATE(),register_stamp) AS diff_days
        FROM mst_users_with_dates;
 ```
+
+```
+<postgresql version>
+
 
 #### * Age 
 It seems to be trivial and struggling for data analysts to compute age based on date-typed data if they decide to use MySQL. Among many alternatives , I have taken TIMESTAMPDIFF.
