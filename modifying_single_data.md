@@ -133,12 +133,20 @@ SELECT stamp,url,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTR(url,LENGTH(SUBSTRING_IND
 
 ```SQL
 <postgresql>
-SELECT url,
-       SUBSTRING(url from '//([^/]*)') AS host,
-       SUBSTRING(url from '//[^/]+([^?#]+)') AS path,
-       SPLIT_PART(SUBSTRING(url from '//[^/]+([^?#]+)'),'/',2) AS path1,
-       SPLIT_PART(SUBSTRING(url from '//[^/]+([^?#]+)'),'/',3) as path2
-       FROM access_log;
+WITH access_time AS(
+     SELECT SUBSTRING(stamp,1,4) AS year,
+            SUBSTRING(stamp,6,2) AS month,
+            SUBSTRING(stamp,9,2) AS date,
+            url
+            FROM access_log)
+	    
+     SELECT CONCAT(year,'-',month) AS year_month,
+            SUBSTRING(url,'//([^/]*)') AS host,
+            SUBSTRING(url,'//[^/]+([^#?]+)') AS path,
+            SPLIT_PART(SUBSTRING(url,'//[^/]+([^#?]+)'),'/',2) AS path1,
+            SPLIT_PART(SUBSTRING(url,'//[^/]+([^?#]+)'),'/',3) AS path2,
+            SUBSTRING(url,'id=([^&]*)') AS id
+            FROM access_time;
  ```
 
 #### 4) Handling Date and Time Stamp of Data
