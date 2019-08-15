@@ -5,7 +5,7 @@ does support some including ROW_NUMBER,RANK(),DESE_RANK() and so on.
 
 
 ## CHAPTER 7 MANUPULATION OF DATA TABLE 
-### 1) GROUPING 
+### 7.1 GROUPING 
 
 GROUP BY function is very often used for grouping rows that have the same values into summary rows and accompanied 
 with aggregate function(MAX,MIN,AVG etc) to group the result set by one or more columns. 
@@ -45,8 +45,8 @@ SELECT user_id,
 	   FROM review
        GROUP  BY user_id;
 ```
-### 2) THE Syntax of OVER CLUASE 
-#### * OVER() VS OVER(PARTITION BY)
+### 7.2 THE Syntax of OVER CLUASE 
+#### 7.2.1 OVER() VS OVER(PARTITION BY)
 
 In order to present data before and after aggreate functions  are implemented all together, OVER is the most suitable function. 
 we could take.Unless OVER funcion is used with specifying any options,the aggreating function will be applied to the whole table(see the column named avg_score in our code where we are actully averaging all the scores on the table). However,  PARTITION BY caluse in the parenthesis of Over will determine which rows will be applied to the given functions. Let's look at how these concepts are actually 
@@ -65,7 +65,7 @@ SELECT user_id,
 
 For more detail about OVER cluase, visit [https://www.sqlservercentral.com/articles/understanding-the-over-clause]
 
-#### * OVER(ORDER BY) and Ranking The Rows 
+#### 7.2.2 OVER(ORDER BY) and Ranking The Rows 
 First,we want to arrange rows in either descending or ascedning order  with a help of  ORDER BY clause. In addition, 
 there are three separate window functions to label the ranks of rows of a result-set, each of which has a distinct feature. 
 
@@ -111,7 +111,7 @@ SELECT product_id,
        LEAD(product_id,2) OVER(ORDER BY score DESC) as lead2 # a raw after the next raw
 	   FROM popular_products;
 ```
-#### * OVER() clause and Aggregating Functions (1)
+#### 7.2.3 OVER() clause and Aggregating Functions (1)
 
 <Descrition of Each Label>
 
@@ -137,7 +137,7 @@ SELECT product_id,
        ;
  ```
  
- #### * Using PARTITION BY AND ORDER BY in THE OVER() function at The same time
+ #### 7.2.4 Using PARTITION BY AND ORDER BY in THE OVER() function at The same time
 
 Like what we have done on the previous section, we are still interested in ranking the rows based on the given scores. Howeever, there
 is one more prerequisite at this time - ranking the orders based on scores with the rows being partitioned by category. 
@@ -152,7 +152,7 @@ SELECT category,product_id,score,
        ;
  ```
  
- #### * K-th higheset Rnaks 
+ #### 7.2.5 K-th higheset Rnaks 
  
  Now, let's extract k-th highest ranks from the sorted rows with all the rows still being partitioned by category. 
  Then, WHERE is an essential clause to meet the task but the problem beings as fllowing 
@@ -174,7 +174,7 @@ SELECT *
                  ORDER BY category,ranks;
 ```
 
-#### * Find The First Rank and Least Rank
+#### 7.2.6 Find The First Rank and Least Rank
 
 ```MySQL
 
@@ -187,7 +187,7 @@ SELECT DISTINCT category,
        ORDER BY category;
 
 ```
-#### * GROUP_CONCAT CALUSE 
+#### 7.2.7 GROUP_CONCAT CALUSE 
 
 Just image a vast of consumers logged on Amazone with thier own user id and puchased a variety of products on display. You may present 
 all the purchaseses and the total amount each user spent as two separate fields on the table. This can be done through use of GROUP_CONCAT. 
@@ -221,7 +221,7 @@ SELECT DISTINCT purchase_id,
 As a default, the separtor of GROUP_CONCAT is ','. If you want to change it, put whatever you want to the second part of the clause. 
 GROUP_CONCAT(EXP1,'|') 
 
-### 3) Transfomration of Rows into Columns
+### 7.3 Transfomration of Rows into Columns
 
 ### _This special 'transposition' is conditional on the fact that you know exactly the number of rows and thier type._
 
@@ -270,61 +270,54 @@ SELECT dt,
        GROUP BY dt
        ORDER BY dt;
 ```    
-### 4) Splitting comm_Separted Values in MySQL
+### 7.4 Concatenating Selected Rows into A Single String
 
-Now take a look at purchase_log table and you will notice a comma-separated list of product_ids that one of costumers purcahsed with
-thier own ideas. You want to add two separte columns which indicate the index of each element in the specific produc_ids
-and its corresponding product_id.
+The resulting outcome consists of the following fileds 
 
+- purchase_id 
 
-- step1) Createa a Separate Table containg numbers at least as big as the length of our longest comma-separted list. 
-         In our data, each slot of product_ids conatin up to 3 elements and this makes a temporary table with numbers 
-	 equal to 3.
-```MySQL
-create temporary table numbers as (
-  select 1 as n
-  union select 2 as n
-  union select 3 as n
+- product_id_array : to pick up the selected items by each consumer and return it in a array by using ARRAY_AGG() 
+
+- product_id_string : to select all the products by each user_id and concatenate them into a string 
+
+- amount : the total amount of spendings made by one cusotmer. 
+
+This way of expression would make the end-users of your table more easily percevie what items each user has purchased. 
+
+```sql
+DROP TABLE IF EXISTS purchase_detail_log;
+CREATE TABLE purchase_detail_log (
+    purchase_id integer
+  , product_id  varchar(255)
+  , price       integer
 );
 
-SELECT * FROM numbers;
+INSERT INTO purchase_detail_log
+VALUES
+    (100001, 'A001', 3000)
+  , (100001, 'A002', 4000)
+  , (100001, 'A003', 2000)
+  , (100002, 'D001', 5000)
+  , (100002, 'D002', 3000)
+  , (100003, 'A001', 3000)
+;
+
+SELECT purchase_id,
+       ARRAY_AGG(product_id) AS product_id_array,
+       STRING_AGG(product_id,',') AS product_id_string,
+       SUM(price) AS total_sum
+       FROM purchase_detail_log
+       GROUP BY purchase_id
+       ORDER BY purchase_id;
 ```
 
-- step 2) Selecting Each Item in the Table
-We use a SUBSTRING_INDEX with n-th comma and select the entire list before that comma. We call it again with thrid arguament being 
--1 which selects everything to the left of the commna. 
+### 7.5 Stacking Columns 
+ 
 
-```MySQL
-SELECT purchase_id,product_ids,
-	   SUBSTRING_INDEX(SUBSTRING_INDEX(product_ids,',',n),',',-1) AS product_id
-       FROM purchase_log
-       CROSS JOIN numbers
-       ORDER BY purchase_id,product_id
-       ;
-```
-
-- step 3) A Column Indicatiing a Length of Each list
-
-Now, we need to prepare a sepearte procedure to restirct the number of rows to the length of each list and make it appear on 
-the column named as idx'.
+       
 
 
-Let's take a look at the # code in peices. 
-First is char_length, which returns the number of characters in a string. replace(product_ids, ',', '') removes commas from email_recipients. So char_length(email_recipients) - char_length(replace(product_ids, ',', '')) counts the commas.
 
-By joining on the number of commas <= , we get exactly the number of rows as there.
-
-```MySQL
-
-SELECT purchase_id,product_ids,
-	   SUBSTRING_INDEX(SUBSTRING_INDEX(product_ids,',',n),',',-1) AS product_id,
-       p.n
-       FROM purchase_log
-       CROSS JOIN numbers AS p
-             ON p.n<=(CHAR_LENGTH(product_ids)-CHAR_LENGTH(REPLACE(product_ids,',',''))+1)
-       ORDER BY purchase_id,product_id
-       ;
- ```
 
 
 
