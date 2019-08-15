@@ -1,6 +1,6 @@
 ## CHAPTER 6 Manupulation of Various Values
 
-### 1) Concatenating letters
+### 6.1 Concatenating letters
 The Section itself implies that I have tried to link all the given letters in an manner we want to present to end users. 
 The 'concat; is used for linking letters and I have put ' ' for leaving a space betweeen pref_name and city_name. 
 
@@ -24,7 +24,7 @@ SELECT CONCAT(pref_name,' ',city_name) AS pref_city
        FROM mst_user_location;
 ```
 
-### 2) Comparing Values 
+### 6.2  Comparing Values 
 
 The table shows the sale of each quater from 2015 to 2017. Assuming there were no track records  in the 3 and 4 quarter of 2017, I have inserted NULL for these periods. As for 2018, all columns consist of NULL. 
 
@@ -47,7 +47,7 @@ VALUES
 
 ```
 
-#### * Measuremnet for Sale's Movement
+#### 6.3 Measuremnet for Sale's Movement
 It is crucial for mangers to see there is any change in sale's revenue from thier company. Therefore, I have made 
 there separate sections ,which make it more convenient and handy to conduct thier quarterly analysis. 
 
@@ -70,7 +70,7 @@ SELECT year,q1,q2,
         ORDER BY year;
 ```
 
-#### * Finding The Lowest and Greatest Sale among The Qauaters 
+#### 6.4 Finding The Lowest and Greatest Sale among The Qauaters 
 
 This taks took me a quite longer than What I had previously expected . This is primarly beacuse  MySQL is not currently providing
 any functions which generates either lowest,greatest value among 'non-null' columns. Therefore, I come out with indirect ways to
@@ -116,7 +116,7 @@ SELECT years,
 
 
 
-#### * Finding Avaerage 
+####6.5 Finding Avaerage 
 
 ```sql
 DROP TABLE IF EXISTS quarterly_sales;
@@ -152,7 +152,7 @@ WITH stat_sales AS(
 
 
 
-### 3) Manipulation of Integer Data
+### 6.7  Manipulation of Integer Data
 
 ```MySQL
 CREATE TABLE advertising_stats (
@@ -199,8 +199,8 @@ SELECT ROUND(clcks/NULLIF(impression,0),2) AS ctr, 100*(clicks/NULLIF(impression
                   Other than these two cases, it always return the first expression. 
                   
 		  
-### 4) Computation of Distance 
-#### * Absolute Value and Squared Root 
+### 6.8 Computation of Distance 
+#### 6.8.1 Absolute Value and Squared Root 
 
 ```MySQL
 DROP TABLE IF EXISTS location_1d;
@@ -223,7 +223,7 @@ SELECT ABS(X1-X2) AS abs,
 	   FROM location_1d;
 ```
 
-#### * Eucleidan Distance 
+#### 6.8.2 Eucleidan Distance 
 
 ```MySQL
 DROP TABLE IF EXISTS location_2d;
@@ -245,7 +245,7 @@ SELECT ROUND(SQRT(POW(x1-x2,2)+POW(y1-y2,2)),2) AS dist
 	   FROM location_2d;
 ```
 
-### 5) Hanlding Time and Date Data
+### 6.9 Hanlding Time and Date Data
 
 #### _Preapring unprocessed data_
 ```MySQL
@@ -264,9 +264,9 @@ VALUES
 ;
 ```
 
-#### * Manipulation of Date and Time 
+#### 6.10 Manipulation of Date and Time 
 
-In order to substract from or add cetrain interval to the current data,   I have used the simple operators( + or - ) together with INTERVAL function. Unlike postGresql, MySQL dictates thatINTERVAL be followed by a desginated integer number. For exmaple,  INTERVAL 1 HOUR .
+In order to substract from or add cetrain interval to the current data,  I have used the simple operators( + or - ) together with INTERVAL function. Unlike postGresql, MySQL dictates that INTERVAL be followed by a desginated integer number. For exmaple,  INTERVAL 1 HOUR .
 
 ```MySQL
 <MySQL version>
@@ -279,12 +279,18 @@ SELECT user_id,register_stamp,
        DATEDIFF(CURDATE(),register_stamp) AS diff_days
        FROM mst_users_with_dates;
 ```
-
-```
+```SQL
 <postgresql version>
 
-
-#### * Age 
+SELECT user_id,
+       register_stamp::timestamp AS time_stamp,
+       register_stamp::timestamp+'1hour'::interval AS after_1_hour,
+       register_stamp::timestamp-'30minutes'::interval AS before_30_minutes,
+       register_stamp::date+'1hour'::interval AS after_1_day,
+       register_stamp::date-'1month'::interval AS before_1_month
+       FROM mst_users_with_dates;
+```
+#### 6.11 Age 
 It seems to be trivial and struggling for data analysts to compute age based on date-typed data if they decide to use MySQL. Among many alternatives , I have taken TIMESTAMPDIFF.
 
 ```MySQL
@@ -296,49 +302,68 @@ SELECT user_id,DATE(NOW()) AS today,register_stamp,birth_date,
        FROM mst_users_with_dates;
 
 ```
+```sql
+<postgresql version>
+SELECT user_id,
+       CURRENT_DATE AS today,
+       birth_date::DATE AS birth_date,
+       EXTRACT(YEAR FROM AGE(birth_date::DATE)) AS age,
+       EXTRACT(YEAR FROM AGE(register_stamp::DATE)) AS register_age
+       FROM mst_users_with_dates;
+```
 
-### 6) Management of IP address
+### 6.13 Management of IP address
 
-Given the dotted-quad representations of IP address as a string, we are curious wheter one is more or less than another,or whether
-IP address belongs to the data in the format 'adress/y'. Whatever cases they are, it is not a good idead  to make a judgement
-based on 'string' data since the task itself is really inefficient and time-consuming. Therefore, I have employed INET_ATON.
+Given the dotted-quad representations of IP address, we can see that a majority of them are saved as a string. However,  it is not a good idead  to make a judgement based on 'string' data since the task itself is really inefficient and time-consuming. Basically, 
+we need to convert it into integer and perform inequality comparasion. Converion of string to integer value is done by CAST clause. 
 
-#### * Inequality  
+#### 6.13.1 Inequality  
 
-```MySQL
-SELECT IF(INET_ATON('123.0.0.1') < INET_ATON('128.0.0.1'),'T','F') AS lt,
-       IF(INET_ATON('123.0.0.1')> INET_ATON('123.0.0.1'),'T','F') AS gt;
- ```
- #### * Split an IP address into 4 respective octet
+
+```sql 
+ <postgresql>
+ SELECT CAST('120.168.0.1' AS inet) > CAST('179.123.0.2' AS inet) ;
+
+```
  
- In addition to the four sections of IP address, I pad the table with another column called ip_integer(ie an integer value of ip address).
  
-```MySQL
+ 
+ 
+ #### 6.13.2 Split an IP address into 4 respective octet
+ 
+ The dotted_quad representation of IP address consist of four parts split by delimeter '.'. Now we want to extrac eac of them 
+ and place it into the four separate columns. First, we will use split function to separate the string by the given delimeter.Also 
+ you can pick the desired filed from the string. Implement CAST caluse to convert the string to integer value. 
+ 
+ I will pad the colum,'ip_integer' by converting quad-dotted ip address to the long integer wtih each extracted part of ip address         mutiplied by 2^24, 2^16,2^8,and 2^0, respectively.
+ 
+```sql
 DROP TABLE IF EXISTS iptbl;
 CREATE TABLE iptbl
 (ip CHAR(20) NOT NULL PRIMARY KEY);
 INSERT INTO iptbl
        VALUES ('120.168.0.1'),
               ('179.123.0.2'),
-			  ('156.233.0.0'),
+	      ('156.233.0.0'),
               ('123.0.0.2');
-              
-SELECT ip,SUBSTRING_INDEX(ip,'.',1) AS ip_part1,
-          SUBSTRING_INDEX(SUBSTRING_INDEX(ip,'.',-3),'.',1) AS ip_part2,
-	      SUBSTRING_INDEX(SUBSTRING_INDEX(ip,'.',-2),'.',1) AS ip_part3,
-          SUBSTRING_INDEX(ip,'.',-1) AS ip_part4,
-          INET_ATON(ip) AS ip_integer
-          FROM iptbl;
+
+WITH iptbl_part AS(SELECT
+       CAST(SPLIT_PART(ip,'.',1) AS integer) AS part_1,
+       CAST(SPLIT_PART(ip,'.',2) AS integer) AS part_2,
+       CAST(SPLIT_PART(ip,'.',3) AS integer) AS part_3,
+       CAST(SPLIT_PART(ip,'.',4) AS integer) AS part_4
+       FROM iptbl)
+       SELECT part_1,
+              part_2,
+              part_3,
+              part_4,
+              part_1*2^24+part_2*2^16+part_3*2^8+part_4*2^0 AS inter_value
+              FROM iptbl_part;
 ```
-##### - _special Note_  INET_ATON(EXP1) VS INET_NTOA(EXP1)
-
-INET_ATON(exp1) to return the numerical value of IP address.
-
-INET_NTOA(exp1) to concvert the numerical value into IP address. 
  
-       
-
-
+ 
+ 
+ 
 
 
 
