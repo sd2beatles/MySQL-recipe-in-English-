@@ -196,17 +196,28 @@ SELECT DISTINCT category,
 Prepare a table satisfying the following pre-conditions. 
 
 1) The columns must include 
-           - user_id
+           
+	   - user_id
+	   
 	   - array_id : group proudct_id by usre_id and return it in an array
+	   
 	   - cum_array_id : return a cumulative array 
+	   
 	   - total_avg : average out all the values regardless of user_id and product_id and round it to two deciamal points
+	   
 	   - rank1 : rank the elements within subgroupo of user_id based on thier local average 
 	         : this ranking does not allow for overlap and leap in the ranks
+		 
             - rank 2: the same as rank 1 except allow for leap or skip in the ranks
+	    
 	    - rank 3: allow for overlap and skip or leap in the ranks
+	    
 	    - lag1 : obtain access to a row of product_id before the current row
+	    
 	    - lag2 : get an acess to a row of product_id before the previous row
+	    
 	    - lead1 : obtain access to a row of product_id after the current row
+	    
             - lead 2: get an acess to a row of product_id after the next row
 
  2) Just show rank1 up to 3
