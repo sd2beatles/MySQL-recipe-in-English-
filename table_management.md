@@ -312,7 +312,124 @@ SELECT purchase_id,
 ```
 
 ### 7.5 Stacking Columns 
+
+#### 7.5.1 A fixed number of columns in rows 
+
+ In this section, we will introduce how to stack the values of columns into serveral rows into a group. Look at the table below, 
+ and you can easily be aware that there are fixed number of columns in rows. Here create a pivot table
+ whose serial number is listed in the same number as that of the columns and CROSS JOIN it. 
  
+![image](https://user-images.githubusercontent.com/53164959/63136668-11aaeb80-c00e-11e9-986c-dce59e939523.png)
+
+```sql
+DROP TABLE IF EXISTS quarterly_sales;
+CREATE TABLE quarterly_sales (
+    year integer
+  , q1   integer
+  , q2   integer
+  , q3   integer
+  , q4   integer
+);
+
+INSERT INTO quarterly_sales
+VALUES
+    (2015, 82000, 83000, 78000, 83000)
+  , (2016, 85000, 85000, 80000, 81000)
+  , (2017, 92000, 81000, NULL , NULL )
+;
+
+DROP TABLE IF EXISTS purchase_log;
+CREATE TABLE purchase_log (
+    purchase_id integer
+  , product_ids varchar(255)
+);
+
+INSERT INTO purchase_log
+VALUES
+    (100001, 'A001,A002,A003')
+  , (100002, 'D001,D002')
+  , (100003, 'A001')
+;
+
+SELECT q.year AS year,
+       CASE WHEN p.idx=1 THEN 'q1'
+            WHEN P.idx=2 THEN 'q2'
+            WHEN p.idx=3 THEN 'q3'
+            WHEN p.idx=4 THEN 'q4'
+            END AS quarter,
+       CASE WHEN p.idx=1 THEN q.q1
+            WHEN p.idx=2 THEN q.q2
+            WHEN P.idx=3 THEN q.q3
+            WHEN p.idx=4 THEN q.q4 
+            END AS sales
+       FROM quarterly_sales AS 	q
+       CROSS JOIN(
+       SELECT 1 AS idx
+       UNION ALL SELECT 2 AS idx
+       UNION ALL SELECT 3 AS idx
+       UNION ALL SELECT 4 AS idx
+       )AS p
+
+```
+
+#### 7.5.2 Variable length of a column in rows 
+
+Let's suppose that we have a table with two columns and one of them refers to uers id and the colum next to it tells you
+the code of items each user has placed an order for. Numer of items will vary from one to another,thereby the length of 
+a string in which selected items are stored being also different. We need to take a different approach to deal with this case. 
+
+![image](https://user-images.githubusercontent.com/53164959/63137477-6734c780-c011-11e9-9694-48dedddba0b1.png)
+
+First there is a need to convert string to an array. We can perform this conversion by using STRING_TO_ARRAY. 
+Ater that, employ UNNEST function to take an array and create a table with a single row for each element in an array. 
+The last step is simply CROSS JOIN it if you want to show purchase_id and product_id altoegher.
+
+
+```sql
+DROP TABLE IF EXISTS purchase_log;
+CREATE TABLE purchase_log (
+    purchase_id integer
+  , product_ids varchar(255)
+);
+
+INSERT INTO purchase_log
+VALUES
+    (100001, 'A001,A002,A003')
+  , (100002, 'D001,D002')
+  , (100003, 'A001')
+;
+
+SELECT purchase_id,
+       product_id
+       FROM purchase_log AS p
+       CROSS JOIN UNNEST(STRING_TO_ARRAY(product_ids,',')) AS product_id ;
+```
+
+#### 7.5.3 put serial number on each product_ids 
+
+```sql
+SELECT l.purchase_id,
+       l.product_ids,
+       p.idx,
+       SPLIT_PART(l.product_ids,',',p.idx) AS product_id
+       FROM purchase_log AS l
+       JOIN(SELECT 1 AS idx
+                UNION ALL SELECT 2 AS idx
+                UNION ALL SELECT 3 AS idx
+                UNION ALL SELECT 4 as idx) AS p
+          ON p.idx<=(1+char_length(l.product_ids)-char_length(replace(l.product_ids,',',''))) -- combine rows only if idx is smaller or equal to the number of items;
+```
+
+_NOTE_
+
+An SQL JOIN clause is used to combine rows from two or more tables, based on a common field between them. There are different types of joins available in SQL: INNER JOIN: returns rows when there is a match in both tables. LEFT JOIN: returns all rows from the left table, even if there are no matches in the right table.
+
+![image](https://user-images.githubusercontent.com/53164959/63138725-7cf8bb80-c016-11e9-8cd2-a774a14000a1.png)
+
+
+
+
+
 
        
 
