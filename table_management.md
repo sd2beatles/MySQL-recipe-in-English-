@@ -192,7 +192,8 @@ SELECT DISTINCT category,
 
 ```
 
-<Quiz>
+#### 7.2.7 Quiz
+
 Prepare a table satisfying the following pre-conditions. 
 
 1) The columns must include 
@@ -266,14 +267,7 @@ SELECT user_id,
 
 
 
-
-
-
-
-
-
-
-#### 7.2.7 GROUP_CONCAT CALUSE 
+#### 7.2.8 GROUP_CONCAT CALUSE 
 
 Just image a vast of consumers logged on Amazone with thier own user id and puchased a variety of products on display. You may present 
 all the purchaseses and the total amount each user spent as two separate fields on the table. This can be done through use of GROUP_CONCAT. 
