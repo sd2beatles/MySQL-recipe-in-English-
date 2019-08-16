@@ -75,8 +75,12 @@ there are three separate window functions to label the ranks of rows of a result
 
 Furthermore, it is a worthy of remembering other window functions such as "LEAD","LAG". 
 
-- LEAD() : to return a value from  the next row
-- LAG() :  to return a value from the previous row 
+- LEAD() : to return a a vlue that current row follows
+- LAG() :  to return a value that comes before the ccurrent row 
+
+You can also specify the number of rows either forwarding or backwarding from the current row. For example,
+LEAD(usre_id,2) means yo want to get an access to the row after the next row
+LAG(user_id,2) indicatest an acess to the row before the previous row.
 
 To see how these all window functions are acually implmented int the case of popular_products
 
@@ -187,6 +191,77 @@ SELECT DISTINCT category,
        ORDER BY category;
 
 ```
+
+<Quiz>
+Prepare a table satisfying the following pre-conditions. 
+
+1) The columns must include 
+           - user_id
+	   - array_id : group proudct_id by usre_id and return it in an array
+	   - cum_array_id : return a cumulative array 
+	   - total_avg : average out all the values regardless of user_id and product_id and round it to two deciamal points
+	   - rank1 : rank the elements within subgroupo of user_id based on thier local average 
+	         : this ranking does not allow for overlap and leap in the ranks
+            - rank 2: the same as rank 1 except allow for leap or skip in the ranks
+	    - rank 3: allow for overlap and skip or leap in the ranks
+	    - lag1 : obtain access to a row of product_id before the current row
+	    - lag2 : get an acess to a row of product_id before the previous row
+	    - lead1 : obtain access to a row of product_id after the current row
+            - lead 2: get an acess to a row of product_id after the next row
+
+ 2) Just show rank1 up to 3
+ 
+ ```sql
+ DROP TABLE IF EXISTS review;
+CREATE TABLE review (
+    user_id    varchar(255)
+  , product_id varchar(255)
+  , score      numeric
+);
+
+INSERT INTO review
+VALUES
+    ('U001', 'A001', 4.0)
+  , ('U001', 'A002', 5.0)
+  , ('U001', 'A003', 5.0)
+  , ('U001', 'A004', 5.0)
+  , ('U002', 'A001', 3.0)
+  , ('U002', 'A002', 3.0)
+  , ('U002', 'A003', 4.0)
+  , ('U002', 'A004', 4.0)
+  , ('U003', 'A001', 5.0)
+  , ('U003', 'A002', 4.0)
+  , ('U003', 'A003', 4.0)
+  , ('U003', 'A004', 4.0)
+;
+WITH temp_statics AS(
+SELECT user_id,
+       ARRAY_AGG(product_id) OVER(PARTITION BY user_id) AS array_id,
+       ARRAY_AGG(product_id) OVER(PARTITION BY user_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cum_array_id,
+       AVG(score) OVER() AS total_avg,
+       ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY score) AS rank1,
+       RANK() OVER(PARTITION  BY user_id ORDER BY score) AS rank2,
+       DENSE_RANK() OVER(PARTITION BY user_id ORDER BY score) AS rank3,
+       LAG(product_id,1) OVER(PARTITION BY user_id) AS lag1,
+       LAG(product_id,2) OVER(PARTITION BY user_id) AS lag2,
+       LEAD(product_id,1) OVER(PARTITION BY user_id) AS lead1,
+       LEAD(product_id,2) OVER(PARTITION BY user_id) AS lead2
+       FROM review)
+       SELECT *
+       FROM temp_statics
+       WHERE rank1<=3
+      ; 
+ ```
+
+
+
+
+
+
+
+
+
+
 #### 7.2.7 GROUP_CONCAT CALUSE 
 
 Just image a vast of consumers logged on Amazone with thier own user id and puchased a variety of products on display. You may present 
