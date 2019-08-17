@@ -378,26 +378,14 @@ WITH mst_id_labels AS(
 
 In MySQL 8.0, generataing  a sequence in number can be done through recursive CTE's.
 
- ```MySQL
- DROP TABLE IF EXISTS numbers;
-CREATE TABLE numbers
-(number int);
-
-INSERT INTO numbers
-values(2),(3),(9);
-
-
- WITH RECURSIVE nums AS (
-    SELECT 1 AS value
-    UNION ALL
-    SELECT value + 1 AS value
-    FROM nums
-    WHERE nums.value <= 9
-)
-SELECT nums.value, 1-ISNULL(numbers.number) 
-FROM nums
-  LEFT JOIN numbers ON numbers.number = nums.value
-ORDER BY nums.value;
+ ```SQL
+WITH serial_number AS(
+    SELECT GENERATE_SERIES(1,10) AS idx)
+    SELECT d.idx,
+           SIGN(COALESCE(n.number,0)) AS number
+           FROM serial_number AS d
+           LEFT JOIN numbers AS n
+                ON d.idx=n.number;
 ```
 
 
