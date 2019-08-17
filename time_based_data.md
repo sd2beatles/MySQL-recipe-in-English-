@@ -156,7 +156,13 @@ CREATE TABLE purchase_log(
 INSERT INTO purchase_log
 VALUES
     ('2014-01-01',    1, 'rhwpvvitou', 13900)
+  , ('2014-01-01',    1, 'rhwpvvitou', 13900)
+  , ('2014-01-03',    1, 'rhwpvvitou', 13900)
+  ,('2014-01-03',    1, 'rhwpvvitou', 13900)
   , ('2014-02-08',   95, 'chtanrqtzj', 28469)
+  ,('2014-02-08',   95, 'chtanrqtzj', 28469)
+  ,('2014-02-28',   95, 'chtanrqtzj', 28469)
+  ,('2014-02-28',   95, 'chtanrqtzj', 28469)
   , ('2014-03-09',  168, 'bcqgtwxdgq', 18899)
   , ('2014-04-11',  250, 'kdjyplrxtk', 12394)
   , ('2014-05-11',  325, 'pgnjnnapsc',  2282)
