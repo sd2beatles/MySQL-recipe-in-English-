@@ -20,7 +20,8 @@ INSERT INTO mst_user_location
 method 2) concating the letters
 
 ```mysql
-SELECT CONCAT(pref_name,' ',city_name) AS pref_city 
+SELECT CONCAT(pref_name,city_name) AS pref_city
+       ,CONCAT(pref_name||city_name) AS pref_city2 -- one space is permissible when concating the strings
        FROM mst_user_location;
 ```
 
