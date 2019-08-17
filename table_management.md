@@ -305,18 +305,14 @@ GROUP_CONCAT(EXP1,'|')
 
 ### _This special 'transposition' is conditional on the fact that you know exactly the number of rows and thier type._
 
-First, select the columns of interset. In losely term, we take y-values and x-values
-       In our case, dt provides y-values and indicator provides x-values.
-       
-Second,extend the 'base'table(ie table with only y-values) with extra columns,one for each x-value
-       We add one colum per x-value. Be aware that our x-values is 'indicator'
+First, we need a base column which is used to group the values. In our case, dt is refered to as a base column. 
 
-Third, group and aggregate the exteded table.
-       We need to group by dt since it provides the y-values. 
-       
-       
-Lastly, use MAX/MIN function to extract each value for newly created fields.       
-        On every dt there is the only one TRUE value in response to CASE cluase available for each of newly created                             fileds;'impressions','sessions',and'users'. Use MAX/MIN to extract the value for every dt
+Second, count the number of columns you want to add to the existing table. The number is exactly the same as    
+        that of unquie values under the column of indicator. 
+
+Third, set up condition to assign a value to the proper column. 
+       This process will iterate over until it reaces the last row. 
+       In this stage, you have to be cautious to handle the date.That is, use MAX/MIN function to extract each value for newly created          fields. On every dt there is the only one TRUE value in response to CASE cluase available for each of newly created                      fileds;'impressions','sessions',and'users'. Use MAX/MIN to extract the value for every dt
 
 
  __"Note that the resulting output from CASE clause is a list. Even for only one single scalar, the resulting foramt is still
