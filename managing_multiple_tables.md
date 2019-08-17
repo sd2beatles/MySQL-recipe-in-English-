@@ -54,6 +54,9 @@ SELECT 'app2' AS app_name,user_id,name, NULL AS email FROM app2_mst_users;
 
 ### 2) Combing The Tables horizontally: adding extra columns to one existing table. 
 
+_Note that suppose you want to maintain the same number of rows and add extra columns to the existing table. That is,
+ add more values column-wise._
+
 category_id<center>|name<center>
 |---------------:|-----------:|
 1|dvd|
