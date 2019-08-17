@@ -376,7 +376,7 @@ WITH mst_id_labels AS(
 |9|1|
 |10|0|
 
-In MySQL 8.0, generataing  a sequence in number can be done through recursive CTE's.
+
 
  ```SQL
 WITH serial_number AS(
