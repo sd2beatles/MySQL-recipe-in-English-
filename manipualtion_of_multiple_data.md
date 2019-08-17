@@ -155,7 +155,37 @@ WITH stat_sales AS(
 
 ### 6.7  Manipulation of Integer Data
 
+#### 6.7.1 Calculating The Rate
+```sql
+<postgresql>
+
+CREATE TABLE advertising_stats (
+    dt          varchar(255)
+  , ad_id       varchar(255)
+  , impressions integer
+  , clicks      integer
+);
+
+INSERT INTO advertising_stats
+VALUES
+    ('2017-04-01', '001', 100000,  3000)
+  , ('2017-04-01', '002', 120000,  1200)
+  , ('2017-04-01', '003', 500000, 10000)
+  , ('2017-04-02', '001',      0,     0)
+  , ('2017-04-02', '002', 130000,  1400)
+  , ('2017-04-02', '003', 620000, 15000)
+;
+
+SELECT ad_id,
+       CAST(SUM(impressions) AS double precision)/SUM(clicks) AS rate 
+       -- impressions is saved in integer and when calculating rate, the decimal points are automatically discarded.
+       -- Therefore we need to take a proper step to convert it into double by using cast function
+       FROM advertising_stats
+       GROUP BY ad_id;
+```
+
 ```MySQL
+<MySQL version>
 CREATE TABLE advertising_stats (
     dt          varchar(255)
   , ad_id       varchar(255)
@@ -198,8 +228,33 @@ SELECT ROUND(clcks/NULLIF(impression,0),2) AS ctr, 100*(clicks/NULLIF(impression
 
 - IFNULL(exp1,exp2) if exp1 is null,then it returns exp2 and if two values are all NULL,it returns NULL. 
                   Other than these two cases, it always return the first expression. 
-                  
-		  
+
+#### 6.7.2 Avid Zero Denominator
+
+```sql
+CREATE TABLE advertising_stats (
+    dt          varchar(255)
+  , ad_id       varchar(255)
+  , impressions integer
+  , clicks      integer
+);
+
+INSERT INTO advertising_stats
+VALUES
+    ('2017-04-01', '001', 100000,  3000)
+  , ('2017-04-01', '002', 120000,  1200)
+  , ('2017-04-01', '003', 500000, 10000)
+  , ('2017-04-02', '001',      0,     0)
+  , ('2017-04-02', '002', 130000,  1400)
+  , ('2017-04-02', '003', 620000, 15000)
+
+SELECT dt,
+       CASE WHEN clicks>0 THEN CAST(impressions AS double precision)/clicks
+            ELSE NULL END AS rate
+       FROM advertising_stats; 
+       
+```
+
 ### 6.8 Computation of Distance 
 #### 6.8.1 Absolute Value and Squared Root 
 
@@ -265,7 +320,7 @@ VALUES
 ;
 ```
 
-#### 6.10 Manipulation of Date and Time 
+#### 6.9.1 ipulation of Date and Time 
 
 In order to substract from or add cetrain interval to the current data,  I have used the simple operators( + or - ) together with INTERVAL function. Unlike postGresql, MySQL dictates that INTERVAL be followed by a desginated integer number. For exmaple,  INTERVAL 1 HOUR .
 
@@ -291,18 +346,8 @@ SELECT user_id,
        register_stamp::date-'1month'::interval AS before_1_month
        FROM mst_users_with_dates;
 ```
-#### 6.11 Age 
-It seems to be trivial and struggling for data analysts to compute age based on date-typed data if they decide to use MySQL. Among many alternatives , I have taken TIMESTAMPDIFF.
+#### 6.9.2 Age
 
-```MySQL
-SELECT user_id,DATE(NOW()) AS today,register_stamp,birth_date,
-	   TIMESTAMPDIFF(YEAR,birth_date,CURDATE()) AS register_date,
-       /* in order to extract the section of date from register_stamp,
-	      DATE is used!*/
-       TIMESTAMPDIFF(YEAR,birth_date,DATE(register_stamp)) AS current_age
-       FROM mst_users_with_dates;
-
-```
 ```sql
 <postgresql version>
 SELECT user_id,
@@ -313,12 +358,48 @@ SELECT user_id,
        FROM mst_users_with_dates;
 ```
 
-### 6.13 Management of IP address
+Alternatively, we can compute the age in a standard way. Date information is stored in string where year,month,and date are split by
+delimeter '-'. 
+
+First use the replace function to remove all '-' and convert it into integer. 
+
+Second, the same procedure goes for conversion of current_date into integer expcept for  specifying text in CAST function. 
+        Do the cast function over it again to convert it into integer. 
+
+Lastly, current_date - birth_date /10000 
+
+```sql
+DROP TABLE IF EXISTS mst_users_with_dates;
+CREATE TABLE mst_users_with_dates (
+    user_id        varchar(255)
+  , register_stamp varchar(255)
+  , birth_date     varchar(255)
+);
+
+INSERT INTO mst_users_with_dates
+VALUES
+    ('U001', '2016-02-28 10:00:00', '2000-02-29')
+  , ('U002', '2016-02-29 10:00:00', '2000-02-29')
+  , ('U003', '2016-03-01 10:00:00', '2000-02-29')
+;
+
+WITH age_selection AS
+( SELECT CAST(REPLACE(birth_date,'-','') AS INT) AS birth,
+         CAST(REPLACE(CAST(CURRENT_DATE AS TEXT),'-','') AS INT) AS current
+         FROM mst_users_with_dates)
+         SELECT (current-birth)/10000 AS age
+         FROM age_selection;
+```
+
+
+
+
+### 6.10Management of IP address
 
 Given the dotted-quad representations of IP address, we can see that a majority of them are saved as a string. However,  it is not a good idead  to make a judgement based on 'string' data since the task itself is really inefficient and time-consuming. Basically, 
 we need to convert it into integer and perform inequality comparasion. Converion of string to integer value is done by CAST clause. 
 
-#### 6.13.1 Inequality  
+#### 6.10.1 Inequality  
 
 
 ```sql 
@@ -330,7 +411,7 @@ we need to convert it into integer and perform inequality comparasion. Converion
  
  
  
- #### 6.13.2 Split an IP address into 4 respective octet
+ #### 6.10.2 Split an IP address into 4 respective octet
  
  The dotted_quad representation of IP address consist of four parts split by delimeter '.'. Now we want to extrac eac of them 
  and place it into the four separate columns. First, we will use split function to separate the string by the given delimeter.Also 
