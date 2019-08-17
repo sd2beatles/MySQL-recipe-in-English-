@@ -78,8 +78,7 @@ category_id<center>|rank<center>|prodcut_id<center>|sale<center>|
 2|2|C002|20000
 2|3|C003|10000
 
-Based on sales from each category, We want to create a separte reuslt set which includes category_id,name of category,
-total sale made by each category,product_id of the top sale product. 
+Now we consider mst_categories as a base table and start adding more colums extracted from other tables. 
 
 
 Method 1) LEFT JOIN
@@ -135,7 +134,7 @@ SELECT m.category_id,m.name,s.sales,r.product_id AS top_sale_produt
               ON m.category_id=r.category_id
 		         AND r.ranks=1;
 ```
-If JOIN were used insteda of LEFT JOIN, there would be unexpceted problems arising: dupcliacte rows and omission of
+If JOIN were used insteda of LEFT JOIN, there would be unexpceted problems arising: dupcliacte entries  and omission of
 unmatched ones.
 
 
