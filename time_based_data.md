@@ -1,7 +1,7 @@
- Reporting Time Based Data
+ CHAPTER 10 Reporting Time Based Data
  =========================
-
-### 1) Aggregation Function on Multiple Rows
+ 
+#### 10.1 Aggregation Function on Multiple Rows
 
 we are now intrested in aggregating multiple rows to calculate the total number of purchases, the amount in total, and the avergage of the 
 spending made on each date. 
@@ -61,7 +61,7 @@ Without taking a consideration of who made a purchse on the specific date, our f
 on evry date in a given interval. Then, using a COUNT() function will do for the case. 
 
 
-### 2) Moving Average : A Indicator of Trend 
+#### 10.2 Moving Average : A Indicator of Trend 
 
 There are many types of data reporting a seasonal increase in sales in a weekend or during the specified interval of a year. 
 This seasonal 'noise' could adversely affect our critical insight into the trend of business performance. Therefore, a seasonal average comes in handy to help data analysts the track of sale's movement. In our example, we use 'seven-day moving average' .
@@ -87,7 +87,7 @@ SELECT dt,
         ORDER BY dt;
  ```
  
- ### 3) Cummulate Sum 
+ #### 10.3 Cummulate Sum 
  
  case 1) daily cumulate sum 
  
@@ -141,7 +141,7 @@ WITH temp_purchase AS(
 If you take a closer examination on the code above,   the integral information is first set up and stored in 'temp_purchase' with the help of WITH AS funcion and reused in the later code.  This practice may slow the performance of the data-process. However, in the custom of big data management, the clarity the code line gives readers should outweigh the level of its performance. 
 
 
-### 4) Comparison of Sales on Year Base  
+#### 10.4 Comparison of Sales on Year Base  
 It is worthy of comparing the sales made in the specific month of a year to that in the same month of the previous year.
 
 ```sql
@@ -243,7 +243,7 @@ WITH temp_purchase AS(
       GROUP BY month
       ORDER BY month;
 ```
-### 5) Z-chart Analysis
+#### 10.5 Z-chart Analysis
 
 ![z_chart](https://user-images.githubusercontent.com/53164959/62454270-f8ed3b00-b7ae-11e9-9800-ad4fc7e4143d.png)
 
@@ -301,7 +301,7 @@ WITH daily_purchase AS(
 	 ORDER BY year_month;
 ```
 
-### 6) Key Points in Analysing Sales
+### 10.6 Key Points in Analysing Sales
 
 We should not reach a conclusion on the performance of business solely based on sales record bacause there must be some reason behind it. Therefore, it is a good practice to attach some supporting numbers as factors leading to the result of sale performance. For example,  the financial performance of the shopping mall has shown a steady decrease in revenue earned in a certain year. You could possibly suggest the frequency of purchases made by customers and the average expenditure by him or her: a steady in the level of frequency but a steady decrease in average spending.  By using these 'aids', you now infer that a decrease in spending is playing a major determinant of the poor performance in sales. 
 
@@ -335,6 +335,68 @@ SELECT CONCAT(year,'-',month) AS year_months,
         100.0*monthly/LAG(monthly,12) OVER(ORDER BY year,month) AS rate
         FROM monthly_purchase
         ORDER BY year_months;
+```
+
+#### 10.7 Case Study (Penguin Birth and Death)
+
+![image](https://user-images.githubusercontent.com/53164959/63220322-adc82480-c1bf-11e9-8aa5-8c214fabb99e.png)
+
+```sql
+
+WITH stats AS(
+SELECT SUBSTRING(quarter,1,4) AS year,
+       SUBSTRING(quarter,5,2) AS quart,
+       male_birth,
+       female_birth,
+       male_death,
+       female_death
+       FROM birth_death),
+     cum_sum AS(
+     SELECT year,
+            quart,
+            male_birth,
+            SUM(male_birth) OVER(PARTITION BY year)  AS annual_sum_male_birth,
+            ROUND(100*CAST(male_birth AS numeric) /SUM(male_birth) OVER(PARTITION BY year),2) AS local_male_birth_rate,
+            LAG(male_birth,4) OVER(ORDER BY year,quart) AS last_year_male_birth,
+            female_birth,
+            SUM(female_birth) OVER(PARTITION BY year)  AS annual_sum_female_birth,
+            ROUND(100*CAST(female_birth AS numeric)/SUM(female_birth) OVER(PARTITION BY year),2) AS local_female_birth_rate,
+            LAG(female_birth,4) OVER(ORDER BY year,quart) AS last_year_female_birth,
+            male_death,
+            SUM(male_death) OVER(PARTITION BY year)  AS annual_sum_male_death,
+            ROUND(100*CAST(male_death AS numeric)/SUM(female_birth) OVER(PARTITION BY year),2) AS local_male_death_rate,
+            LAG(male_death,4) OVER(ORDER BY year,quart) AS last_year_male_death,
+            female_death,
+            SUM(female_death) OVER(PARTITION BY year) AS annual_sum_female_death,
+            ROUND(100*CAST(female_death AS numeric)/SUM(female_death) OVER(PARTITION BY year),2) AS local_female_death_rate,
+            LAG(female_death,4) OVER(ORDER BY year,quart) AS last_year_female_death
+            FROM stats
+            )
+            SELECT CONCAT(year||quart) AS year_quart,
+                   male_birth,
+                   annual_sum_male_birth,
+                   local_male_birth_rate,
+                   last_year_male_birth,
+                   ROUND(100*CAST(male_birth AS numeric)/last_year_male_birth,2) AS year_over_year_rate,
+                   female_birth,
+                   annual_sum_female_birth,
+                   local_female_birth_rate,
+                   last_year_female_birth,
+                   ROUND(100*CAST(female_birth AS numeric)/last_year_female_birth,2) AS year_over_year_rate,
+                   male_death,
+                   annual_sum_male_death,
+                   local_male_death_rate,
+                   last_year_male_death,
+                   ROUND(100*CAST(male_death AS numeric)/last_year_male_death,2) AS year_over_year_rate,
+                   female_death,
+                   annual_sum_female_death,
+                   local_female_death_rate,
+                   last_year_female_death,
+                   ROUND(100*CAST(female_death AS numeric)/last_year_female_death,2) AS year_over_year_rate
+                FROM cum_sum;
+    
+     --postgreSQL does not support round(double precision,integer). For this reason, we should cast the
+     --rate into numberic then round it to any decimal points you wish for.
 ```
 
 
