@@ -4,7 +4,7 @@
 [ENG]SQL recipe For Data Analyst contains tips on how to manage a given set of data in efficient and economical manners. This book gives us a lot of guides and raises my insight on how to transforming,  organizing, and summarizing the given data and reach a conclusion based on it.  
 
 However, there are some problems associated with this book.
-First, some coding errors are easily detected since it is the first edition. With reference to google and other sources, I have made some modification on the. 
+First, some coding errors are easily detected since it is the first edition. With reference to google and other sources, I have made some modification on theM. 
 Second,  the most serious drawback is the data-set for training is not matched to that in the book or does not even exist, causing the readers to feel confused and disturbed while reading.  Therefore,  I additionally download the data from kaggle and perform SQL codes on it. 
 Last but not least, the book is published only in Korean and Japanese.  What I have learned from the book and some tips while writing codes is all written in English. Doing the work in Korean seems to be unnecessary and time-consuming.  
 
