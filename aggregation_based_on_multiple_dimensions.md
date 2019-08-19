@@ -47,34 +47,35 @@ VALUES
   , ('2017-01-18', 48295, 'usr38013', 'lad147', 96100,  'ladys_fashion', 'jacket')
  ;
  
- 
- SELECT * FROM purchase_detail_log limit 5;
- WITH sub_category_amount AS
- (SELECT category,
-         sub_category,
-         SUM(price) AS amount
-         FROM purchase_detail_log
-         GROUP BY category,sub_category),
-         category_amount AS(
-         SELECT category,
-         'all' as sub_category,
-         SUM(price) AS amount
-         from purchase_detail_log
-         GROUP BY category),
-         total_amount AS(
-         SELECT
-         'all' AS category,
-         'all' AS sub_category,
-         SUM(price) AS amount
-         from purchase_detail_log)
-         SELECT category,sub_category,amount FROM sub_category_amount
-         UNION ALL SELECT category,sub_category,amount FROM category_amount
-         UNION ALL SELECT category,sub_category,amount FROM total_amount;
-         ```
+
+WITH all_category AS(
+     SELECT CAST('all' AS VARCHAR) AS category,
+            CAST('all' AS VARCHAR) AS sub_category,
+            SUM(price) AS sale
+            FROM purchase_detail_log),
+     sub_category AS(
+     SELECT category AS category,
+           CAST('all' AS VARCHAR) AS sub_category,
+           SUM(price) AS sale
+           FROM purchase_detail_log
+           GROUP BY category),
+      sub_all_category AS(
+      SELECT category AS category,
+             sub_category AS sub_category,
+             SUM(price) OVER(PARTITION BY category,sub_category) AS sale
+             FROM purchase_detail_log)
+      SELECT * FROM sub_all_category
+            UNION ALL SELECT * FROM sub_category
+            UNION ALL SELECT * FROM all_category;
+             
+                
+	 
+	 
 The problems with this approach is 
 - The query is quite lengthy.
-- The performance of the query may not be good since the database engine has to internally execute two separate       queries and combine the result sets into one.
-         
+- The performance of the query may not be good since the database engine has to internally execute two separate       queries and         combine the result sets into one.
+- To prevent mismatch in data-type, we need to cast the section into proper type. 
+  
 1.2 ROLL UP method 
 
 We use ROLL up cluase (The ROLLUP generates multiple grouping sets based on the columns or expression specified in the GROUP BY clause.) to simplify our previous code. If either category or sub_category is NULL, then COALESCE
@@ -82,10 +83,11 @@ returns 'all'.
 
 ```sql
 SELECT COALESCE(category,'all') AS category,
-        COALESCE(sub_category,'all') AS sub_category,
-        SUM(price) AS amount
-        FROM purchase_detail_log
-        GROUP BY category,sub_category WITH ROLLUP;
+       COALESCE(sub_category,'all') AS sub_category,
+       SUM(price) AS amount
+       FROM purchase_detail_log
+       GROUP BY ROLLUP(category,sub_category)
+       ORDER BY category='all',sub_category='all';
 ```
 
 ### 2 ABC Analysis
