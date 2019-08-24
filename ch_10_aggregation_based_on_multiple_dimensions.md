@@ -102,7 +102,52 @@ Lastly, prepare the cumulate sum and set the arbitrary intervals at your
             own disposal or accordingly to rank the listed categories. 
 
 
-skip no data available 
+```sql
+WITH category_info AS(
+     SELECT category,
+           SUM(price) AS amount
+           FROM purchase_detail_log
+           GROUP BY category),
+      cal_index AS(
+      SELECT category,
+             amount, 
+             100*amount/SUM(amount) OVER() AS rate
+             FROM category_info
+             ORDER BY amount DESC)
+      ,cum_sum AS(
+       SELECT category,
+              amount,
+              rate,
+              SUM(rate) OVER(ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cum_rate
+              FROM cal_index)
+     SELECT category,
+            amount,
+            rate,
+            cum_rate,
+            CASE WHEN cum_rate BETWEEN 0 AND 75 THEN 'A'
+                 WHEN cum_rate BETWEEN 75 AND 90 THEN 'B'
+                 WHEN cum_rate BETWEEN 90 AND 101 THEN 'C'
+                 END AS class
+            FROM cum_sum;
+```
+![image](https://user-images.githubusercontent.com/53164959/63639407-901e2200-c6cd-11e9-8446-588f4589f705.png)
+
+Export the outcome to csv file and draw a barchart using the exported infomrtion. 
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+data=pd.read_csv('test.csv')
+sns.set()
+category=data.category
+ax=data.pivot_table("rate",index='category',columns='class')
+ax=ax.reindex(category)
+ax.plot(kind="bar")
+```
+![image](https://user-images.githubusercontent.com/53164959/63639437-002ca800-c6ce-11e9-87b3-1f51c2bef59b.png)
 
 
 
