@@ -62,12 +62,13 @@ category_id<center>|name<center>
 1|dvd|
 2|cd|
 3|book|
-
+table 1) mst_categories
 
 category_id<center>|sales<center>
 |---------------:|-----------:|
 1|850000|
 2|500000|
+table 2) category_sales
 
 category_id<center>|rank<center>|prodcut_id<center>|sale<center>|
 |----------------:|------------:|-----------------:|------------:|
@@ -77,7 +78,8 @@ category_id<center>|rank<center>|prodcut_id<center>|sale<center>|
 2|1|C001|30000
 2|2|C002|20000
 2|3|C003|10000
-
+table 3) product_sale_ranking 
+	
 Now we consider mst_categories as a base table and start adding more colums extracted from other tables. 
 
 
@@ -173,11 +175,12 @@ The fields we will take to our resulting table are following below
 - purchase_history  : 1 for yes  / 0 for no
 
 
-user_id<center>|car_number<center>
+user_id<center>|card_number<center>
 |---------------:|-----------:|
 U001|123-XXXX-XXXX|
 U002||
 U003|5678-XXXX-XXXX|
+table 1) mst_users_with_card_number	
 	
 purchase_id<center>|user_id<center>|amount<center>|stamp<center>|
 |----------------:|------------:|-----------------:|------------:|
@@ -186,7 +189,7 @@ purchase_id<center>|user_id<center>|amount<center>|stamp<center>|
 |1003|U001|200|2017-02-12 10:00:00|
 |1004|U002|800|2017-03-01 10:00:00|
 |1005|U002|400|2017-03-02 10:00:00|
-
+table 2) purchase_log
 
 ```
 USE sqldb;
