@@ -484,16 +484,21 @@ SELECT purchase_id,
 #### 7.5.3 put serial number on each product_ids 
 
 ```sql
-SELECT l.purchase_id,
-       l.product_ids,
-       p.idx,
-       SPLIT_PART(l.product_ids,',',p.idx) AS product_id
-       FROM purchase_log AS l
-       JOIN(SELECT 1 AS idx
-                UNION ALL SELECT 2 AS idx
-                UNION ALL SELECT 3 AS idx
-                UNION ALL SELECT 4 as idx) AS p
-          ON p.idx<=(1+char_length(l.product_ids)-char_length(replace(l.product_ids,',',''))) -- combine rows only if idx is smaller or equal to the number of items;
+
+WITH statics AS(
+     SELECT purchase_id,
+            product_id,
+            LENGTH(product_id)-LENGTH(REPLACE(product_id,',',''))+1 AS len --to find out the total number of product in each array
+            FROM purchase_log)
+     SELECT DISTINCT s.purchase_id,
+            s.product_id,
+            p.index,
+            SPLIT_PART(product_id,',',p.index) --placing product up to the total number
+            FROM statics AS s
+            --we need to make a series with index up to the greast number of product_ids 
+            JOIN(SELECT GENERATE_SERIES(1,MAX(LENGTH(product_id)-LENGTH(REPLACE(product_id,',',''))+1) OVER()) AS index
+                 FROM purchase_log) AS p
+                 ON p.index<=s.len ; --to place on limit that the index can not exceed over the total number of prodcuts 
 ```
 
 _NOTE_
