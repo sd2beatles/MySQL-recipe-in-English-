@@ -90,10 +90,10 @@ When we inted to insert a subtotal for each field and name it "all", use COALESC
 
 - Information on Attributes
 
-- action
-- login_status
-- action_uu  : number of either login or guest in each action category
-- action_count : the total counts of each action 
+ * action
+ * login_status
+ * action_uu  : number of either login or guest in each action category
+ * action_count : the total counts of each action 
 
 
 ```sql
@@ -115,10 +115,15 @@ FROM login_status
 GROUP BY action, login_status WITH ROLLUP;
 ```
 
+- result
+
+![image](https://user-images.githubusercontent.com/53164959/64014817-15865400-cb5e-11e9-86f1-9fec80c7b2ac.png)
+
+
 3.3 Managing Membership Status 
 
-From immediate supervisors, you are required to change the status of membership of customers to "member" if they have logged in the website once in thier lifetime.  Regardless of whether users visit the website with login or not, the data of member status will keep appearing as a member once they log onto the site. Let's take this change into
-our consideration when coding. 
+From immediate supervisors, you are required to change the status of membership of customers to "member" if they have logged in the website once .  Regardless of whether users visit the website with login or not, the data of member status will keep appearing as a member once they log onto the site. Let's take this change in account when coding. 
+
 ```sql
 DROP TABLE IF EXISTS action_log;
 CREATE TABLE action_log(
@@ -133,26 +138,26 @@ CREATE TABLE action_log(
 
 INSERT INTO action_log
 VALUES
-    ('989004ea', NULL, 'purchase', 'drama' , 'D001,D002', 2000, '2016-11-03 18:10:00')
-  , ('989004ea', 'U001', 'view'    , NULL    , NULL       , NULL, '2016-11-03 18:00:00')
-  , ('989004ea', NULL, 'favorite', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
-  , ('989004ea', 'U001', 'review'  , 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
+    ('989004ea', NULL, 'purchase', 'drama' , 'D001,D002', 2000, '2016-03-01 18:10:00')
+  , ('989004ea', 'U001', 'view'    , NULL    , NULL       , NULL, '2016-04-04 18:00:00')
+  , ('989004ea', NULL, 'favorite', 'drama' , 'D001'     , NULL, '2016-10-23 18:00:00')
+  , ('989004ea', 'U001', 'review'  , 'drama' , 'D001'     , NULL, '2016-02-03 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-04-11 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-09-13 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-10-03 18:00:00')
   , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
-  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
-  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
-  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
-  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
-  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D002'     , NULL, '2016-11-03 18:01:00')
-  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001,D002', NULL, '2016-11-03 18:02:00')
-  , ('989004ea', 'U001', 'purchase', 'drama' , 'D001,D002', 2000, '2016-11-03 18:10:00')
-  , ('47db0370', NULL, 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 19:00:00')
-  , ('47db0370', 'U002', 'purchase', 'drama' , 'D001'     , 1000, '2016-11-03 20:00:00')
-  , ('47db0370', NULL, 'add_cart', 'drama' , 'D002'     , NULL, '2016-11-03 20:30:00')
-  , ('87b5725f', NULL, 'add_cart', 'action', 'A004'     , NULL, '2016-11-04 12:00:00')
-  , ('87b5725f', 'U001', 'add_cart', 'action', 'A005'     , NULL, '2016-11-04 12:00:00')
-  , ('87b5725f', NULL, 'add_cart', 'action', 'A006'     , NULL, '2016-11-04 12:00:00')
-  , ('9afaf87c', 'U002', 'purchase', 'drama' , 'D002'     , 1000, '2016-11-04 13:00:00')
-  , ('9afaf87c', 'U002', 'purchase', 'action', 'A005,A006', 1000, '2016-11-04 15:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001'     , NULL, '2016-12-03 18:00:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D002'     , NULL, '2016-12-21 18:01:00')
+  , ('989004ea', 'U001', 'add_cart', 'drama' , 'D001,D002', NULL, '2016-12-23 18:02:00')
+  , ('989004ea', 'U001', 'purchase', 'drama' , 'D001,D002', 2000, '2016-12-25 18:10:00')
+  , ('47db0370', NULL, 'add_cart', 'drama' , 'D001'     , NULL, '2016-02-03 19:00:00')
+  , ('47db0370', 'U002', 'purchase', 'drama' , 'D001'     , 1000, '2016-05-03 20:00:00')
+  , ('47db0370', NULL, 'add_cart', 'drama' , 'D002'     , NULL, '2016-11-12 20:30:00')
+  , ('87b5725f', NULL, 'add_cart', 'action', 'A004'     , NULL, '2016-01-04 12:00:00')
+  , ('87b5725f', 'U001', 'add_cart', 'action', 'A005'     , NULL, '2016-03-04 12:00:00')
+  , ('87b5725f', NULL, 'add_cart', 'action', 'A006'     , NULL, '2016-05-04 12:00:00')
+  , ('9afaf87c', 'U002', 'purchase', 'drama' , 'D002'     , 1000, '2016-12-04 13:00:00')
+  , ('9afaf87c', 'U002', 'purchase', 'action', 'A005,A006', 1000, '2016-12-24 15:00:00')
 ;
 
 WITH action_log_detail AS(
@@ -167,10 +172,13 @@ WITH action_log_detail AS(
               SELECT  * FROM action_log_detail;
 ```
 
+- Tips for SQL query
+Up to the current row, if one customer has ever used log_in, there must appear a user_id in the previous section. When he places an order without login after that, the NULL value is automatically assigned
+to the section of user_id. Then, Using MAX(user_id)  function makes the program to search over  max number of string for the user_id from the very first row to the current one if user_id  is ever recorded 
+ If nothing is recorded up to the point of search, then it returns  NULL. 
 
-- result
+Right After that,  we use COALESCE clause to specify the status of members. 
 
-![image](https://user-images.githubusercontent.com/53164959/64014817-15865400-cb5e-11e9-86f1-9fec80c7b2ac.png)
 
 
 
