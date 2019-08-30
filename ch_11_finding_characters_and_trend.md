@@ -255,14 +255,16 @@ WITH mst_users_temp AS(
 		   CASE WHEN age BETWEEN 4 AND 12 THEN 'C'
                 WHEN age BETWEEN 13 AND 19 THEN 'T'
                 WHEN age BETWEEN 20 AND 34 THEN '1'
-		        WHEN age BETWEEN 35 AND 49 THEN '2'
-				WHEN age>=50 THEN '3' END) AS category
+		WHEN age BETWEEN 35 AND 49 THEN '2'
+	        WHEN age>=50 THEN '3' END) AS category
            FROM mst_users_temp)
            SELECT category, 
-                  COUNT(1) AS user_count
-				   FROM mst_users_caetgory
-                   GROUP BY category;
+                  COUNT(1) AS user_count 
+		  FROM mst_users_caetgory
+                  GROUP BY category;
 ```
+![image](https://user-images.githubusercontent.com/53164959/64020818-7ec19380-cb6d-11e9-9d6d-035ddf093be8.png)
+
 
 5. Understanding Different Aged Groups and thier preferences 
 
