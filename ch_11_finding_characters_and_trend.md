@@ -179,29 +179,8 @@ Up to the current row, if one customer has ever used log_in, there must appear a
 
 
 
-#### 2.4 Speacial Treatment On user_id 
 
-When carefully examing all the sections of the table thoroughly, you should be aware that some sections are containing  NULL.  To treat the missing value,  you are required to replace it with 0. Otherwise, return user_id. 
-This time COALESCE function could have alternatively used. However, this time I take NULLIF function.. 
-
-_"NULLIF(exp1,exp2) function returns NULL if exp1 and exp2 are same.Otherwise, return exp1."_
-
-```sql
- 
-WITH action_log_detail AS(
-      SELECT  session,
-			  CASE WHEN NULLIF(user_id,NUll)<>'' THEN user_id ELSE '0' END AS user_id,
-              action,
-              CASE WHEN COALESCE(MAX(user_id) OVER(PARTITION BY session
-              ORDER BY  stamp ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
-              ,'')<>'' THEN 'memeber' ELSE 'none' END AS member_status,
-              stamp
-              FROM action_log)
-              SELECT  * FROM action_log_detail;
-```
-
-
-4. Data Collection By Age
+### 3. Data Collection By Age
 
 
 Based on information on age and sex of customers, we can set up five different categories to indicate which 
@@ -236,29 +215,31 @@ VALUES
 ;
 
 
-WITH mst_users_with_birth_date AS(
-    SELECT
-    user_id,
-    sex,
-	birth_date,
-    TIMESTAMPDIFF(YEAR,birth_date,CURDATE()) AS age
-    FROM mst_users)
+WITH age_cal AS(
+   SELECT user_id, 
+          sex,
+          birth_date,
+          (CAST(REPLACE(CAST(CURRENT_DATE AS TEXT),'-','') AS INT)-CAST(REPLACE(birth_date,'-','') AS INT))/10000 AS age
+          FROM mst_users)
+    ,age_classification AS(
     SELECT user_id,
            sex,
            birth_date,
-           age,
-		   CONCAT(
-           CASE WHEN 20<=age THEN sex
-                ELSE ''END, 
-		   CASE WHEN age BETWEEN 4 AND 12 THEN 'C' #C stands for children
-                WHEN age BETWEEN 13 AND 19 THEN 'T'
-                WHEN age BETWEEN 20 AND 34 THEN  '1'
-                WHEN age BETWEEN 35 AND 49 THEN '2'
-                WHEN age>=50 THEN '3'
-                END) AS category
-		FROM mst_users_with_birth_date;
+           FLOOR(age) AS age,
+           CONCAT(CASE WHEN age<20 THEN ''
+                  ELSE sex END,
+                  CASE WHEN age BETWEEN 4 AND 12 THEN  'C'
+                       WHEN age BETWEEN 13 AND 19 THEN 'T'
+                       WHEN age BETWEEN 20 AND 34 THEN '1'
+                       WHEN age BETWEEN 35 AND 49 THEN '2'
+                       ELSE '3' END) AS category
+             FROM age_cal)
+     SELECT * FROM  age_classification;
+                       
+            
   ```
-  
+![image](https://user-images.githubusercontent.com/53164959/64020700-31452680-cb6d-11e9-9840-5edfd4cc7fcc.png)
+
 Now we want to group consumers by category and count them to produce the total sum of each group. 
 
 ```sql 
