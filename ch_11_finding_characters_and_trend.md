@@ -268,8 +268,9 @@ WITH mst_users_temp AS(
 
 5. Understanding Different Aged Groups and thier preferences 
 
-AS sales manager, you should probably wonder which product lines appeal most to the teenagers these days and
-which one could get the worst reviews by 3o's with the higher purchasing power. It seems to be inevitable that we should take an investigation on the liking among different groups of consumers. 
+AS sales manager, you should probably wonder which product lines appeal most among the various age groups and which one could score a poor sales score. To better insight into the scale of sales of a product among the age brackets, it is a common practice to adopt bar charts to suggest the difference among the groups.  Then we need to do some manipulation for data visitation. 
+
+
 
 ```sql
 WITH mst_age AS(
@@ -279,20 +280,20 @@ WITH mst_age AS(
            FROM mst_users),
            mst_age_group AS(
            SELECT   user_id,
-					CONCAT(CASE WHEN age<=20 THEN '' ELSE sex END,
-					    CASE WHEN age BETWEEN 4 AND 12 THEN  'C'
-                             WHEN age BETWEEN 13 AND 19 THEN 'T'
-                             WHEN age BETWEEN 20 AND 34 THEN '1'
-                             WHEN age BETWEEN 35 AND 49 THEN '2'
-                             WHEN age>=50 THEN '3' END) AS category
-				FROM mst_age)
-			SELECT p.register_device,l.category AS user_category,COUNT(1) AS purchase_count
+	 CONCAT(CASE WHEN age<=20 THEN '' ELSE sex END,
+	 CASE WHEN age BETWEEN 4 AND 12 THEN  'C'
+              WHEN age BETWEEN 13 AND 19 THEN 'T'
+              WHEN age BETWEEN 20 AND 34 THEN '1'
+              WHEN age BETWEEN 35 AND 49 THEN '2'
+              WHEN age>=50 THEN '3' END) AS category
+             FROM mst_age)
+            SELECT p.register_device,l.category AS user_category,COUNT(1) AS purchase_count
 			FROM mst_users AS p
 			LEFT JOIN mst_age_group  AS l
 			      ON p.user_id=l.user_id
                   GROUP BY p.register_device,l.category
 				  ORDER BY purchase_count DESC;
-```
+```	
 
 
 ![image](https://user-images.githubusercontent.com/53164959/62818253-18ee7700-bb80-11e9-8647-71764cef4f54.png)
