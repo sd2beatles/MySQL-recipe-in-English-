@@ -24,12 +24,15 @@ You can find that there are some missing entries on the column of 'user_id' and 
 who visits the website without any log in. 
 
 
-### 2. Table conating a 
-
+### 2. Table conating a separate section "Status of login"
 
 2.1  Login/Guest 
+
 Just in case where there is no entry for the section of user_id, I have used
-COALESCE function to categorize the data into login and guest. Note that <> means not equal to, != also means not equal to.
+COALESCE function to distignusih  data into login and guest.
+
+- comparision operation
+<>  or != means 'not equl to'.
 
 ```sql
 DROP TABLE IF EXISTS action_log;
