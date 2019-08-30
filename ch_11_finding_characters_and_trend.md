@@ -26,7 +26,7 @@ who visits the website without any log in.
 
 ### 2. Table conating a separate section "Status of login"
 
-2.1  Login/Guest 
+#### 2.1  Login/Guest 
 
 Just in case where there is no entry for the section of user_id, I have used
 COALESCE function to distignusih  data into login and guest.
@@ -80,7 +80,7 @@ WITH action_log_with_status AS(
         FROM action_log)
  SELECT * FROM action_log_with_status;
 ```        
-3.2 The Treatment of Subtotal 
+#### 2.2 The Treatment of Subtotal 
 
 In this section,  we would like to group our data by on two selected columns (ie) action and  login_status and count numbers of each group to present subtotal and total in the table simultaneously. 
 That is, we can show a  numberson those who placed the goods in shopping charts with not log in and  the total number of action right next to it  
@@ -88,12 +88,12 @@ That is, we can show a  numberson those who placed the goods in shopping charts 
 When we inted to insert a subtotal for each field and name it "all", use COALESCE(name of column, "all") and ROllUP functions. Remind that he ROLLUP is an extension of the GROUP BY clause. The ROLLUP option allows you to include extra rows that represent the subtotals along with the grand total row. By using the ROLLUP option, you can use a single query to generate _"multiple grouping sets"_. Then, the resulting tables contain the column 'action' including indiviaul types and "all", and 'login_status' containing 'login','guest',and 'all'. 
 
 
-- Information on Attributes
+* Information on Attributes
 
- * action
- * login_status
- * action_uu  : number of either login or guest in each action category
- * action_count : the total counts of each action 
+ 1) action
+ 2) login_status
+ 3) action_uu  : number of either login or guest in each action category
+ 4) action_count : the total counts of each action 
 
 
 ```sql
@@ -120,7 +120,7 @@ GROUP BY action, login_status WITH ROLLUP;
 ![image](https://user-images.githubusercontent.com/53164959/64014817-15865400-cb5e-11e9-86f1-9fec80c7b2ac.png)
 
 
-3.3 Managing Membership Status 
+#### 2.3 Managing Membership Status 
 
 From immediate supervisors, you are required to change the status of membership of customers to "member" if they have logged in the website once .  Regardless of whether users visit the website with login or not, the data of member status will keep appearing as a member once they log onto the site. Let's take this change in account when coding. 
 
@@ -173,16 +173,13 @@ WITH action_log_detail AS(
 ```
 
 - Tips for SQL query
-Up to the current row, if one customer has ever used log_in, there must appear a user_id in the previous section. When he places an order without login after that, the NULL value is automatically assigned
-to the section of user_id. Then, Using MAX(user_id)  function makes the program to search over  max number of string for the user_id from the very first row to the current one if user_id  is ever recorded 
- If nothing is recorded up to the point of search, then it returns  NULL. 
 
-Right After that,  we use COALESCE clause to specify the status of members. 
+Up to the current row, if one customer has ever used log_in, there must appear a user_id in the previous section. When he places an order without login after that, the NULL value is automatically assigned to the section of user_id. Then, Using MAX(user_id)  function makes the program to search over  max number of string for the user_id from the very first row to the current one if user_id  is ever recorded. If nothing is recorded up to the point of search, then it returns  NULL. Right After that,  we use COALESCE clause to specify the status of members. 
 
 
 
 
-3.4 Speacial Treatment On user_id 
+#### 2.4 Speacial Treatment On user_id 
 
 When carefully examing all the sections of the table thoroughly, you should be aware that some sections are containing  NULL.  To treat the missing value,  you are required to replace it with 0. Otherwise, return user_id. 
 This time COALESCE function could have alternatively used. However, this time I take NULLIF function.. 
