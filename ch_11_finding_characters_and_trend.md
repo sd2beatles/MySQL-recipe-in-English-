@@ -24,9 +24,10 @@ You can find that there are some missing entries on the column of 'user_id' and 
 who visits the website without any log in. 
 
 
-### 3. Table Data Categorized By The Type of Uers
+### 2. Table conating a 
 
-3.1  Login/Guest 
+
+2.1  Login/Guest 
 Just in case where there is no entry for the section of user_id, I have used
 COALESCE function to categorize the data into login and guest. Note that <> means not equal to, != also means not equal to.
 
