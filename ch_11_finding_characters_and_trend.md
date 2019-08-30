@@ -82,7 +82,19 @@ WITH action_log_with_status AS(
 ```        
 3.2 The Treatment of Subtotal 
 
+In this section,  we would like to group our data by on two selected columns (ie) action and  login_status and count numbers of each group to present subtotal and total in the table simultaneously. 
+That is, we can show a  numberson those who placed the goods in shopping charts with not log in and  the total number of action right next to it  
+
 When we inted to insert a subtotal for each field and name it "all", use COALESCE(name of column, "all") and ROllUP functions. Remind that he ROLLUP is an extension of the GROUP BY clause. The ROLLUP option allows you to include extra rows that represent the subtotals along with the grand total row. By using the ROLLUP option, you can use a single query to generate _"multiple grouping sets"_. Then, the resulting tables contain the column 'action' including indiviaul types and "all", and 'login_status' containing 'login','guest',and 'all'. 
+
+
+- Information on Attributes
+
+- action
+- login_status
+- action_uu  : number of either login or guest in each action category
+- action_count : the total counts of each action 
+
 
 ```sql
 SELECT * FROM action_log limit 21;
@@ -154,6 +166,13 @@ WITH action_log_detail AS(
               FROM action_log)
               SELECT  * FROM action_log_detail;
 ```
+
+
+- result
+
+![image](https://user-images.githubusercontent.com/53164959/64014817-15865400-cb5e-11e9-86f1-9fec80c7b2ac.png)
+
+
 
 3.4 Speacial Treatment On user_id 
 
