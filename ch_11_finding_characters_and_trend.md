@@ -373,13 +373,12 @@ WITH user_data AS(
 ```
 ![image](https://user-images.githubusercontent.com/53164959/64059427-61d1a280-cbf7-11e9-8264-8a54d3d3f452.png)
 
-6. Venn Diagram Analysis 
+### 5. Venn Diagram Analysis 
 
 Venn Diagram is a statistical tool to visualize the proportion of each group and overlaps among two or more datasets. The diagram oftenuses a circle or ellipse to represent a segment or how much similar or different 
 segments are from one another. 
 
 
-6.1 Flag Variable 
 
 With the use of flag variable, grant 1 if there is a record existing for each segment.  Otherwise, give 0.
 For example, a consumer whose user_id is U001 has a historical record of all types of action. Then grant 1 for all the segments. 
@@ -424,67 +423,74 @@ VALUES
 ;
 
 Collecting data For action and converting it into flag variable. 
-WITH action_log_users AS(
-     SELECT    # first sum up all the purchases made by one user and if the count
-               # is non-zero, return 1. Otherwise, 0. Same goes to the other segments.
-		    SIGN(SUM(CASE WHEN action='purchase' THEN 1 ELSE 0 END)) AS has_purchase,
-		    SIGN(SUM(CASE WHEN action='review' THEN 1 ELSE 0 END)) AS has_review,
-            SIGN(SUM(CASE WHEN action='favorite' THEN 1 ELSE 0 END)) AS has_favorite
-            FROM action_log
-            GROUP BY user_id)
-	 SELECT * 
-	 FROM action_log_users;
+WITH flag_variable AS(
+    SELECT session,
+           --to perform group by session then we need aggregate function  on action
+           --SIGN returns 1 if any positive value , 0 if value is zero
+           SIGN(SUM(CASE WHEN action='purchase' THEN 1 ELSE 0 END)) AS has_purchase,
+           SIGN(SUM(CASE WHEN action='add_cart' THEN 1 ELSE 0 END)) AS has_add,
+           SIGN(SUM(CASE WHEN action='review' THEN 1 ELSE 0 END)) AS has_chart
+           FROM action_log
+           GROUP BY session)
+     SELECT * FROM flag_variable 
+     
 ```
+
 
 Additionally, to draw venn didagram, we should preapre a separte section to indicate the subtotal of all
-combinatin of grouping columns. We use CUBE cluase to obtain the combinations. 
+combinatin of grouping columns. We use CUBE cluase to obtain this desired information.
+
+Note that if flag variable is 1, then  name the slot the corresponding name of action or 
+          if falg variable is zero, put 'not' in front of the name
+	  The flag variable is filled with null value, not sure what the user has done. So,
+	  put 'any' to the slot. If all of colums contain 'any', the total counts of it is
+	  _the total number of users involved in our analysis_. 
+      
+          
 
 ```sql
-WITH user_action_flag AS(
-     SELECT CASE WHEN COALESCE(user_id,'')<>'' THEN user_id ELSE 'Guest' END AS user_id,
-            SIGN(SUM(CASE WHEN action='purchase' THEN 1 ELSE 0 END)) AS has_purchase,
-            SIGN(SUM(CASE WHEN action='review' THEN 1 ELSE 0 END)) AS has_review,
-            SIGN(SUM(CASE WHEN action='favorite' THEN 1 ELSE 0 END)) AS has_favorite
-            FROM action_log
-            GROUP BY user_id) -- produce fullstatics based on each user_id
-            SELECT has_purchase,
-                   has_review,
-                   has_favorite
-                   FROM user_action_flag
-                   GROUP BY CUBE(has_purchase,has_review,has_favorite)
-		   ORDER BY has_purchase,has_review,has_favorite;
+WITH flag_variable AS(
+    SELECT session,
+           SIGN(SUM(CASE WHEN action='purchase' THEN 1 ELSE 0 END)) AS has_purchase,
+           SIGN(SUM(CASE WHEN action='add_cart' THEN 1 ELSE 0 END)) AS has_add,
+           SIGN(SUM(CASE WHEN action='review' THEN 1 ELSE 0 END)) AS has_review
+           FROM action_log
+           GROUP BY session)
+    ,action_venn_diagram AS(
+     SELECT has_purchase,
+            has_add,
+            has_review,
+            COUNT(1) AS users
+            FROM flag_variable
+            GROUP BY CUBE(has_purchase,has_add,has_review))
+            
+    SELECT -- converting the string variable into appropriate string label
+           CASE WHEN has_purchasE=0 THEN 'Not Purchase'
+                WHEN has_purchase=1 THEN 'purhcase'
+                ELSE 'any' END AS has_purchase,
+           CASE WHEN has_add=0 THEN 'NOT add chart'
+                WHEN has_add=1 THEN 'add chart'
+                ELSE 'any' END AS has_add,
+            CASE WHEN has_review=0 THEN 'NOT review'
+                 WHEN has_review=1 THEN 'review'
+                 ELSE 'any' END AS has_review,
+            users,
+            --all columns WITH NULL is the total number of users in our analysis
+            --NULLIF if exp1 and exp2 are same, return NULL.Otherwise, return exp1
+            100*users/NULLIF(SUM(CASE WHEN has_purchase IS NULL AND has_add IS NULL AND has_review IS NULL THEN users ELSE 0 END) OVER(),0) AS ratio
+            FROM action_venn_diagram
+            ORDER BY has_purchase,has_add,has_review;
                    
-  ```
-
-
-The empty entries are NULL to indicate that it is unclear wheter consumers has taken any action on each category or not.
-
-```SQL
-WITH user_action_flag AS(
-     SELECT CASE WHEN COALESCE(user_id,'')<>'' THEN user_id ELSE 'Guest' END AS user_id,
-            SIGN(SUM(CASE WHEN action='purchase' THEN 1 ELSE 0 END)) AS has_purchase,
-            SIGN(SUM(CASE WHEN action='review' THEN 1 ELSE 0 END)) AS has_review,
-            SIGN(SUM(CASE WHEN action='favorite' THEN 1 ELSE 0 END)) AS has_favorite,
-            count(1) AS users
-            FROM action_log
-            GROUP BY user_id) -- produce fullstatics based on each user_id
-                  ,action_venn_diagram AS(SELECT 
-                   has_purchase,
-                   has_review,
-                   has_favorite,
-                   COUNT(1) AS users
-                   FROM user_action_flag
-                   GROUP BY CUBE(has_purchase,has_review,has_favorite)
-		   ORDER BY has_purchase,has_review,has_favorite)
-            SELECT CASE WHEN has_purchase=1 THEN 'purchase' WHEN has_purchase=0 THEN 'not purchase' ELSE 'any' END AS has_purchse,
-                   CASE WHEN has_review=1 THEN 'review' WHEN has_review=0 THEN 'not review' ELSE 'any' END AS has_review,
-                   CASE WHEN has_favorite=1 THEN 'favorite' WHEN has_favorite=0 THEN 'not favorite' ELSE 'any' END AS has_favorite,
-                   100.0*users/NULLIF(SUM(CASE WHEN has_purchase IS NULL AND has_review IS NULL AND has_favorite IS NULL THEN users ELSE                    0 END) OVER(),0) AS ratio
-		   -- every action having null value represents the total amount of consumers
-		   -- using window function to calculate the sum 
-                   FROM action_venn_diagram
-		   ORDER by has_purchase,has_review,has_favorite ;
+ 
 ```
+
+
+![image](https://user-images.githubusercontent.com/53164959/64060591-efb68900-cc09-11e9-843b-b374a6f523e2.png)
+
+
+
+
+
 
 
 7. Decile Aanalysis 
