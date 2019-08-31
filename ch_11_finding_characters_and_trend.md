@@ -266,89 +266,113 @@ WITH mst_users_temp AS(
 ![image](https://user-images.githubusercontent.com/53164959/64020818-7ec19380-cb6d-11e9-9d6d-035ddf093be8.png)
 
 
-5. Understanding Different Aged Groups and thier preferences 
+### 4. Understanding Different Aged Groups and thier preferences 
 
-AS sales manager, you should probably wonder which product lines appeal most among the various age groups and which one could score a poor sales score. To better insight into the scale of sales of a product among the age brackets, it is a common practice to adopt bar charts to suggest the difference among the groups.  Then we need to do some manipulation for data visitation. 
-
+AS sales manager, you should probably wonder which product lines appeal most among the various age groups and which one could score a poor sales score. To better insight into the scale of sales of a product among the age brackets, it is a common practice to adopt bar charts to suggest the difference among the groups.  Then we need to do some manipulation for data visulization.
 
 
 ```sql
-WITH mst_age AS(
-    SELECT user_id,
-           sex, 
-           TIMESTAMPDIFF(YEAR,birth_date,CURDATE()) AS age
-           FROM mst_users),
-           mst_age_group AS(
-           SELECT   user_id,
-	 CONCAT(CASE WHEN age<=20 THEN '' ELSE sex END,
-	 CASE WHEN age BETWEEN 4 AND 12 THEN  'C'
-              WHEN age BETWEEN 13 AND 19 THEN 'T'
-              WHEN age BETWEEN 20 AND 34 THEN '1'
-              WHEN age BETWEEN 35 AND 49 THEN '2'
-              WHEN age>=50 THEN '3' END) AS category
-             FROM mst_age)
-            SELECT p.register_device,l.category AS user_category,COUNT(1) AS purchase_count
-			FROM mst_users AS p
-			LEFT JOIN mst_age_group  AS l
-			      ON p.user_id=l.user_id
-                  GROUP BY p.register_device,l.category
-				  ORDER BY purchase_count DESC;
-```	
+DROP TABLE IF EXISTS action_log;
+CREATE TABLE action_log(
+    session  varchar(255)
+  , user_id  varchar(255)
+  , action   varchar(255)
+  , category varchar(255)
+  , products varchar(255)
+  , amount   integer
+  , stamp    varchar(255)
+);
+
+INSERT INTO action_log
+VALUES
+    ('989004ea', NULL, 'purchase', 'drama' , 'D001,D002', 2000, '2016-03-01 18:10:00')
+  , ('989004ea', 'U001', 'view'    , 'animation'    , NULL       , NULL, '2016-04-04 18:00:00')
+  , ('989004ea', NULL, 'favorite', 'drama' , 'D001'     , NULL, '2016-10-23 18:00:00')
+  , ('889004ea', 'U002', 'review'  , 'drama' , 'D001'     , NULL, '2016-02-03 18:00:00')
+  , ('889004ea', 'U002', 'add_cart', 'drama' , 'D001'     , NULL, '2016-04-11 18:00:00')
+  , ('789004ea', 'U003', 'add_cart', 'drama' , 'D001'     , NULL, '2016-09-13 18:00:00')
+  , ('789004ea', 'U003', 'add_cart', 'drama' , 'D001'     , NULL, '2016-10-03 18:00:00')
+  , ('1089004ea', 'U004', 'add_cart', 'drama' , 'D001'     , NULL, '2016-11-03 18:00:00')
+  , ('1089004ea', 'U004', 'add_cart', 'drama' , 'D001'     , NULL, '2016-12-03 18:00:00')
+  , ('1189004ea', 'U005', 'add_cart', 'drama' , 'D002'     , NULL, '2016-12-21 18:01:00')
+  , ('1189004ea', 'U005', 'add_cart', 'drama' , 'D001,D002', NULL, '2016-12-23 18:02:00')
+  , ('1289004ea', 'U006', 'purchase', 'drama' , 'D001,D002', 2000, '2016-12-25 18:10:00')
+  , ('47db0370', 'U007', 'add_cart', 'drama' , 'D001'     , NULL, '2016-02-03 19:00:00')
+  , ('47db0370', 'U007', 'purchase', 'drama' , 'D001'     , 1000, '2016-05-03 20:00:00')
+  , ('57db0370', 'U008', 'add_cart', 'drama' , 'D002'     , NULL, '2016-11-12 20:30:00')
+  , ('87b5725f', 'U009', 'add_cart', 'action', 'A004'     , NULL, '2016-01-04 12:00:00')
+  , ('87b5725f', 'U009', 'add_cart', 'action', 'A005'     , NULL, '2016-03-04 12:00:00')
+  , ('87b5725f', NULL, 'add_cart', 'action', 'A006'     , NULL, '2016-05-04 12:00:00')
+  , ('9afaf87c', 'U0010', 'purchase', 'drama' , 'D002'     , 1000, '2016-12-04 13:00:00')
+  , ('9afaf87c', 'U0010', 'purchase', 'action', 'A005,A006', 1000, '2016-12-24 15:00:00')
+;
 
 
-![image](https://user-images.githubusercontent.com/53164959/62818253-18ee7700-bb80-11e9-8647-71764cef4f54.png)
+DROP TABLE IF EXISTS mst_users;
+CREATE TABLE mst_users(
+    user_id         varchar(255)
+  , sex             varchar(255)
+  , birth_date      varchar(255)
+  , register_date   varchar(255)
+  , register_device varchar(255)
+  , withdraw_date   varchar(255)
+);
 
-5. Vitor Frequency Table Downlading The Data Called public_center_vistors.csv
+INSERT INTO mst_users
+VALUES
+    ('U001', 'M', '1977-06-17', '2016-10-01', 'pc' , NULL        )
+  , ('U002', 'F', '1953-06-12', '2016-10-01', 'sp' , '2016-10-10')
+  , ('U003', 'M', '1965-01-06', '2016-10-01', 'pc' , NULL        )
+  , ('U004', 'F', '1954-05-21', '2016-10-05', 'pc' , NULL        )
+  , ('U005', 'M', '1987-11-23', '2016-10-05', 'sp' , NULL        )
+  , ('U006', 'F', '1950-01-21', '2016-10-10', 'pc' , '2016-10-10')
+  , ('U007', 'F', '1950-07-18', '2016-10-10', 'app', NULL        )
+  , ('U008', 'F', '2006-12-09', '2016-10-10', 'sp' , NULL        )
+  , ('U009', 'M', '2004-10-23', '2016-10-15', 'pc' , NULL        )
+  , ('U010', 'F', '1987-03-18', '2016-10-16', 'pc' , NULL        )
+;
 
-```sql
-DROP TABLE IF EXISTS public_vistors;
-CREATE TABLE public_vistors
-(date varchar(50),
- career_exploration INT,
- child_center INT,
- exhibition INT,
- total INT);
- 
-LOAD DATA  INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/visit_day.csv' INTO TABLE public_vistors 
-fields terminated by ','; 
-SELECT * FROM public_vistors;
+WITH user_data AS(
+     SELECT s.session,
+            --replace null values with user_id if avaialbe or leave it null
+            MAX(s.user_id) OVER(PARTITION BY session ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS user_id,
+            s.category
+            FROM action_log AS s)
+     ,merge_data AS(            
+     SELECT s.session,
+            s.user_id,
+            s.category,
+            t.sex,
+            t.birth_date
+            FROM user_data AS s 
+            JOIN mst_users AS t --enforcing a link between two tables
+                 ON s.user_id=t.user_id)
+     ,cal_age AS(
+      SELECT user_id,
+             category,
+             sex,
+             FLOOR((CAST(REPLACE(CAST(CURRENT_DATE AS TEXT),'-','') AS INT)-CAST(REPLACE(birth_date,'-','') AS INT))/10000) AS age
+             FROM merge_data)
+     ,age_group AS(
+             SELECT category,
+             CONCAT(CASE WHEN age<20 THEN ''
+                         ELSE sex END,
+                     CASE WHEN age BETWEEN 4 AND 12 THEN 'C'
+                          WHEN age BETWEEN 13 AND 19 THEN 'T'
+                          WHEN age BETWEEN 20 AND 34 THEN '1'
+                          WHEN age BETWEEN 35 AND 49 THEN '2'
+                          ELSE  '3' END) AS age_group
+              FROM cal_age)
+       SELECT category,
+              age_group,
+              count(1) AS count
+              FROM age_group
+              GROUP BY category,age_group
+              ORDER BY age_group;
 
+```
+![image](https://user-images.githubusercontent.com/53164959/64059427-61d1a280-cbf7-11e9-8264-8a54d3d3f452.png)
 
-DROP TABLE IF EXISTS public_vistors;
-CREATE TABLE public_vistors
-(visit_date varchar(50),
- career_exploration INT,
- child_center INT,
- exhibition INT,
- total INT);
- 
-LOAD DATA  INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/visit_day.csv' INTO TABLE public_vistors 
-fields terminated by ','; 
-SELECT * FROM public_vistors LIMIT 10;
-
-
-WITH term_data AS(
-     SELECT visit_date,
-     SUBSTRING_INDEX(visit_date,'-',1) AS year,
-     SUBSTR(visit_date,6,2) AS month,
-     SUBSTRING_INDEX(visit_date,'-',-1) AS date,
-     career_exploration,
-     child_center
-     FROM public_vistors
-     GROUP BY MONTH)
-     SELECT month,
-            career_exploration,
-	    child_center,
-	    SUM(career_exploration) OVER() AS total_career_exploration,
-            SUM(child_center) OVER() AS total_child_center, 
-            SUM(career_exploration) OVER(ORDER BY month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS
-	    cum_sum_ce,
-            SUM(child_center) OVER(ORDER BY month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cum_sum_cc,
-            ROUND(100*career_exploration/sum(career_exploration) OVER(),2) AS rate_ce,
-            ROUND(100*child_center/SUM(child_center) OVER(),2) AS rate_cc
-    FROM term_data
-    GROUP BY month;
- ```
 6. Venn Diagram Analysis 
 
 Venn Diagram is a statistical tool to visualize the proportion of each group and overlaps among two or more datasets. The diagram oftenuses a circle or ellipse to represent a segment or how much similar or different 
