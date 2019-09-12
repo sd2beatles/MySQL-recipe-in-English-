@@ -333,7 +333,7 @@ WITH repeat_interval(index_name,interval_begin,interval_end) AS(
                ORDER BY register_date,index_name;
  ```
  #### 4.5 Displaying Factors affecting Rentation Rate
- 
+ ```sql
 WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
 VALUES ('01 day report',1,1))
 ,action_log_index_date AS(
@@ -384,3 +384,4 @@ SELECT u.user_id,
                            ON m.user_id=f.user_id
                            WHERE f.index_date_action IS NOT NULL)
                            SELECT * from register_action_flag limit 4;
+```
