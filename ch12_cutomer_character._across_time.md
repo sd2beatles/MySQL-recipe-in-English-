@@ -332,8 +332,21 @@ WITH repeat_interval(index_name,interval_begin,interval_end) AS(
                GROUP BY register_date,index_name
                ORDER BY register_date,index_name;
  ```
- #### 4.5 Displaying Factors affecting Rentation Rate
- ```sql
+ #### 4.5 Displaying factors affecting customer churn and rentation rate for each factor
+ From the last section,  we can easily see the trend of retention rate across the given interval.  However, there is an extra measure to investigate on. That is which part of the services that customers have used mostly contributed to the movement of retention rate. To answer this question, we need to display all the activities they have done and individual relation rate. 
+
+The final result will include
+
+activity name
+the total number of users for the service
+the rate of usage 
+the retention rate of users  one day after initial sign up(you can adjust the date at your disposal) 
+the retention rate of non-users one day after registration
+(the percentage of people who has not kept using the service from the first sign up )
+
+With common sense, it is so reasonable to say that the greater  retention rate of users but the lower of non-users, the greater it can influence the whole preservation rate. 
+
+  ```sql
 WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
 VALUES ('01 day report',1,1))
 ,action_log_index_date AS(
@@ -362,7 +375,7 @@ SELECT u.user_id,
            SELECT 'view' AS action
            UNION ALL SELECT 'comment' AS action
            UNION ALL SELECT 'follow' AS action)
-         , mst_user_actions AS(
+         , mst_user_actions AS( -- create the first three columns of the table
            SELECT u.user_id,
                   u.register_date,
                   a.action
@@ -372,7 +385,7 @@ SELECT u.user_id,
           SELECT DISTINCT m.user_id, 
                           m.register_date,
                           m.action,
-                          CASE WHEN a.action IS NOT NULL THEN 1 ELSE 0 END AS do_action,
+                          CASE WHEN a.action IS NOT NULL THEN 1 ELSE 0 END AS do_action, 
                           f.index_name,
                           f.index_date_action
                           FROM mst_user_actions AS m
@@ -382,6 +395,18 @@ SELECT u.user_id,
                              AND m.action=a.action
                            LEFT JOIN user_action_flag AS f
                            ON m.user_id=f.user_id
-                           WHERE f.index_date_action IS NOT NULL)
-                           SELECT * from register_action_flag limit 4;
+                           WHERE f.index_date_action IS NOT NULL)--remove data with latest date
+                      SELECT action,  
+                             COUNT(1) AS users,--the total number of each action
+                             AVG(100.0* do_action) AS usage_rate,--the total usage rate of each action
+                             index_name,
+                             --If user do action one day after initial register, cacluate its rate
+                             AVG(CASE WHEN do_action=1 THEN 100*index_date_action END) AS idx_date,
+                             AVG(CASE WHEN do_action=0 THEN 100*index_date_action END) AS no_idx_date
+                             FROM register_action_flag
+                             GROUP BY index_name,action;
+                             
 ```
+
+![image](https://user-images.githubusercontent.com/53164959/64795320-df62be80-d5b8-11e9-920e-d6a894f5cb77.png)
+
