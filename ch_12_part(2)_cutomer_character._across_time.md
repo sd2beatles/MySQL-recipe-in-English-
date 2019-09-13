@@ -71,7 +71,8 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
                  FROM mst_user_bucket AS m
                  LEFT JOIN action_log AS a
                       ON m.user_id=a.user_id
-                         AND CAST(a.stamp AS DATE) --combing rows based on the 7-day data 
+                         --restricting the data based on the past 7days
+                         AND CAST(a.stamp AS DATE)  
                          BETWEEN CAST(m.register_date AS DATE) AND CAST(m.register_date AS DATE)+'7 day'::interval
                          AND m.action=a.action
                  LEFT JOIN user_action_flag AS f
