@@ -63,7 +63,7 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
                  m.action,
                  m.min_count,
                  m.max_count,
-                 COUNT(a.action) AS action_count,
+                 COUNT(a.action) AS action_count, --recording the level of each activity for the past 7 days.
                  CASE WHEN COUNT(m.action) BETWEEN m.min_count AND m.max_count
                       THEN 1 ELSE 0 END AS achieve,
                  index_name,
@@ -93,3 +93,4 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
                      GROUP BY index_name,action,min_count,max_count
                      ;
 ```
+![image](https://user-images.githubusercontent.com/53164959/64873763-c0c9f980-d684-11e9-9d66-5752f91f8772.png)
