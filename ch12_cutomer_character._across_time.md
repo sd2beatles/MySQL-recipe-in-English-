@@ -412,6 +412,8 @@ SELECT u.user_id,
 
 
 4.6
+
+```sql
 WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
     VALUES('14 day rentation',8,14))
     ,action_log_with_index_date AS(
@@ -488,4 +490,4 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
                      FROM register_action_flag
                      GROUP BY index_name,action,min_count,max_count
                      ;
-                          
+```
