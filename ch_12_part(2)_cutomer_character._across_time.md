@@ -149,7 +149,7 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
             SELECT dt_count AS dates, -- number of days from 1 to 7
                    COUNT(user_id) AS users,-- number of users who keep using services from day 1 to day 7
                    100*COUNT(user_id)/SUM(COUNT(user_id)) OVER() AS user_ratio,
-                   100*SUM(COUNT(user_id)) OVER(ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)/
+                   100*SUM(COUNT(user_id)) OVER(ORDER BY dt_count ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)/
                        SUM(COUNT(user_id)) OVER() AS cum_ratio,
                    --to create a column to indicate those who are using services up to somewhere between 22 and 28 days
                    SUM(index_date_action) AS achieve_users,
