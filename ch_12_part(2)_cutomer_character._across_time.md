@@ -101,9 +101,9 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
 
 5.1 Introductiion
 
-We are sometimes curious about how the first nth of days could affect the long-term usage rate. The result is highly uncertain in terms of business we are currently analyzing. For example, if you are currently on the analysis of social network services, the longer period of the first few days could likely lead to a higher possibility of a consistent rate in the future date. However, this is not always a case.  We need to prepare a table showing the first assigned dates and 'settlement' rate after some specific dates later. 
+We are sometimes curious about how the first nth of days could affect the long-term usage rate. The result is highly uncertain in terms of business we are currently analyzing. For example, if you are currently on the analysis of social network services, the longer period of the first few days could likely lead to a higher possibility of a consistent rate in the future date. However, this is not always a case.  We need to prepare a table showing the first assigned dates and 'settlement' rate after some specific dates later.  
 
-
+ ```sql
 WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
     VALUES('28_day_rentation',22,28))
     ,action_log_with_date AS(
@@ -157,4 +157,5 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
                    FROM register_action_flag
                         GROUP BY dt_count
                         ORDER by dt_count;
-                        
+  ```
+  
