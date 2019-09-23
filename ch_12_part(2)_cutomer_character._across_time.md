@@ -1,11 +1,13 @@
+### 4 Consistent Date by number of uses
 
- 1. Introduction 
+
+ 4.1 Introduction 
 
 From the last section, we have provided the retention rate for each service customer has used for the given period. 
 If further divided into the various levels, each group could give us a view of which group of the service largely contribute to 
 the higher customer churn.  
 
-2. Method
+4.2 Method
 
 We will collect the data for each level of activity during the past seven days and based on it.
 Our attention is manly on what is the 14-day-retention rate for each sub-group.
@@ -94,3 +96,65 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
                      ;
 ```
 ![image](https://user-images.githubusercontent.com/53164959/64873763-c0c9f980-d684-11e9-9d66-5752f91f8772.png)
+
+5. Consistent Rate by daily uses
+
+5.1 Introductiion
+
+We are sometimes curious about how the first nth of days could affect the long-term usage rate. The result is highly uncertain in terms of business we are currently analyzing. For example, if you are currently on the analysis of social network services, the longer period of the first few days could likely lead to a higher possibility of a consistent rate in the future date. However, this is not always a case.  We need to prepare a table showing the first assigned dates and 'settlement' rate after some specific dates later. 
+
+
+WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
+    VALUES('28_day_rentation',22,28))
+    ,action_log_with_date AS(
+     SELECT u.user_id,
+            CAST(u.register_date AS DATE) AS register_date,
+            r.index_name,
+            CAST(a.stamp AS DATE) AS action_date,
+            MAX(CAST(a.stamp AS DATE)) OVER() AS latest_date,
+            CAST(u.register_date AS DATE)+'1 day'::interval*r.interval_begin_date AS begin_date,
+            CAST(u.register_date AS DATE)+'1 day'::interval*r.interval_end_date AS end_date
+            FROM mst_user AS u
+                 LEFT OUTER JOIN action_log AS a
+                 ON u.user_id=a.user_id
+                 CROSS JOIN repeat_interval AS r)
+     ,user_action_flag AS(
+     --count 
+     SELECT user_id,
+            register_date,
+            index_name,
+            SIGN(SUM(
+                 CASE WHEN end_date<latest_date THEN
+                 CASE WHEN action_date BETWEEN begin_date AND end_date THEN 1 ELSE 0 END END)) AS index_date_action
+            FROM action_log_with_date
+            GROUP BY user_id,register_date,index_name)
+    ,register_action_flag AS(
+     SELECT m.user_id,
+            --here,we want to track out how many consecutive days user keep log-in for during the first 8 days
+            COUNT(DISTINCT CAST(a.stamp AS DATE)) AS dt_count
+            --From now on, we wnat to show information in the period between 22 and 28 days after registration
+            ,f.index_name
+            ,f.index_date_action
+            FROM mst_users AS m
+                LEFT OUTER JOIN action_log AS a
+                ON m.user_id=a.user_id
+                   AND CAST(a.stamp AS DATE) BETWEEN 
+                       CAST(m.register_date AS DATE)+'1 day'::interval AND CAST(m.register_date AS DATE)+'7 day'::interval
+                 LEFT JOIN user_action_flag AS f
+                      ON m.user_id=f.user_id
+                 WHERE f.index_date_action IS NOT NULL
+                 GROUP BY m.user_id,
+                          f.index_name,
+                          f.index_date_action)
+            SELECT dt_count AS dates, -- number of days from 1 to 7
+                   COUNT(user_id) AS users,-- number of users who keep using services from day 1 to day 7
+                   100*COUNT(user_id)/SUM(COUNT(user_id)) OVER() AS user_ratio,
+                   100*SUM(COUNT(user_id)) OVER(ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)/
+                       SUM(COUNT(user_id)) OVER() AS cum_ratio,
+                   --to create a column to indicate those who are using services up to somewhere between 22 and 28 days
+                   SUM(index_date_action) AS achieve_users,
+                   AVG(100*index_date_action) AS achieve_ratio
+                   FROM register_action_flag
+                        GROUP BY dt_count
+                        ORDER by dt_count;
+                        
