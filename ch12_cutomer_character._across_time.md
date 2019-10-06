@@ -180,6 +180,8 @@ But it is one easy mistake to store consistent rates under the columns of a tabl
 we need to store the relevant data row-wise.
 
 ```sql
+/*
+This code itself is really burdensome since we should type it one by one.
 WITH repeat_interval(index_name,interval_date) AS(
      VALUES
      ('01 day repeat',1),
@@ -190,6 +192,12 @@ WITH repeat_interval(index_name,interval_date) AS(
      ('06 day repeat',6),
      ('07 day repeat',7)
      )
+  */
+  WITH repeate_interval AS(
+     SELECT CONCAT(index,'days') AS index_name,
+            interval_date
+          FROM GENERATE_SERIES(1,7) AS interval_date)
+     SELECT * FROM interval_range;
   ,action_log_mst_index AS(
    SELECT m.user_id,
           CAST(m.register_date AS DATE) AS register_date,
