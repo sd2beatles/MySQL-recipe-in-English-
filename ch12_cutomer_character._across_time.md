@@ -65,6 +65,11 @@ SELECT register_date,
 
 ```
 
+
+![image](https://user-images.githubusercontent.com/53164959/66262935-ea5de700-e824-11e9-8721-7abbf9437cd0.png)
+
+
+
 #### 2. Total counts of creating accounts via various devices 
 
 At first, it may seem dubitable to classify the whole consumer into different sub-groups based on the electrical device they use 
@@ -147,6 +152,9 @@ WITH action_log_mst AS(
       ,one_day_consistency AS(
        SELECT user_id,
               register_date,
+              --Just in case where a user log in more than one on a specific date, we need to indicate whether 
+              --they log on one day after register_date. Using sign function to return 1 to indicate that they have logged in
+              --at least one time after register
               SIGN(SUM(
                    --removing any date later than latest_date
                    --assign 1  if the day of the first vist after sign up is the fllowing day.Otherwise, 0.
