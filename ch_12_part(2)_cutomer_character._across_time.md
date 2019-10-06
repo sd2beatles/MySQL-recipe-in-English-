@@ -9,6 +9,10 @@ the higher customer churn.
 
 4.2 Method
 
+There is 
+
+
+
 We will collect the data for each level of activity during the past seven days and based on it.
 Our attention is manly on what is the 14-day-retention rate for each sub-group.
 The reason behind this business technique is to find out how the past event could affect the following week's retention. 
