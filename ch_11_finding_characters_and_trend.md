@@ -26,6 +26,37 @@ who visits the website without any log in.
 
 ### 2. Table conating a separate section "Status of login"
 
+#### 2.1 Analysing Action Types Performed By Customers 
+
+Our main goal here is to prepare a table with four input features including 
+
+- action : types of actions performed by customers
+- action_uu : the unique number of each action type
+- total_uu : the total sum of action_uu 
+- usage_rate : action_uu /total_uu 
+- action_count: the total transaction made 
+
+```sql
+
+WITH stat AS(
+    -- the total unique number of action done by customers 
+    -- We should create this number as a separate section 
+    SELECT COUNT(DISTINCT session) AS total_uu
+    FROM action_log)
+    SELECT l.action, 
+           --session represents the unique transaciton number granted to a customers on the 
+           --certain transaction date
+           COUNT(DISTINCT l.session) AS action_uu,
+           s.total_uu AS total_uu,
+           CAST(COUNT(DISTINCT l.session)/s.total_uu AS FLOAT)*100 AS usage_rate,
+           COUNT(1)  AS action_count
+           FROM action_log AS l
+           CROSS JOIN stat AS s
+           GROUP BY l.action,s.total_uu;
+```
+
+
+
 #### 2.1  Login/Guest 
 
 Just in case where there is no entry for the section of user_id, I have used
@@ -122,7 +153,7 @@ GROUP BY action, login_status WITH ROLLUP;
 
 #### 2.3 Managing Membership Status 
 
-From immediate supervisors, you are required to change the status of membership of customers to "member" if they have logged in the website once .  Regardless of whether users visit the website with login or not, the data of member status will keep appearing as a member once they log onto the site. Let's take this change in account when coding. 
+From immediate supervisors, you are required to change the status of membership of customers to "member" if they have logged in the website at least one time in the past . Right after he or she logs in, the data of member status will keep appearing as a member regardless of whether they will revisit with loging in. Let's take this additional consideration when writing codes. 
 
 ```sql
 DROP TABLE IF EXISTS action_log;
