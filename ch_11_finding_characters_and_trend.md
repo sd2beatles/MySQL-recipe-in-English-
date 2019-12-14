@@ -404,7 +404,97 @@ WITH user_data AS(
 ```
 ![image](https://user-images.githubusercontent.com/53164959/64059427-61d1a280-cbf7-11e9-8264-8a54d3d3f452.png)
 
-### 5. Venn Diagram Analysis 
+
+
+### 5. Finding the number of customers visiting/using the service for a designated period.
+
+We are curious about how many customers visit and use our service for each day of a specific interval. Let's write a code for preaparing a table showing the number of customers for each day. 
+
+```sql
+DROP TABLE IF EXISTS action_log;
+CREATE TABLE action_log(
+    session  varchar(255)
+  , user_id  varchar(255)
+  , action   varchar(255)
+  , category varchar(255)
+  , products varchar(255)
+  , amount   integer
+  , stamp    varchar(255)
+);
+
+INSERT INTO action_log
+VALUES
+    ('989004ea', 'U001', 'purchase', 'drama' , 'D001,D002', 2000, '2016-04-01 18:10:00')
+  , ('989004ea', 'U001', 'view'    , 'animation'    , NULL       , NULL, '2016-04-01 18:00:00')
+  , ('989004ea', 'U001','favorite', 'drama' , 'D001'     , NULL, '2016-04-02 18:00:00')
+  , ('889004ea', 'U002', 'review'  , 'drama' , 'D001'     , NULL, '2016-04-01 18:00:00')
+  , ('889004ea', 'U002', 'add_cart', 'drama' , 'D002'     , NULL, '2016-04-02 18:00:00')
+  , ('889004ea', 'U002', 'add_cart', 'drama' , 'D002'     , NULL, '2016-04-03 18:00:00')
+  .('889004ea', 'U002', 'add_cart', 'drama' , 'D002'     , NULL, '2016-04-03 18:00:00')
+  , ('789004ea', 'U003', 'add_cart', 'drama' , 'D001'     , NULL, '2016-04-04 18:00:00')
+  , ('789004ea', 'U003', 'add_cart', 'drama' , 'D001'     , NULL, '2016-04-05 18:00:00')
+  , ('1089004ea', 'U004', 'add_cart', 'drama' , 'D001'     , NULL, '2016-04-05 18:00:00')
+  , ('1089004ea', 'U004', 'add_cart', 'drama' , 'D001'     , NULL, '2016-04-05 18:00:00')
+  , ('1189004ea', 'U005', 'add_cart', 'drama' , 'D002'     , NULL, '2016-04-05 18:01:00')
+  , ('1189004ea', 'U005', 'add_cart', 'drama' , 'D001,D002', NULL, '2016-04-06 18:02:00')
+  , ('1289004ea', 'U006', 'purchase', 'drama' , 'D001,D002', 2000, '2016-04-01 18:10:00')
+  , ('47db0370', 'U007', 'add_cart', 'drama' , 'D001'     , NULL, '2016-04-02 19:00:00')
+  , ('47db0370', 'U007', 'purchase', 'drama' , 'D001'     , 1000, '2016-04-03 20:00:00')
+  , ('57db0370', 'U008', 'add_cart', 'drama' , 'D002'     , NULL, '2016-04-07 20:30:00')
+  , ('87b5725f', 'U009', 'add_cart', 'action', 'A004'     , NULL, '2016-04-06 12:00:00')
+  , ('87b5725f', 'U009', 'add_cart', 'action', 'A005'     , NULL, '2016-04-07 12:00:00')
+  , ('87b5725f', NULL, 'add_cart', 'action', 'A006'     , NULL, '2016-04-03 12:00:00')
+  , ('9afaf87c', 'U0010', 'purchase', 'drama' , 'D002'     , 1000, '2016-04-04 13:00:00')
+  , ('9afaf87c', 'U0010', 'purchase', 'action', 'A005,A006', 1000, '2016-04-06 15:00:00')
+;
+
+
+WITH stat AS(
+  SELECT *, 
+        SUBSTRING(stamp,1,11) AS dt
+        FROM action_log),
+     action_count AS(
+  SELECT user_id,
+         COUNT(DISTINCT(dt)) AS action_day_count
+         FROM stat
+         WHERE dt BETWEEN '2016-04-01' AND '2016-04-07'
+         GROUP BY user_id)
+    SELECT action_day_count,
+           COUNT(user_id)
+           FROM action_count
+           GROUP BY action_day_count
+           ORDER BY action_day_count;
+
+```
+
+Additionally, we can put somefigures including composition ration and cumulateive ratio right next to the user_count. 
+The code is as follows. 
+
+```sql
+WITH stat AS(
+  SELECT *, 
+        SUBSTRING(stamp,1,11) AS dt
+        FROM action_log),
+     action_count AS(
+  SELECT user_id,
+         --number of visits by each user_id
+         COUNT(DISTINCT(dt)) AS action_day_count
+         FROM stat
+         WHERE dt BETWEEN '2016-04-01' AND '2016-04-07'
+         GROUP BY user_id)
+   SELECT action_day_count,
+          COUNT(DISTINCT(user_id)) AS user_count,
+          100*COUNT(DISTINCT user_id)/SUM(COUNT(user_id)) OVER() AS composition_rate,
+          100*SUM(COUNT(DISTINCT user_id)) OVER(ORDER BY action_day_count ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)/
+              SUM(COUNT(DISTINCT user_id)) OVER() AS cumulative_rate
+          FROM action_count
+          GROUP BY action_day_count;
+```
+
+
+
+
+### 6. Venn Diagram Analysis 
 
 Venn Diagram is a statistical tool to visualize the proportion of each group and overlaps among two or more datasets. The diagram oftenuses a circle or ellipse to represent a segment or how much similar or different 
 segments are from one another. 
