@@ -608,17 +608,7 @@ WITH flag_variable AS(
 
 ![image](https://user-images.githubusercontent.com/53164959/64060591-efb68900-cc09-11e9-843b-b374a6f523e2.png)
 
-
-
-
-
-
-
-7. Decile Aanalysis 
-
-Decile analysis is a popular segmentation tool that dvide the whole data into equally sized groups of 10%. 
-The steps are so following beow
-
+<Case Study: Black Friday>
 
 ```sql
 
@@ -636,7 +626,49 @@ CREATE TABLE blackfriday
  product_category2 SMALLINT,
  product_category3 SMALLINT,
  purchase_amount INT);
+ ```
+![image](https://user-images.githubusercontent.com/53164959/71353202-b096b400-25bb-11ea-9092-d4ce77be1b79.png)
 
+```sql
+WITH modified_info AS(
+    SELECT user_id,
+       CASE WHEN COALESCE(CAST(product_category1 AS char),'')<>'' THEN product_category1 ELSE 0 END AS product_category1,
+       CASE WHEN COALESCE(CAST(product_category2 AS char),'')<>'' THEN product_category2 ELSE 0 END  AS product_category2,
+       CASE WHEN COALESCE(CAST(product_category3 AS char),'')<>'' THEN product_category3 ELSE 0 END  AS product_category3
+       FROM blackfriday),
+     has_counts AS(
+    SELECT user_id, 
+           SIGN(SUM(CASE WHEN product_category1>0 THEN 1 ELSE 0 END)) AS has_product1,
+           SIGN(SUM(CASE WHEN product_category2>0 THEN 1 ELSE 0 END)) AS has_product2,
+           SIGN(SUM(CASE WHEN product_category3>0 THEN 1 ELSE 0 END)) AS has_product3
+           FROM modified_info
+           GROUP BY user_id)
+     ,combination_counts AS(
+     SELECT has_product1,
+            has_product2,
+            has_product3,
+            COUNT(1) AS total_count
+            FROM has_counts
+            GROUP BY CUBE(has_product1,has_product2,has_product3))
+     SELECT CASE has_product1 WHEN 1 THEN 'Yes' WHEN 0 THEN 'No' ELSE 'Any' END AS has_product1,
+            CASE has_product2 WHEN 1 THEN 'Yes' WHEN 0 THEN 'No' ELSE 'Any' END AS has_product2,
+            CASE has_product3 WHEN 1 THEN 'Yes' WHEN 0 THEN 'No' ELSE 'Any' END AS has_product3,
+            total_count
+            FROM combination_counts
+            ORDER BY has_product1,has_product2;
+
+```
+
+
+7. Decile Aanalysis 
+
+Decile analysis is a popular segmentation tool that dvide the whole data into equally sized groups of 10%. 
+The steps are so following beow
+
+![image](https://user-images.githubusercontent.com/53164959/71353202-b096b400-25bb-11ea-9092-d4ce77be1b79.png)
+
+
+```sql
 WITH user_purchase_amount AS(
 SELECT user_id,
        SUM(purchase_amount) AS purchase_amount
