@@ -859,6 +859,35 @@ SELECT user_id,
                         ORDER BY rfm_index DESC;
                       
 ```
+
+Alternatively, we can make use of NTILE to make it simple.
+
+```sql
+WITH modified_data AS(
+     SELECT user_id,
+            date,
+            CURRENT_DATE-CAST(date AS DATE) AS diff_days,
+            amount
+            FROM retail_data),
+     user_summary AS(
+     SELECT user_id,
+            COUNT(DISTINCT date) AS frequency,
+            MIN(diff_days) AS recency,
+            SUM(amount) AS monetary
+            FROM modified_data
+            GROUP BY user_id)
+     ,rfm AS( SELECT user_id,
+            frequency,
+            recency,
+            monetary,
+            NTILE(5) OVER(PARTITION BY frequency ORDER BY frequency DESC) AS f,
+            NTILE(5) OVER(PARTITION BY recency ORDER BY recency ASC) AS r,
+            NTILE(5) OVER (PARTITION BY monetary ORDER BY monetary DESC) AS m
+            FROM user_summary)
+	 
+	 ....The rest of codes are the same
+```
+
 ![image](https://user-images.githubusercontent.com/53164959/62881723-5e22cc80-bd6b-11e9-986c-a9339af250dd.png)
 
 ### 8.4 RFM based on one variable(ie) the total sum of r,f,and m
