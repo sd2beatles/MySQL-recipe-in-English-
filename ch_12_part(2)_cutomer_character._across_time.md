@@ -99,7 +99,7 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
                      GROUP BY index_name,action,min_count,max_count
                      ;
 ```
-![image](https://user-images.githubusercontent.com/53164959/64873763-c0c9f980-d684-11e9-9d66-5752f91f8772.png)
+
 
 5. Consistent Rate by daily uses
 
