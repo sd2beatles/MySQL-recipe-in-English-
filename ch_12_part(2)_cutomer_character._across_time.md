@@ -163,3 +163,59 @@ WITH repeat_interval(index_name,interval_begin_date,interval_end_date) AS(
                         ORDER by dt_count;
   ```
   
+#### Practical Test
+```sql
+
+WITH modified_data AS(
+ SELECT user_id,
+        CAST(date AS DATE) AS action_date,
+        CAST(MIN(date) OVER(PARTITION BY user_id) AS DATE)  AS register_date
+        FROM retail
+        GROUP BY user_id,date)
+   ,repeat_interval (index_name,interval_begin,interval_end) AS(
+    VALUES('12-36 months rentation',12,36))
+   ,action_log_with_date AS(
+    SELECT m.user_id,
+           m.action_date,
+           m.register_date,
+           m.register_date+'1 month'::interval*r.interval_begin AS begin_date,
+           m.register_date+'1 month'::interval*r.interval_end AS end_date,
+           MAX(m.action_date) OVER() AS latest_date,
+           r.index_name
+           FROM modified_data AS m
+           CROSS JOIN repeat_interval AS r)
+    ,user_action_flag AS(
+    SELECT user_id, 
+           register_date,
+           index_name,
+           SIGN(SUM(CASE WHEN end_date<=latest_date THEN
+                         CASE WHEN action_date BETWEEN begin_date AND end_date THEN 1 ELSE 0 END END)) AS index_date_action
+           FROM action_log_with_date
+           GROUP BY user_id,register_date,index_name)
+    ,register_action_flag AS(
+    SELECT m.user_id,
+           COUNT(DISTINCT(m.action_date)) AS dt_counts,
+           u.index_name,
+           u.index_date_action
+           FROM modified_data AS m
+           LEFT JOIN user_action_flag AS u
+           ON m.user_id=u.user_id
+           AND m.action_date BETWEEN m.register_date AND m.register_date+'12 month'::INTERVAL
+           WHERE u.index_date_action IS NOT NULL
+           GROUP BY m.user_id,
+                    u.index_name,
+                    u.index_date_action)
+    SELECT dt_counts AS months, 
+           COUNT(user_id) AS users,
+           100*COUNT(user_id)/SUM(COUNT(user_id)) OVER() AS user_ration,
+           100*SUM(COUNT(user_id)) OVER(ORDER BY dt_counts ROWs BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)/SUM(COUNT(user_id)) OVER() AS cum_ratio,
+           SUM(index_date_action) AS achieve_users,
+           AVG(100*index_date_action) AS achieve_ratio
+           FROM register_action_flag
+           WHERE dt_counts BETWEEN 1 AND 12
+           GROUP by dt_counts
+           ORDER by dt_counts;
+           
+ ```
+ 
+  
