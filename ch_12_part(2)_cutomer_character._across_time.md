@@ -218,4 +218,54 @@ WITH modified_data AS(
            
  ```
  
+ ### 5.2 MAU(Monthly Active Users)
+ 
+ MAU stands for Monthly Active Users, commonly used to indicate the number of users for a given month.  The figure is meaningless unless this can be sub-divided into some categories for further analysis.  For example, 300 thousand for this month is the simple number that does not help us to read what is happening on the service of the company. To assess the health performance of  our comany and used to a basis of other metrics, the classificaiton is now necessary. 
   
+Now, we will divide the whole number into three groups which are
+
+new-comer: those who begin to start using our service from this month
+revisitor:those who has kept using our service up to this month
+comback user: those who has been away for a while but came back 
+
+```sql
+WITH monthly_user_action AS(
+  SELECT m.user_id,
+         SUBSTRING(m.register_date,1,7) AS register_month,
+         SUBSTRING(a.stamp,1,7) AS action_month,
+         SUBSTRING(CAST(CAST(a.stamp AS DATE)-'1 month'::INTERVAL AS TEXT),1,7) AS pre_month 
+         FROM mst_users AS m
+         LEFT JOIN action_log AS a
+         ON m.user_id=a.user_id)
+   ,monthly_user_with_type AS(
+   SELECT --each users can use the service more than once in a given month.
+          --To prevent double-counting, we should implement disetinct before user_id 
+          DISTINCT user_id,
+          action_month,
+          CASE WHEN register_month=action_month THEN 'new_user'
+               WHEN pre_month=LAG(action_month) OVER(PARTITION BY user_id ORDER BY action_month) THEN 'repeated_user'
+               ELSE 'comeback_user' END AS c,
+          pre_month
+          FROM monthly_user_action
+          WHERE action_month IS NOT NULL)
+       SELECT action_month,
+           COUNT(user_id),
+           COUNT(CASE WHEN c='new_user' THEN 1 END) AS new_users,
+           COUNT(CASE WHEN c='repeated_user' THEN 1 END) AS repeated_users,
+           COUNT(CASE WHEN c='comeback_user' THEN 1 END) AS comeback_users
+           FROM monthly_user_with_type 
+           GROUP BY action_month;
+```
+
+The outcome is 
+
+![image](https://user-images.githubusercontent.com/53164959/72214197-a162b080-3540-11ea-9dca-d096f23560e6.png)
+
+
+
+        
+         
+
+
+
+                             
