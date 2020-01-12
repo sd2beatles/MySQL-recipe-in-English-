@@ -309,5 +309,47 @@ Our main interest is in the repeated group. To have much knowledge, we should mo
   
   ![image](https://user-images.githubusercontent.com/53164959/72214448-729b0900-3545-11ea-962e-c285db478018.png)
 
-
+5.3 MAU (3)
+WITH monthly_user_action AS(
+ SELECT m.user_id,
+        SUBSTRING(m.register_date,1,7) AS register_month,
+        SUBSTRING(a.stamp,1,7) AS action_month,
+        SUBSTRING(CAST(CAST(a.stamp AS DATE)-'1 month'::INTERVAL AS TEXT),1,7) AS pre_month 
+        FROM mst_users AS m
+        LEFT JOIN action_log AS a
+        ON m.user_id=a.user_id)
+  ,monthly_user_with_type AS(
+  SELECT --each users can use the service more than once in a given month.
+         --To prevent double-counting, we should implement disetinct before user_id 
+         DISTINCT user_id,
+         action_month,
+         CASE WHEN register_month=action_month THEN 'new_user'
+              WHEN pre_month=LAG(action_month) OVER(PARTITION BY user_id ORDER BY action_month) THEN 'repeated_user'
+              ELSE 'comeback_user' END AS c,
+         pre_month
+         FROM monthly_user_action
+         WHERE action_month IS NOT NULL)
+    ,monthly_users AS(
+    SELECT m1.action_month,
+           COUNT(m1.user_id) AS mau,
+           COUNT(CASE WHEN m1.c='new_user' THEN 1 END) AS new_users,
+           COUNT(CASE WHEN m1.c='repeat_user' THEN 1 END) AS repeat_users,
+           COUNT(CASE WHEN m1.c='comeback_user' THEN 1 END) AS comeback_users,
+           COUNT(CASE WHEN m1.c='new_user' AND m0.c='new_user' THEN 1 ELSE 0 END) AS new_repeat_users,
+           COUNT(CASE WHEN m1.c='repeat_user' AND m0.c='repeat_user' THEN 1 ELSE 0 END) AS continuous_repeat_users,
+           COUNT(CASE WHEN m1.c='repeat_user' AND m0.c='comeback_user' THEN 1 ELSE 0 END) AS come_back_repeat_users
+       FROM monthly_user_with_type AS m1
+       LEFT JOIN monthly_user_with_type AS m0 
+       ON m1.user_id=m0.user_id AND 
+          m1.pre_month=m0.action_month
+       GROUP BY m1.action_month)
+       SELECT *,
+              --Labeled as the new_users in the previous month but repeated_users for this month
+              100*new_repeat_users/NULLIF(LAG(new_users) OVER(ORDER BY action_month),0) AS priv_new_repeat_ratio,
+              --Labeled as the repeated_users in the previous month and still classifed as the repeated
+              100*continuous_repeat_users/NULLIF(LAG(repeat_users) OVER(ORDER BY action_month),0) AS priv_new_repeat_ratio,
+              --Labeled as the comeback users in the previous month and classifed as repeated_comeback_users
+              100*come_back_repeat_users/NULLIF(LAG(comeback_users) OVER(ORDER BY action_month),0) AS priv_come_back_ratio
+              FROM monthly_users
+        
   
