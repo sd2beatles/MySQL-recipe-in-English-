@@ -218,7 +218,7 @@ WITH modified_data AS(
            
  ```
  
- ### 5.2 MAU(Monthly Active Users)
+ ### 5.2 MAU(Monthly Active Users) part1
  
  MAU stands for Monthly Active Users, commonly used to indicate the number of users for a given month.  The figure is meaningless unless this can be sub-divided into some categories for further analysis.  For example, 300 thousand for this month is the simple number that does not help us to read what is happening on the service of the company. To assess the health performance of  our comany and used to a basis of other metrics, the classificaiton is now necessary. 
   
@@ -259,13 +259,55 @@ WITH monthly_user_action AS(
 
 The outcome is 
 
-![image](https://user-images.githubusercontent.com/53164959/72214197-a162b080-3540-11ea-9dca-d096f23560e6.png)
+![image](https://user-images.githubusercontent.com/53164959/72214229-3796d680-3541-11ea-85e0-675e580ec16e.png)
 
 
+### 5.3 (MAU part 2)
 
-        
-         
+Our main interest is in the repeated group. To have much knowledge, we should move one step further to subdivide the group into three parts. The breif disccusion is following 
+
+ * repeated_user(new_user) :Those who was classifed as newcomer in the previous month but stil use the service for the given month 
+ * repeated_user(repeat_user):Tho
+ 
+ 
+ ``sql
+ WITH monthly_user_action AS(
+  SELECT m.user_id,
+         SUBSTRING(m.register_date,1,7) AS register_month,
+         SUBSTRING(a.stamp,1,7) AS action_month,
+         SUBSTRING(CAST(CAST(a.stamp AS DATE)-'1 month'::INTERVAL AS TEXT),1,7) AS pre_month 
+         FROM mst_users AS m
+         LEFT JOIN action_log AS a
+         ON m.user_id=a.user_id)
+   ,monthly_user_with_type AS(
+   SELECT --each users can use the service more than once in a given month.
+          --To prevent double-counting, we should implement disetinct before user_id 
+          DISTINCT user_id,
+          action_month,
+          CASE WHEN register_month=action_month THEN 'new_user'
+               WHEN pre_month=LAG(action_month) OVER(PARTITION BY user_id ORDER BY action_month) THEN 'repeated_user'
+               ELSE 'comeback_user' END AS c,
+          pre_month
+          FROM monthly_user_action
+          WHERE action_month IS NOT NULL)
+     ,monthly_users AS(
+     SELECT m1.action_month,
+            COUNT(m1.user_id) AS mau,
+            COUNT(CASE WHEN m1.c='new_user' THEN 1 END) AS new_users,
+            COUNT(CASE WHEN m1.c='repeat_user' THEN 1 END) AS repeat_users,
+            COUNT(CASE WHEN m1.c='comeback_user' THEN 1 END) AS comeback_users,
+            COUNT(CASE WHEN m1.c='new_user' AND m0.c='new_user' THEN 1 ELSE 0 END) AS new_repeat_users,
+            COUNT(CASE WHEN m1.c='repeat_user' AND m0.c='repeat_user' THEN 1 ELSE 0 END) AS continuous_users,
+            COUNT(CASE WHEN m1.c='repeat_user' AND m0.c='comeback_user' THEN 1 ELSE 0 END) AS come_back_users
+        FROM monthly_user_with_type AS m1
+        LEFT JOIN monthly_user_with_type AS m0 
+        ON m1.user_id=m0.user_id AND 
+           m1.pre_month=m0.action_month
+        GROUP BY m1.action_month)
+      SELECT * FROM monthly_users;
+  ```
+  
+  ![image](https://user-images.githubusercontent.com/53164959/72214448-729b0900-3545-11ea-962e-c285db478018.png)
 
 
-
-                             
+  
