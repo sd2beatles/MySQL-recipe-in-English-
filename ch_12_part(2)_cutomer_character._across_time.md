@@ -270,7 +270,7 @@ Our main interest is in the repeated group. To have much knowledge, we should mo
  * repeated_user(repeat_user):Tho
  
  
- ``sql
+ ```sql
  WITH monthly_user_action AS(
   SELECT m.user_id,
          SUBSTRING(m.register_date,1,7) AS register_month,
