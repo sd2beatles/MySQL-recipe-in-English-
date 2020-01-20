@@ -225,7 +225,9 @@ WITH modified_data AS(
 Now, we will divide the whole number into three groups which are
 
 new-comer: those who begin to start using our service from this month
+
 revisitor:those who has kept using our service up to this month
+wi
 comback user: those who has been away for a while but came back 
 
 ```sql
@@ -310,6 +312,7 @@ Our main interest is in the repeated group. To have much knowledge, we should mo
   ![image](https://user-images.githubusercontent.com/53164959/72214448-729b0900-3545-11ea-962e-c285db478018.png)
 
 5.3 MAU (3)
+```sql
 WITH monthly_user_action AS(
  SELECT m.user_id,
         SUBSTRING(m.register_date,1,7) AS register_month,
@@ -351,5 +354,5 @@ WITH monthly_user_action AS(
               --Labeled as the comeback users in the previous month and classifed as repeated_comeback_users
               100*come_back_repeat_users/NULLIF(LAG(comeback_users) OVER(ORDER BY action_month),0) AS priv_come_back_ratio
               FROM monthly_users
-        
+  ```    
   
