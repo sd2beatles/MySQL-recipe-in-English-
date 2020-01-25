@@ -356,3 +356,81 @@ WITH monthly_user_action AS(
               FROM monthly_users
   ```    
   
+## 5.4 Growth index 
+
+The main goals of the management team are to encourage their customers to stay with companies and to boost the rate of reactivation. The leaving rate or customer churn is inevitable. Therefore, we come out with a useful measure to evaluate the growth of its service based on time. This index is called 'growth index' and its score is a sum of four scores 
+ 
+ - a group 'sign up'  registers and start to use the service and is counted +1
+ - a group 'Deactivation' now becomes an inactive user and is counted -1
+ - a group 'Reactivation'  is come back user and is counted +1
+ - a group 'exit'  withdraws the service and is counted -1.
+ 
+ The growth index is now computed as following below and we should be alarmed especially if the index plummets to below zero, which indicates that customer churn is much greater than register and reactivation. 
+
+```
+growth_index='signup'+'Reactivation'-'Deactivation'-'exit'
+```
+
+
+```sql
+
+WITH unique_action_log AS(
+   SELECT DISTINCT user_id,
+          CAST(SUBSTRING(stamp,1,11) AS DATE) AS action_date
+          FROM action_log)
+   ,mst_calender AS(
+    --this seciton is up to your choice. 
+    SELECT CAST(CONCAT('2016-10-0',GENERATE_SERIES(1,9)) AS DATE) AS dt
+    UNION ALL SELECT CAST(CONCAT('2016-10-',GENERATE_SERIES(10,31)) AS DATE) AS dt
+    UNION ALL SELECT CAST(CONCAT('2016-11-0',GENERATE_SERIES(1,4)) AS DATE) AS dt)
+    ,target_date_with_user AS(
+    SELECT u.user_id,
+           CAST(u.register_date AS DATE) AS register_date,
+           CAST(u.withdraw_date AS DATE) AS withdraw_date,
+           m.dt AS target_date
+           FROM mst_users AS u
+           CROSS JOIN mst_calender AS m)
+    ,user_status_log AS(
+    SELECT u.target_date,
+           u.user_id,
+           u.register_date,
+           u.withdraw_date,
+           a.action_date,
+           CASE WHEN a.action_date=u.register_date THEN 1 ELSE 0 END AS is_new
+           ,CASE WHEN a.action_date=u.withdraw_date THEN 1 ELSE 0 END AS is_exit
+           ,CASE WHEN a.action_date=u.target_date THEN 1 ELSE 0 END AS is_access
+           ,LAG(CASE WHEN u.target_date=a.action_date THEN 1 ELSE 0 END)  
+           OVER(PARTITION BY u.user_id ORDER BY u.target_date) AS was_access
+           FROM target_date_with_user AS u
+           LEFT JOIN unique_action_log AS a
+           ON u.user_id=a.user_id
+           --limit our target_date to the range between register_date and withdraw_date
+           WHERE u.register_date<=u.target_date
+               AND(u.withdraw_date IS NULL OR u.target_date<=u.withdraw_date) 
+           ORDER BY user_id,action_date
+            )
+    ,user_growth_index AS(
+    SELECT *,
+          CASE WHEN is_new+is_exit=1 THEN
+                    CASE WHEN is_new=1 THEN 'signup'
+                         WHEN is_exit=1 THEN 'exit' END
+               WHEN is_new+is_exit=0 THEN
+                    CASE WHEN was_access=0 and is_access=1 THEN 'reactivation'
+                         WHEN was_access=1 and is_access=0 THEN 'deactivation'
+                    END
+                END AS growth_index
+                FROM user_status_log)
+      SELECT target_date,
+             SUM(CASE WHEN growth_index='signup' THEN 1 END) AS signup,
+             SUM(CASE WHEN growth_index='exit' THEN 1 END) AS exit,
+             SUM(CASE WHEN growth_index='reactivation' THEN 1 END) AS reactivation,
+             SUM(CASE WHEN growth_index='deactivation' THEN 1 END) AS deactivation,
+             SUM(CASE growth_index WHEN 'signup' THEN 1
+                                   WHEN 'exit' THEN -1
+                                   WHEN 'reactivation' THEN 1
+                                   WHEN 'deactivation' THEN -1
+                                   ELSE 0
+                                   END) AS growth_index
+             FROM user_growth_index
+             GROUP BY target_date;
+```
