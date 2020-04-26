@@ -1026,7 +1026,31 @@ Some customers buy up a great amount and then disappear. The possible reason is 
 Low-scoring customers are the least promising prospects in your database. They don’t have a significant purchase history with your company and there have been no recent interactions. These customers will fall outside of the scope of most marketing campaigns. By focusing on more promising leads, you can invest resources where they’re likely to lead to a result
  
 
-                               
+with temp as (
+  select id,
+	      to_date(dt,'dd-Mon-YY') as dt,
+	      amount,
+	      max(to_date(dt,'dd-Mon-YY')) over()::date+1  as ref_date
+	      from retails
+)
+,user_rfm as(
+select id,
+	   max(dt) as recent_date,
+       ref_date-max(dt) as recency,
+	   sum(amount) as monetary,
+	   count(dt) as frequency
+      from temp
+	  group by id,ref_date)
+select * from user_rfm;p2
+
+
+
+
+
+
+
+
+                            
                    
          
                  
