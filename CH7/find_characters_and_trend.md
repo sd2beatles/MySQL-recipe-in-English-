@@ -994,10 +994,7 @@ with temp as(
 		   from rfm_flag 
 		   group by rfm_index 
 		   order by rfm_index desc;
-	
-	
-         
-     ```
+```
  
 It is also possible to select the number of indicators in your analysis to your case. Just think of a table with rows
 indicating recency and columns consisting of the range of frequency.
