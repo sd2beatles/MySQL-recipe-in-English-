@@ -2,7 +2,7 @@
 There are some useful metrics we should track to find any hidden purchasing patterns of our customers. In this section, we will explore how to compute these metrics and add explanations on how to obtain useful insights based on them. 
 
 
-#### 14.1 [Metric Part 1] Number of Vistors,Number of Frequencies and Page Views. 
+#### 14.1 <Metric Part 1> Number of Vistors,Number of Frequencies and Page Views. 
 
 Unfortunately, in web-log analysis, these two terms are interchangeably used to lead to an unintentional confusion to the third users. To prevent this from happening,  we need to clarify some of the most widely used terms.
 
@@ -61,4 +61,16 @@ INSERT INTO visits_website VALUES ('28', 'ip7', 'ip7', '', '2016-08-29 20:30:00'
 INSERT INTO visits_website VALUES ('29', 'ip1', 'ip1', '', '2016-08-29 20:30:00','http://www.example.com/?utm_source=google&utm_medium=search','http://www.google.co.kr/xxx'  );
 INSERT INTO visits_website VALUES ('30', 'ip2', 'ip2', '', '2016-08-29 20:30:00','http://www.example.com/detail?id=1','');
 ```
+```sql
 
+select  distinct create_at as dt,
+        count(distinct browser_long) as access_visits,
+		count(distinct browser_short) as access_counts,
+		count(*) as page_view,
+		count(*)/count(distinct browser_long) as page_per_user
+		from visits_website
+		group by dt
+		order by dt;
+		
+
+```
