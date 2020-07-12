@@ -2,7 +2,7 @@
 There are some useful metrics we should track to find any hidden purchasing patterns of our customers. In this section, we will explore how to compute these metrics and add explanations on how to obtain useful insights based on them. 
 
 
-#### 14.1 Metric Part 1) Number of Vistors,Number of Frequencies and Page Views. 
+#### 14.1 [Metric Part 1] Number of Vistors,Number of Frequencies and Page Views. 
 
 Unfortunately, in web-log analysis, these two terms are interchangeably used to lead to an unintentional confusion to the third users. To prevent this from happening,  we need to clarify some of the most widely used terms.
 
@@ -13,7 +13,7 @@ We need to make a difference between the two terminologies.
 As for clicks, the clicks in the column indicate the number of times a visitor clicked. Please note that more than one click by each customer in a given data counts toward the total. On the other hand, the visit is simply the number of net sessions initiated by the visitor.  
 
 
-2)page views
+2) page views
 
 Page Views indicates the number of times for which each user visits a tracked website. When a visitor reaches the page and clicks the refresh button, an additional pageview is recorded. A new pageview is also recorded when the user navigates to another page and then returns to the original page.
 
