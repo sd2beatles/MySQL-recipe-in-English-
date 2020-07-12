@@ -23,9 +23,9 @@ Page Views indicates the number of times for which each user visits a tracked we
 drop table if exists visits_website;
 CREATE TABLE  visits_website (
     id int,
-    ip VARCHAR NOT NULL,
     browser_short VARCHAR(45) NOT NULL,
     browser_long VARCHAR(255) NOT NULL,
+	ip varchar,
 	create_at date NOT NULL,
 	url varchar,
 	referrer varchar);
@@ -60,6 +60,5 @@ INSERT INTO visits_website VALUES ('27', 'ip6', 'ip6', '', '2016-08-29 20:30:00'
 INSERT INTO visits_website VALUES ('28', 'ip7', 'ip7', '', '2016-08-29 20:30:00','http://www.example.com/detail?id=1','https://twitter.com/xxx'    );
 INSERT INTO visits_website VALUES ('29', 'ip1', 'ip1', '', '2016-08-29 20:30:00','http://www.example.com/?utm_source=google&utm_medium=search','http://www.google.co.kr/xxx'  );
 INSERT INTO visits_website VALUES ('30', 'ip2', 'ip2', '', '2016-08-29 20:30:00','http://www.example.com/detail?id=1','');
-
 ```
 
