@@ -74,3 +74,24 @@ select  distinct create_at as dt,
 		
 
 ```
+
+### 14.2 <Metric 2> Referral 
+
+We may come up with another method to segmentize the data. You may consider taking the URL as a metric to divide the data into a variety of groups and compute its counts. But the problem here is that the number of classification should be small and make it worse to develop a better insight into the consumer pattern. Instead, it seems to be better for us to make a url path as a standard.
+
+
+```sql
+with acess_log_path as(
+   select distinct substring(url from '//[^/]+([^?#]+)') as url_path,
+	      count(distinct browser_short) as user_counts,
+	      count(distinct browser_long) as user_freq
+	      from visits_website
+	      group by url_path)
+   select * from acess_log_path;
+
+```
+
+
+![image](https://user-images.githubusercontent.com/53164959/87244027-d612de80-c475-11ea-82f0-4719936f5e86.png)
+
+
