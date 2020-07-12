@@ -75,7 +75,7 @@ select  distinct create_at as dt,
 
 ```
 
-### 14.2 <Metric 2> Referral 
+### 14.2 <Metric 2> URL Path
 
 We may come up with another method to segmentize the data. You may consider taking the URL as a metric to divide the data into a variety of groups and compute its counts. But the problem here is that the number of classification should be small and make it worse to develop a better insight into the consumer pattern. Instead, it seems to be better for us to make a url path as a standard.
 
@@ -90,8 +90,37 @@ with acess_log_path as(
    select * from acess_log_path;
 
 ```
-
-
 ![image](https://user-images.githubusercontent.com/53164959/87244027-d612de80-c475-11ea-82f0-4719936f5e86.png)
 
+
+The approach we have taken seems to be sound and logical to begin. However, it has its drawbacks in that some of the rows are designated as a list. We are currently looking at a big picture of how many customers visit the given website through a given path. Either too specialized or categorized URL path would bring out an unintentional difficulty and confusion to the analysts. We need to conglomerate the relevant items into one and assign a proper name.
+
+``sql
+
+with prep as(
+ select distinct substring(url from '//[^/]+([^?#]+)') as url_path,
+	    count(distinct browser_short) as counter_access,
+	    count(distinct browser_long) as counter_vistors
+	    from visits_website
+	    group by url_path),
+    split_part as(
+       select *,
+        split_part(url_path,'/',2) as path1,
+        split_part(url_path,'/',3) as path2
+        from prep),
+    assign_access_log as(
+	select *,
+           case when path1='list' then
+		        case when path2='newly' then 'newly'
+		             else 'category_list' end
+		        else url_path end as page_name
+	      from split_part)
+	select page_name,
+	       count(counter_access) as access_count,
+		   count(counter_vistors) as access_vistors
+		   from assign_access_log
+		   group by page_name;
+```
+
+![image](https://user-images.githubusercontent.com/53164959/87244579-1162dc80-c479-11ea-9627-ad06b609fe0c.png)
 
