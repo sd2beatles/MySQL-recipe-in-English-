@@ -95,7 +95,7 @@ with acess_log_path as(
 
 The approach we have taken seems to be sound and logical to begin. However, it has its drawbacks in that some of the rows are designated as a list. We are currently looking at a big picture of how many customers visit the given website through a given path. Either too specialized or categorized URL path would bring out an unintentional difficulty and confusion to the analysts. We need to conglomerate the relevant items into one and assign a proper name.
 
-``sql
+```sql
 
 with prep as(
  select distinct substring(url from '//[^/]+([^?#]+)') as url_path,
