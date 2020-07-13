@@ -154,4 +154,50 @@ with prep as(
 ```
 ![image](https://user-images.githubusercontent.com/53164959/87295975-03788e80-c541-11ea-915d-5797a272fa34.png)
 
+### 14.4 Conversion,CVR,and Amount Purchased
 
+Let's assume we have two separate tables, one of which is on the login infomrton where the other for purchase history. 
+```sql
+
+
+INSERT INTO access_log
+VALUES
+    ('2016-10-01 12:00:00', '0CVKaz', '1CwlSX', 'http://www.example.com/?utm_source=google&utm_medium=search'       , 'http://www.google.co.jp/xxx'      )
+  , ('2016-10-01 13:00:00', '0CVKaz', '1CwlSX', 'http://www.example.com/detail?id=1'                                , ''                                 )
+  , ('2016-10-01 13:00:00', '1QceiB', '3JMO2k', 'http://www.example.com/list/cd'                                    , ''                                 )
+  , ('2016-10-01 14:00:00', '1QceiB', '3JMO2k', 'http://www.example.com/detail?id=1'                                , 'http://search.google.co.jp/xxx'   )
+  , ('2016-10-01 15:00:00', '1hI43A', '6SN6DD', 'http://www.example.com/list/newly'                                 , ''                                 )
+  , ('2016-10-02 16:00:00', '1hI43A', '6SN6DD', 'http://www.example.com/list/cd'                                    , 'http://www.example.com/list/newly')
+  , ('2016-10-01 17:00:00', '2bGs3i', '1CwlSX', 'http://www.example.com/'                                           , ''                                 )
+  , ('2016-10-01 18:00:00', '2is8PX', '7Dn99b', 'http://www.example.com/detail?id=2'                                , 'https://twitter.com/xxx'          )
+  , ('2016-10-02 12:00:00', '2mmGwD', 'EFnoNR', 'http://www.example.com/'                                           , ''                                 )
+  , ('2016-10-02 13:00:00', '2mmGwD', 'EFnoNR', 'http://www.example.com/list/cd'                                    , 'http://search.google.co.jp/xxx'   )
+  , ('2016-10-02 14:00:00', '3CEHe1', 'FGkTe9', 'http://www.example.com/list/dvd'                                   , ''                                 )
+  , ('2016-10-02 15:00:00', '3Gv8vO', '1CwlSX', 'http://www.example.com/detail?id=2'                                , ''                                 )
+  , ('2016-10-02 16:00:00', '3cv4gm', 'KBlKgT', 'http://www.example.com/list/newly'                                 , 'http://search.yahoo.co.jp/xxx'    )
+  , ('2016-10-02 17:00:00', '3cv4gm', 'KBlKgT', 'http://www.example.com/'                                           , 'https://www.facebook.com/xxx'     )
+  , ('2016-10-02 18:00:00', '690mvB', 'FGkTe9', 'http://www.example.com/list/dvd?utm_source=yahoo&utm_medium=search', 'http://www.yahoo.co.jp/xxx'       )
+  , ('2016-10-03 12:00:00', '6oABhM', '3JMO2k', 'http://www.example.com/detail?id=3'                                , 'http://search.yahoo.co.jp/xxx'    )
+  , ('2016-10-03 13:00:00', '7jjxQX', 'KKTw9P', 'http://www.example.com/?utm_source=mynavi&utm_medium=affiliate'    , 'http://www.mynavi.jp/xxx'         )
+  , ('2016-10-03 14:00:00', 'AAuoEU', '6SN6DD', 'http://www.example.com/list/dvd'                                   , 'https://www.facebook.com/xxx'     )
+  , ('2016-10-03 15:00:00', 'AAuoEU', '6SN6DD', 'http://www.example.com/list/newly'                                 , ''                                 )
+;
+
+insert into purchase_log 
+   values ('2016-10-01 15:00:00', '0CVKaz', '1CwlSX',1,10000)
+          ,('2016-10-01 16:00:00', '1QceiB', '3JMO2k',2,10000)
+		  ,('2016-10-01 20:00:00', '1QceiB', '3JMO2k',3,10000)
+		  ,('2016-10-02 14:00:00', '1QceiB', '3JMO2k',4,10000)
+          ,('2016-10-01 17:00:00', '1hI43A', '6SN6DD',5,20000)
+		  ,('2016-10-02 16:40:00', '1hI43A', '6SN6DD',6,10000)
+		  ,('2016-10-01 17:20:00', '2bGs3i', '1CwlSX',7,14000)
+		  ,('2016-10-01 18:10:00', '2is8PX', '7Dn99b',8,20000)
+		  ,('2016-10-02 12:10:00', '2mmGwD', 'EFnoNR',9,4000)
+		  ,('2016-10-02 13:50:00', '2mmGwD', 'EFnoNR',10,2200)
+		  ,('2016-10-02 15:00:00', '3Gv8vO', '1CwlSX',11,2100)
+		  ,('2016-10-02 18:00:00', '3cv4gm', 'KBlKgT',12,2200)
+		  ,('2016-10-02 19:00:00', '690mvB', 'FGkTe9',13,100)
+		  ,('2016-10-03 13:00:00', '6oABhM', '3JMO2k',14,2200)
+		  ,('2016-10-03 15:00:00', 'AAuoEU', '6SN6DD',15,2100);
+
+```
