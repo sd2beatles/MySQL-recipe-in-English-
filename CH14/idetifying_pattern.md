@@ -201,3 +201,47 @@ insert into purchase_log
 		  ,('2016-10-03 15:00:00', 'AAuoEU', '6SN6DD',15,2100);
 
 ```
+
+
+```sql
+
+with access_log_with_parse_info as(
+ select *,
+	   substring(url from 'https?://([^/]*)') as url_domain,
+	   substring(url from 'utm_source=([^&]*)') as url_source,
+	   substring(url from 'utm_medium=([^&]*)') as url_medium,
+	   substring(referrer from 'https?://([^/]*)') as referrer_domain
+	   from access_log)
+  ,access_log_with_via_info as(
+   select *,
+	     row_number() over(order by stamp) as log_id,
+	     case when url_source<>'' and url_medium<>'' then concat(url_source,'-',url_medium) 
+              when referrer_domain in ('google.co.jp','yahoo.co.jp') then 'search'
+	          when referrer_domain in ('facebook.com','twitter.com') then 'social' 
+	          else 'others' end as via 
+	    from access_log_with_parse_info)
+  ,access_log_with_purchase_amount as(
+   select a.log_id,
+	      a.via,
+	      sum(case when p.stamp::date between a.stamp::date and a.stamp::date+'1 day'::interval then p.amount end) as amount
+	  
+	  
+	  from access_log_with_via_info as a
+	  left join purchase_log as p
+	  on a.long_session=p.long_session
+	  group by a.log_id,a.via
+  )
+
+
+select via,
+       count(1) as count_via,
+	   count(amount) as conversions,
+	   avg(100*sign(coalesce(amount,0))) as cvr,
+	   sum(coalesce(amount,0)) as amount,
+	   avg(1.0*coalesce(amount,0)) as avg_amount
+	   from access_log_with_purchase_amount
+	   group by vi
+```
+
+### 14.5 Conversion,CVR,and Amount Purchased
+
