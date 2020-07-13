@@ -124,3 +124,34 @@ with prep as(
 
 ![image](https://user-images.githubusercontent.com/53164959/87244579-1162dc80-c479-11ea-9627-ad06b609fe0c.png)
 
+### 14.3 Logical Ways of Counting The Data
+
+If your generated URL contains extra parameters such as campaign, medium, or so on, we need to seek out the more sophisticated ways to count the data. Here is a simple logic we could take to make the groups and count the number of visitors for each corresponding group.
+
+
+```sql
+with prep as(
+  select *,
+	     substring(url from 'http://([^/]*)') as url_domain,
+	     substring(url from 'utm_source=([^&]*)') as utm_source,
+	     substring(url from 'utm_medium=([^&]*)') as utm_medium,
+	     substring(referrer from 'https?://([^/]*)') as referrer_domain
+	     from visits_website)
+  ,access_via as(
+   select *,
+	      row_number() over(order by create_at) as log_id ,
+	      case when utm_source<>'' and utm_medium<>'' then concat(utm_source,'-',utm_medium) 
+               when referrer_domain in ('www.facebook.com','twitter.com') then 'social'
+	           when referrer_domain in ('search.yahoo.co.jp','www.google.co.kr') then 'search'
+	           else 'others' end as via
+	  from prep)
+  select via,
+         count(1) as acess_count
+		 from access_via
+		 group by via
+		 order by acess_count desc;
+
+```
+![image](https://user-images.githubusercontent.com/53164959/87295975-03788e80-c541-11ea-915d-5797a272fa34.png)
+
+
