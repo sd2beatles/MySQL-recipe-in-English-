@@ -245,3 +245,42 @@ select via,
 
 ### 14.5 Conversion,CVR,and Amount Purchased
 
+
+
+### 14.6 Discovering Click Patterns Based on Days and Time 
+
+We are still looking for many ways to discover teh click patterns of our customers. In this part, we can analyize it using the day and time of using service recorded in our database. Let's demonstrate it in codes. 
+
+```sql
+with access_log_with_dow as(
+ select stamp,
+	    date_part('dow',stamp::timestamp) as dow,
+	    cast(substring(stamp,12,2) as int)*60*60+
+	    cast(substring(stamp,15,2) as int)*60+
+	    cast(substring(stamp,18,2) as int) as whole_seconds,
+	    30*60 as interval_seconds
+        from access_log)
+ ,access_log_with_floor_seconds as(
+    select stamp,
+	       dow,
+	       cast(floor(whole_seconds/interval_seconds)*interval_seconds as int) as floor_seconds
+    from access_log_with_dow)
+  ,access_log_with_index as(select stamp,
+         dow,
+		 lpad(floor(floor_seconds/(60*60))::text,2,'0')||':'
+		     ||lpad(floor(floor_seconds%(60*60)/60)::text,2,'0')||':'
+			 ||lpad(floor(floor_seconds%60)::text,2,'0') as index_time
+			 from access_log_with_floor_seconds)
+	select index_time,
+	       count(case when dow=0 then 1 end) as Sun,
+		   count(case when dow=1 then 1 end ) as Mon,
+		   count(case when dow=2 then 1 end) as Tue,
+		   count(case when dow=3 then 1 end) as Wed,
+		   count(case when dow=4 then 1 end) as Thur,
+		   count(case when dow=5 then 1 end) as Fri,
+		   count(case when dow=6 then 1 end) as Sat
+		   from access_log_with_index
+		   group by index_time;
+```
+![image](https://user-images.githubusercontent.com/53164959/87594201-9115d300-c727-11ea-87c0-c3578dded792.png)
+
