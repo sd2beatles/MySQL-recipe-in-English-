@@ -1,1 +1,2 @@
-### SQL RECIP FOR DATA ANALYSIS 
+### SQL Practical Project
+
