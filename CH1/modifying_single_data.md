@@ -16,6 +16,8 @@ Codes:
 Method 1) preapre the data
 
 ```Mysql 
+<MySQL,PostGreSQL>
+
 CREATE DATABASE sqldb;
 USE sqldb;
 DROP TABLE IF EXISTS mst_users;
@@ -32,6 +34,23 @@ VALUES
   , ('U003', '2016-08-27', 3)
 ;
 ```
+
+```sql
+<Hive>
+CREATE TABLE IF NOT EXISTS emst_users(
+    user_id string,
+    register_date string,
+    register_device tinyint) 
+    ROW FORMAT DELIMITED
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    STORED AS TEXTFILE;
+```
+
+
+
+
+
 Method 2) Conversion of Data Values into Labels 
 
 ```mysql
@@ -80,10 +99,23 @@ SELECT stamp,
        FROM access_log;
 ```
 <postgresql ver>
-SELECT referrer, 
+SELECT stamp, 
        SUBSTRING(referrer from '//([^/]*)') as host 
        FROM access_log;
 ```
+
+```sql
+<Hive>
+SELECT stamp,
+       PARSE_URL(referrer,'HOST') as host,
+       PARSE_URL(url,'PATH') as path,
+       PARSE_URL(url,'QUERY') as id
+       FROM access_log;
+
+
+```
+	
+	
 #### * path,id 
 
 Method 1)prepare the data
@@ -115,6 +147,20 @@ SELECT url,
        SUBSTRING(url,'id=([^&]*)') AS id
        FROM access_log;
 ```
+
+
+```sql
+<Hive>
+SELECT stamp,
+       split(parse_url(url,'PATH'),'/')[1] as b,
+       split(parse_url(url,'PATH'),'/')[2] as c
+       FROM access_log
+```
+
+
+
+
+
 
 #### * spliting one section into many sub-divsions
 In this section, the path is further taken apart into two subgroups, path1 and path 2. 
