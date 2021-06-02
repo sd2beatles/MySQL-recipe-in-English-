@@ -89,7 +89,7 @@ SELECT COALESCE(category,'all') AS category,
        GROUP BY ROLLUP(category,sub_category)
        ORDER BY category='all',sub_category='all';
 ```
-
+ROLLUP operators let you extend the functionality of GROUP BY clauses by calculating subtotals and grand totals for a set of columns. The CUBE operator is similar in functionality to the ROLLUP operator; however, the CUBE operator can calculate subtotals and grand totals for all permutations of the columns specified in it.
 ### 2 ABC Analysis
 
 ABC analysis is commonly used in the management of inventory at companies. The basic method is to categorize the products into ranks from A to C based on some factors including the proportion of sales revenue, market share and so on. After placing priorities on each category, we will plan a proper strategy for each section. 
