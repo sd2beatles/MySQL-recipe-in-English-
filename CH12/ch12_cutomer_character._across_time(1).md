@@ -110,7 +110,7 @@ adds to the group 5-day-consistency.
 
 #### - rentation rate 
 
-The mechanism is pretty much same except for the folloings;
+The mechanism is pretty much same except for the followings;
 
 First, the time period is every 7 day. 
 
