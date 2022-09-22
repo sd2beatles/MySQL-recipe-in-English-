@@ -522,7 +522,33 @@ An SQL JOIN clause is used to combine rows from two or more tables, based on a c
 ![image](https://user-images.githubusercontent.com/53164959/63138725-7cf8bb80-c016-11e9-8cd2-a774a14000a1.png)
 
 
+```mysql
 
+select * from purchase_log;
+set @max_number :=(select distinct max((length(product_ids)-length(replace(product_ids,',','')))+1) over()
+       from purchase_log);
+select @max_number;
+
+with recursive p as(
+  select 1 as idx
+  union all select idx+1 as idx
+  from p
+  where idx<=@max_number
+  )
+  select l.purchase_id,
+         l.product_ids,
+         substring_index(substring_index(product_ids,',',p.idx),',',-1) as product_id
+  from purchase_log as l
+  join p
+  on p.idx<=length(l.product_ids)-length(replace(l.product_ids,',',''))+1
+  order by purchase_id;
+
+				  
+				  
+				  
+				  
+				  
+```
 
 
 
