@@ -385,6 +385,16 @@ SELECT purchase_id,
        FROM purchase_detail_log
        GROUP BY purchase_id
        ORDER BY purchase_id;
+	
+	
+	
+-- mysql version
+SELECT purchase_id,
+       GROUP_CONCAT(purchase_id SEPARATOR ',') AS product_ids,
+       SUM(price) AS total_purchase
+       FROM purchase_detail_log
+       GROUP BY purchase_id;
+		
 ```
 
 ### 7.5 Stacking Columns 
