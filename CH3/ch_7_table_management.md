@@ -401,8 +401,8 @@ SELECT purchase_id,
 
 #### 7.5.1 A fixed number of columns in rows 
 
-![image](https://user-images.githubusercontent.com/53164959/191708937-ee9fbed5-d04c-4cd7-914c-e01e5ca20730.pn
 
+![image](https://user-images.githubusercontent.com/53164959/191709108-6480523b-d9d2-4f23-9236-dbe70a8940d3.png)
 	
 	
  In this section, we will introduce how to stack the values of columns into serveral rows into a group. Look at the table below, 
