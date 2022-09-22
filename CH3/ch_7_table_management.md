@@ -401,6 +401,10 @@ SELECT purchase_id,
 
 #### 7.5.1 A fixed number of columns in rows 
 
+![image](https://user-images.githubusercontent.com/53164959/191708937-ee9fbed5-d04c-4cd7-914c-e01e5ca20730.pn
+
+	
+	
  In this section, we will introduce how to stack the values of columns into serveral rows into a group. Look at the table below, 
  and you can easily be aware that there are fixed number of columns in rows. Here create a pivot table
  whose serial number is listed in the same number as that of the columns and CROSS JOIN it. 
