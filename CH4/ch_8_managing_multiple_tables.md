@@ -234,6 +234,10 @@ SELECT m.user_id,m.card_number,COUNT(p.purchase_id) AS purchase_count,
               ON m.user_id=p.user_id
 		GROUP BY m.user_id;
 ```
+	
+	
+	![image](https://user-images.githubusercontent.com/53164959/192326459-70a28f5e-4c7f-44d4-8de1-7357b4734937.p
+
 
 ### Special Note
 Let's take a look at SIGN(COUNT(p.purchase_id)) in pieces. First Count return either 0 or integer value if purchse_id is more than one.
