@@ -236,13 +236,15 @@ SELECT m.user_id,m.card_number,COUNT(p.purchase_id) AS purchase_count,
 ```
 	
 	
-	![image](https://user-images.githubusercontent.com/53164959/192326459-70a28f5e-4c7f-44d4-8de1-7357b4734937.p
-
 
 ### Special Note
 Let's take a look at SIGN(COUNT(p.purchase_id)) in pieces. First Count return either 0 or integer value if purchse_id is more than one.
 Then, using the function of SIGN where it returns zero for zero parameter whearas returing 1 for any positive integer. 
 
+
+	
+	
+![image](https://user-images.githubusercontent.com/53164959/192326674-235568fc-bbe6-4416-83c5-8faaa54ed4a1.png)
 
 ### 4) Avoiding Recursive and Lengthy Subquries
 In mangaing somewhat complicating quries, repeating the same subquires over and over seems to be inevitable. It thie repetitive code
