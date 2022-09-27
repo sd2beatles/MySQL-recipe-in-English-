@@ -117,6 +117,7 @@ case 2) monthly cumulate sum
 
 Let's record the total revenue generated in each month in the section of purchase_amount and its aggregating sum in agg_amount. 
 
+
 ```sql
 WITH temp_purchase AS(
      SELECT dt,
