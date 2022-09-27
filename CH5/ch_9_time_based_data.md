@@ -89,6 +89,10 @@ SELECT dt,
  
  #### 10.3 Cummulate Sum 
  
+ 
+ ![image](https://user-images.githubusercontent.com/53164959/192448584-b6fa2b8d-0d38-46d3-a715-49ae99dce196.png)
+
+ 
  case 1) daily cumulate sum 
  
  In practice, we are often asked to prepare a separate section indicating the accumulated sum as well as the total amount daily.
@@ -106,7 +110,7 @@ SELECT dt,
        SUBSTR(dt,6,3) AS month,
        SUBSTRING_INDEX(dt,'-',-1) AS date,
        SUM(purchase_amount) AS total_amount,
-       SUM(SUM(purchase_amount)) OVER(ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS agg_amount
+       SUM(SUM(purchase_amount)) OVER(ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING) AS agg_amount
        FROM  purchase_log
        GROUP BY dt
        ORDER BY dt;
